@@ -1,0 +1,22 @@
+{
+  "name": "d-epos-api",
+  "version": "1.0.0",
+  "description": "This is d-epos api service",
+  "main": "main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netra277/improved-robot.git"
+  },
+  "keywords": [
+    "epos"
+  ],
+  "author": "nethra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/netra277/improved-robot/issues"
+  },
+  "homepage": "https://github.com/netra277/improved-robot#readme"
+}
