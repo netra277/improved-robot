@@ -2,8 +2,9 @@
   "name": "d-epos-api",
   "version": "1.0.0",
   "description": "This is d-epos api service",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
+    "start-dev": "nodemon app.js",
     "test": "test"
   },
   "repository": {
@@ -18,5 +19,14 @@
   "bugs": {
     "url": "https://github.com/netra277/improved-robot/issues"
   },
-  "homepage": "https://github.com/netra277/improved-robot#readme"
+  "homepage": "https://github.com/netra277/improved-robot#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
+    "joi": "^14.3.1",
+    "mongoose": "^5.7.1",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.19.2"
+  }
 }
