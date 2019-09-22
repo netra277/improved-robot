@@ -1,10 +1,12 @@
-const mongoose = require('mongoose');
+//const dbConnection = require('../dbconnections/db_connection_common');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+const collections = require('../commons/db-collections');
 const Schema = mongoose.Schema;
 
 //create a schema
 const userSchema = new Schema({
-    email: {
+    username: {
         type: String,
         required: true,
         unique: true,
@@ -14,7 +16,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     }
-});
+},{collection:collections.Users});
 userSchema.pre('save', async function(next) {
  try{
      // Generate a salt
@@ -36,7 +38,6 @@ userSchema.methods.isValidPassword = async function(newpassword){
     }
 }
 //create a model
-const User = mongoose.model('user',userSchema);
-
+//const User = mongoose.model('user-a',userSchema);
 //export the model
-module.exports = User;
+module.exports = userSchema;
