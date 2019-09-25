@@ -1,8 +1,8 @@
 const router = require('express-promise-router')();
 
-const clientsController = require('../controllers/clients');
+const rolesController = require('../controllers/roles');
 
 router.route('/')
-.get(clientsController.getClients);
+.get(rolesController.getRoles);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 module.exports = {
         Users :'Users',
-        Clients: 'Clients'
+        Clients: 'Clients',
+        Roles: 'Roles'
 }

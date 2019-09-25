@@ -57,6 +57,7 @@ app.use((req,res,next)=>{
 //Routes
 app.use('/users',require('./routes/users'));
 app.use('/clients',require('./routes/clients'));
+app.use('/roles', require('./routes/roles'));
 
 // Error handling
 app.use((req, res, next)=>{

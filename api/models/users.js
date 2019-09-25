@@ -10,9 +10,45 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        lowercase: true
+        uppercase: true
     },
     password: {
+        type: String,
+        required: true
+    },
+    userId: {
+        type: String,
+        required: true
+    },
+    clientId: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    createdDate: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    lastLogin: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        required: true
+    },
+    status: {
         type: String,
         required: true
     }
