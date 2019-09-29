@@ -5,23 +5,25 @@ const Schema = mongoose.Schema;
 // Create a roles schema
 
 const RoleSchema = new Schema({
-    ID:{
+    _id: mongoose.Types.ObjectId,
+    roleId:{
         type: Number,
-        required:[true,'Role id is required'],
-        unique:true
+        required:[true,'Role id is required']
     },
-    Role:{
+    role:{
         type: String,
         required:[true,'Role is required']
     },
-    Description:{
+    description:{
         type: String
     },
-    LevelId:{
-        type: Number
+    levelId:{
+        type: Number,
+        required: true
     },
     isClientLevel:{
-        type: Boolean
+        type: Boolean,
+        required: true
     }
 },{collection:collections.Roles});
 

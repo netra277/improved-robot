@@ -5,21 +5,21 @@ const Schema = mongoose.Schema;
 // Create a client schema
 
 const ClientSchema = new Schema({
-    ID:{
+    _id: mongoose.Types.ObjectId,
+    clientId:{
         type: String,
         required:[true,'Client id is required'],
-        unique:true,
         minlength:6,
         maxlength:6
     },
-    Name:{
+    name:{
         type: String,
         required:[true,'Client name is required']
     },
-    Description:{
+    description:{
         type: String
     },
-    Phone:{
+    phone:{
         type: Number,
         required: function(){
             this.Email === undefined || this.Email === null;
@@ -27,26 +27,26 @@ const ClientSchema = new Schema({
         minlength:10,
 
     },
-    Email:{
+    email:{
         type: String,
         required: function(){
             this.Phone === undefined || this.Phone === null;
         }
     },
-    Address:{
+    address:{
         type: String
     },
-    Status:{
+    status:{
         type:String,
         enum:['active','inactive','suspended'],
         required: true,
         default: 'inactive'
     },
-    RegisteredDate:{
+    registeredDate:{
         type: Date,
         required: true
     },
-    UnRegisteredDate:{
+    unregisteredDate:{
         type: Date
     }
 },{collection:collections.Clients});

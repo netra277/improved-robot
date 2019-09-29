@@ -8,6 +8,7 @@ module.exports = {
         }
         if(config.environment === 'DEVELOPMENT'){
             if(connections[clientId]){
+                console.log('clientid:',connections[clientId]);
                 return connections[clientId];
             }
             else{
