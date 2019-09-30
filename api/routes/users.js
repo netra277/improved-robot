@@ -18,9 +18,9 @@ router.route('/login')
 .post(validateBody(schemas.authSchema),passport.authenticate('local',{session:false}), usersController.login);
 
 router.route('/create')
-.post(validateBody(schemas.createUserSchema),passport.authenticate('local',{session:false}), usersController.createUser);
+.post(validateBody(schemas.createUserSchema),passport.authenticate('local',{session:false}), usersController.create);
 
-router.route('/getUser')
+router.route('/:id')
 .get(passport.authenticate('jwt',{session:false}),usersController.getUser);
 // router.route('/secret')
 // .get(passport.authenticate('jwt',{session:false}), usersController.secret);
