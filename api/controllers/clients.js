@@ -4,15 +4,8 @@ const rolesList = require('../auth/roles');
 
 module.exports = {
     getClients: async (req, res, next) => {
-        const User = model.getUserModel();
-        const usr = User.findById(req.user._id);
-        if (!usr) {
-            res.status(401).json({
-                message: 'invalid user'
-            });
-        }
         const Role = model.getRoleModel();
-        const rol = Role.findById(usr.role);
+        const rol = Role.findById(req.user.role);
         if (rol.role === rolesList.SuperUser ||
             rol.role === rolesList.PowerUser) {
             const c = model.getClientModel();
@@ -24,15 +17,8 @@ module.exports = {
         });
     },
     getClient: async (req, res, next) => {
-        const User = model.getUserModel();
-        const usr = User.findById(req.user._id);
-        if (!usr) {
-            res.status(401).json({
-                message: 'invalid user'
-            });
-        }
         const Role = model.getRoleModel();
-        const rol = Role.findById(usr.role);
+        const rol = Role.findById(req.user.role);
         if (rol.role === rolesList.SuperUser ||
             rol.role === rolesList.PowerUser) {
             const c = model.getClientModel();
@@ -44,31 +30,24 @@ module.exports = {
         });
     },
     create: async (req, res, next) => {
-        const User = model.getUserModel();
-        const usr = User.findById(req.user._id);
-        if (!usr) {
-            res.status(401).json({
-                message: 'invalid user'
-            });
-        }
         const Role = model.getRoleModel();
-        const rol = Role.findById(usr.role);
+        const rol = Role.findById(req.user.role);
         if(rol.role !== rolesList.SuperUser){
             res.status(401).json({
                 message:'unauthorized'
             });
         }
         const Client = model.getClientModel();
-        const existClient = Client.find({clientId: req.value.body.id });
+        const existClient = Client.find({clientId: req.value.body.clientId });
         if(existClient){
             console.log('client already exist');
             res.status(500).json({
                 message:'client already exist'
-            })
+            });
         }
         const cli = new Client({
             _id: new mongoose.Types.ObjectId(),
-            clientId: req.value.body.id,
+            clientId: req.value.body.clientId,
             name: req.value.body.name,
             description: req.value.body.description,
             phone: req.value.body.phone,
@@ -92,16 +71,8 @@ module.exports = {
         });
     },
     update: async (req, res, next) => {
-
-        const User = model.getUserModel();
-        const usr = User.findById(req.user._id);
-        if (!usr) {
-            res.status(401).json({
-                message: 'invalid user'
-            });
-        }
         const Role = model.getRoleModel();
-        const rol = Role.findById(usr.role);
+        const rol = Role.findById(req.user.role);
         if(rol.role !== rolesList.SuperUser){
             res.status(401).json({
                 message:'unauthorized'
@@ -141,15 +112,8 @@ module.exports = {
         });
     },
     delete: async (req, res, next) => {
-        const User = model.getUserModel();
-        const usr = User.findById(req.user._id);
-        if (!usr) {
-            res.status(401).json({
-                message: 'invalid user'
-            });
-        }
         const Role = model.getRoleModel();
-        const rol = Role.findById(usr.role);
+        const rol = Role.findById(req.user.role);
         if(rol.role !== rolesList.SuperUser){
             res.status(401).json({
                 message:'unauthorized'
