@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const config = require('./configuration/config');
@@ -44,17 +45,20 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 // cors 
-app.use((req,res,next)=>{
-    res.header('Access-Control-Allow-Origin','*');
-    res.header('Access-Control-Allow-Headers','Origin','X-Requested-With, Content-Type, Accept, Authorization');
-    if(req.method === 'OPTIONS'){
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-        return res.status(200).json({});
-    }
-    next();
-})
+// app.use((req,res,next)=>{
+//     res.header('Access-Control-Allow-Origin','*');
+//     res.header('Access-Control-Allow-Headers','Origin','X-Requested-With, Content-Type, Accept, Authorization');
+//     if(req.method === 'OPTIONS'){
+//         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+//         return res.status(200).json({});
+//     }
+//     next();
+// })
+
+app.use(cors());
 
 //Routes
+app.use('/auth',require('./routes/authentication'));
 app.use('/users',require('./routes/users'));
 app.use('/clients',require('./routes/clients'));
 app.use('/roles', require('./routes/roles'));
@@ -73,7 +77,7 @@ app.use((error, req, res, next) =>{
             message: error.message
         }
         
-    })
+    });
 });
 
 module.exports = app;

@@ -4,25 +4,23 @@ const passport = require('passport');
 const passportConfig = require('../auth/passport');
 
 const { validateBody, schemas } = require('../helpers/userRouteHelpers');
+const { validateParam, paramSchemas } = require('../helpers/commonRouterHelper');
 const usersController = require('../controllers/users');
-
-
-
-// router.route('/signUp')
-// .post(validateBody(schemas.authSchema), usersController.signUp);
-
-// router.route('/login')
-// .post(validateBody(schemas.authSchema),passport.authenticate('local',{session:false}), usersController.login);
-
-router.route('/login')
-.post(validateBody(schemas.authSchema),passport.authenticate('local',{session:false}), usersController.login);
+const authController = require('../controllers/authentication');
+const rolesList = require('../auth/roles');
 
 router.route('/create')
-.post(validateBody(schemas.createUserSchema),passport.authenticate('local',{session:false}), usersController.create);
+.post(usersController.create);
+
+router.route('/')
+.get(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),
+usersController.getUsers);
 
 router.route('/:id')
-.get(passport.authenticate('jwt',{session:false}),usersController.getUser);
-// router.route('/secret')
-// .get(passport.authenticate('jwt',{session:false}), usersController.secret);
+.get(validateParam(paramSchemas.idSchema,'id'),
+passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),
+usersController.getUser);
 
 module.exports = router;

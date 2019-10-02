@@ -4,82 +4,75 @@ const rolesList = require('../auth/roles');
 
 module.exports = {
     getClients: async (req, res, next) => {
-        const Role = model.getRoleModel();
-        const rol = Role.findById(req.user.role);
-        if (rol.role === rolesList.SuperUser ||
-            rol.role === rolesList.PowerUser) {
-            const c = model.getClientModel();
-            const clients = await c.find({});
-            res.status(200).json(clients);
+        if (req.user.role.role === rolesList.SuperUser ||
+            req.user.role.role === rolesList.PowerUser) {
+            const Client = model.getClientModel();
+            const clients = await Client.find({});
+            return res.status(200).json(clients);
         }
         res.status(401).json({
             message: 'unauthorized'
         });
     },
     getClient: async (req, res, next) => {
-        const Role = model.getRoleModel();
-        const rol = Role.findById(req.user.role);
-        if (rol.role === rolesList.SuperUser ||
-            rol.role === rolesList.PowerUser) {
+        if (req.user.role.role === rolesList.SuperUser ||
+            req.user.role.role === rolesList.PowerUser) {
             const c = model.getClientModel();
-            const client = await c.find({ _id: req.params.id });
-            res.status(200).json(client);
+            const client = await c.find({ _id: req.value.params.id });
+            return res.status(200).json(client);
         }
         res.status(401).json({
             message: 'unauthorized'
         });
     },
     create: async (req, res, next) => {
-        const Role = model.getRoleModel();
-        const rol = Role.findById(req.user.role);
-        if(rol.role !== rolesList.SuperUser){
-            res.status(401).json({
-                message:'unauthorized'
-            });
-        }
+        console.log('in create client', req.value);
         const Client = model.getClientModel();
-        const existClient = Client.find({clientId: req.value.body.clientId });
+        const existClient = await Client.findOne({clientId: req.value.body.clientId.toLowerCase() });
         if(existClient){
             console.log('client already exist');
-            res.status(500).json({
+            return res.status(500).json({
                 message:'client already exist'
             });
         }
-        const cli = new Client({
-            _id: new mongoose.Types.ObjectId(),
-            clientId: req.value.body.clientId,
-            name: req.value.body.name,
-            description: req.value.body.description,
-            phone: req.value.body.phone,
-            email: req.value.body.email,
-            address: req.value.body.address,
-            status: req.value.body.status,
-            registeredDate: new Date().toISOString(),
-            unregisteredDate: ''
-        });
-        console.log('saving client');
-        const c = await cli.save();
-        if (c) {
-            console.log('client created successfully, Id: ', c.id);
-            res.status(200).json({
-                message: 'client created successfully'
+        else{
+            const cli = new Client({
+                _id: new mongoose.Types.ObjectId(),
+                clientId: req.value.body.clientId,
+                name: req.value.body.name,
+                description: req.value.body.description,
+                phone: req.value.body.phone,
+                email: req.value.body.email,
+                address: req.value.body.address,
+                status: req.value.body.status,
+                registeredDate: new Date().toISOString(),
+                unregisteredDate: ''
             });
+            console.log('saving client', cli);
+            const c = await cli.save();
+            if (c) {
+                console.log('client created successfully, Id: ', c._id);
+                return res.status(200).json({
+                    message: 'client created successfully'
+                });
+            }else{
+                console.log('No client created');
+                return res.status(500).json({
+                    message: 'client doesnot created'
+                });
+            }
+            
         }
-        console.log('No client created');
-        res.status(500).json({
-            message: 'client doesnot created'
-        });
+        
     },
     update: async (req, res, next) => {
-        const Role = model.getRoleModel();
-        const rol = Role.findById(req.user.role);
-        if(rol.role !== rolesList.SuperUser){
-            res.status(401).json({
+        if(req.user.role.role !== rolesList.SuperUser){
+            return res.status(401).json({
                 message:'unauthorized'
             });
         }
         const Client = model.getClientModel();
-        const cli = Client.findById(req.params.id);
+        const cli = await Client.findById(req.value.params.id);
         if(!cli){
             res.status(404).json({
                 message:'client doesnot exist'
@@ -101,33 +94,35 @@ module.exports = {
         if (req.value.body.address && req.value.body.address !== '') {
             cli.address = req.value.body.address;
         }
-        const c = await Client.updateOne({ _id: req.params.id }, cli);
-        if (c) {
-            res.status(200).json({
+        console.log('updateclient: ',cli);
+        const c = await Client.updateOne({ _id: req.value.params.id }, cli);
+        if (c.nModified > 0) {
+            return res.status(200).json({
                 message: 'role updated successfully'
             });
+        }else {
+           return res.status(500).json({
+                message: 'error in updating role'
+            });
         }
-        res.status(500).json({
-            message: 'error in updating role'
-        });
     },
     delete: async (req, res, next) => {
-        const Role = model.getRoleModel();
-        const rol = Role.findById(req.user.role);
-        if(rol.role !== rolesList.SuperUser){
-            res.status(401).json({
+        if(req.user.role.role !== rolesList.SuperUser){
+            return res.status(401).json({
                 message:'unauthorized'
             });
         }
         const CLient = model.getClientModel();
-        const resp = await CLient.remove({ _id: req.params.id });
+        const resp = await CLient.remove({ _id: req.value.params.id });
         if (resp.deletedCount > 0) {
-            res.status(200).json({
+            return res.status(200).json({
                 message: 'client deleted successfully'
             });
+        }else{
+            return res.status(404).json({
+                message:'client doesnot exist'
+            });
         }
-        res.status(404).json({
-            message:'client doesnot exist'
-        });
+        
     }
 }

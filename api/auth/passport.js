@@ -8,6 +8,7 @@ const config = require('../configuration/config');
 const connection = require('../dbconnections/db_connection_common');
 const mongooModels = require('../commons/mongoose-models');
 const UserSchema = require('../models/users');
+const dbConnection = require('../dbconnections/connection_initializer');
 
 // Json web token strategy
 passport.use(new jwtStrategy({
@@ -15,10 +16,14 @@ passport.use(new jwtStrategy({
     secretOrKey: config.jwtSecretKey
 }, async (payload, done)=>{
 try{
-    const con =connection.connectToDatabase();
-        const usr = con.model(mongooModels.UsersModel,UserSchema);
+    const Role= dbConnection.getRoleModel();
+        const usr = dbConnection.getUserModel();
 // Find the user specified in token 
+console.log('sub: ',payload.sub);
 const user = await usr.findById(payload.sub);
+user.role = await Role.findById(user.role);
+
+console.log(user);
 //If user doesn't exists, retrun user
 if(!user){
     return done(null,false);
@@ -33,12 +38,11 @@ done(null,user);
 
 
 // local strategy
-passport.use(new LocalStrategy({
+passport.use('local', new LocalStrategy({
     usernameField:'username'
 },async (username,password,done)=>{
     try{
-        const con =connection.connectToDatabase();
-        const usr = con.model(mongooModels.UsersModel,UserSchema);
+        const usr = dbConnection.getUserModel();
 //find the user with the given username
 const user = await usr.findOne({username});
 // if  not found, return user
@@ -46,6 +50,7 @@ if(!user){
     console.log('no user found');
     return done(null,false);
 }
+
 // check if the password is correct
 const isMatch = await user.isValidPassword(password);
 console.log('password match: ',isMatch);

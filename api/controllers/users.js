@@ -1,37 +1,17 @@
-const jwt = require('jsonwebtoken');
 
-const config = require('../configuration/config');
 const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
 const constants = require('../commons/enums');
 const model = require('../dbconnections/connection_initializer');
 
-signToken = user => {
-  return token = jwt.sign({
-    user: {
-      id: user._id,
-      clientId: user.clientId,
-      name: user.name
-    },
-    iss: 'd-epos',
-    sub: user.id,
-    iat: new Date().getDate(),
-    exp: new Date().setDate(new Date().getDate() + 1)
-  }, config.jwtSecretKey);
-}
-
 module.exports = {
-  login: async (req, res, next) => {
-    console.log(req);
-    const token = signToken(req.user);
-    res.status(200).json({ token });
-  },
+  
   create: async (req, res, next) => {
     console.log('createUser method entry');
     const Client = model.getClientModel();
-    console.log('getting client details for clientId: ', req.user.clientId);
+    console.log('getting client details for clientId: ', req.body.clientId);
 
-    const reqUserCli = await Client.findById(req.user.clientId);
+    const reqUserCli = await Client.findById(req.body.clientId);
     if (!reqUserCli) {
       console.log('invalid client id, Exiting...');
       res.status(404).json({
@@ -39,8 +19,8 @@ module.exports = {
       });
     }
     const Role = model.getRoleModel();
-    console.log('getting role details for role id: ', req.user.role);
-    const reqUserRole = await Role.findById(req.user.role);
+    console.log('getting role details for role id: ', req.body.role);
+    const reqUserRole = await Role.findById(req.body.role);
     if (!reqUserRole) {
       console.log('invalid role id. exiting');
       res.status(404).json({
@@ -48,8 +28,8 @@ module.exports = {
       });
     }
     const dbRoles = await Role.find({ isClientLevel: true });
-    const User = getUserModel();
-    const dupUser = await User.findOne({userId: reqUserCli.cliendId + req.value.body.username });
+    const User = model.getUserModel();
+    const dupUser = await User.findOne({userId: reqUserCli.cliendId + req.body.username });
     if(dupUser){
       res.status(500).json({
         message:'user already exist'
@@ -57,61 +37,61 @@ module.exports = {
     }
     const usr = new User({
       _id: new mongoose.Types.ObjectId(),
-      username: req.value.body.username,
-      password: req.value.body.password,
-      userId: '',
-      clientId: req.value.body.clientId,
-      name: req.value.body.name,
+      username: req.body.username,
+      password: req.body.password,
+      userId: 'CLI123nethra277',
+      clientId: reqUserCli,
+      name: req.body.name,
       createdDate: new Date().toISOString(),
-      phone: req.value.body.phone,
-      email: req.value.body.email,
+      phone: req.body.phone,
+      email: req.body.email,
       lastLogin: new Date().toISOString(),
-      role: req.value.body.role,
-      status: req.value.body.status
+      role: reqUserRole,
+      status: req.body.status
     });
 
-    if (reqUserRole.role === rolesList.SuperUser) {
-      if (!usr.clientId && usr.clientId === '') {
-        res.status(404).json({
-          message: 'client id is required'
-        });
-      }
-      usr.userId = usr.clientId + usr.username
-    }
-    else if (reqUserRole.role === rolesList.Admin) {
-      usr.clientId = reqUserCli._id;
-      usr.userId = reqUserCli.clientId + usr.username;
-      const selRole = req.value.body.role;
-      if (!selRole || selRole === '') {
-        res.status(404).json({
-          message: 'role is required'
-        });
-      }
-      if (dbRoles.length > 0) {
-        const r = dbRoles.filter((f) => {
-          return f._id === selRole;
-        });
-        if (r.length > 0) {
-          usr.role = r[0]._id;
-        } else {
-          res.status(404).json({
-            message: 'invalid role id'
-          });
-        }
-      }
+    // if (reqUserRole.role === rolesList.SuperUser) {
+    //   if (!usr.clientId && usr.clientId === '') {
+    //     res.status(404).json({
+    //       message: 'client id is required'
+    //     });
+    //   }
+    //   usr.userId = usr.clientId + usr.username
+    // }
+    // else if (reqUserRole.role === rolesList.Admin) {
+    //   usr.clientId = reqUserCli._id;
+    //   usr.userId = reqUserCli.clientId + usr.username;
+    //   const selRole = req.value.body.role;
+    //   if (!selRole || selRole === '') {
+    //     res.status(404).json({
+    //       message: 'role is required'
+    //     });
+    //   }
+    //   if (dbRoles.length > 0) {
+    //     const r = dbRoles.filter((f) => {
+    //       return f._id === selRole;
+    //     });
+    //     if (r.length > 0) {
+    //       usr.role = r[0]._id;
+    //     } else {
+    //       res.status(404).json({
+    //         message: 'invalid role id'
+    //       });
+    //     }
+    //   }
 
-    }
-    else {
-      res.status(401).json({
-        message: 'unauthorized'
-      });
-    }
-    if (usr.status !== constants.UserStatus.Active ||
-      usr.status !== constants.UserStatus.Inactive) {
-      res.status(404).json({
-        message: 'Invalid status'
-      });
-    }
+    // }
+    // else {
+    //   res.status(401).json({
+    //     message: 'unauthorized'
+    //   });
+    // }
+    // if (usr.status !== constants.UserStatus.Active ||
+    //   usr.status !== constants.UserStatus.Inactive) {
+    //   res.status(404).json({
+    //     message: 'Invalid status'
+    //   });
+    // }
 
     usr.save()
       .then(result => {
@@ -128,33 +108,25 @@ module.exports = {
       });
   },
   getUser: async (req, res, next) => {
-    const Role = model.getRoleModel();
-    console.log('getting role details for role id: ', req.user.role);
-    const reqUserRole = await Role.findById(req.user.role);
-    if (!reqUserRole) {
-      console.log('invalid role id. exiting');
-      res.status(404).json({
-        message: 'unauthorized'
-      });
-    }
+    console.log('value: ',req.value);
+    const reqUsr = req.user;
 
     const Client = model.getClientModel();
     console.log('getting client details for clientId: ', req.user.clientId);
-
-    const reqUserCli = await Client.findById(req.user.clientId);
+    const reqUserCli = await Client.findById(reqUsr.clientId);
     if (!reqUserCli) {
       console.log('invalid client id, Exiting...');
       res.status(404).json({
         message: 'unauthorized'
       });
     }
-    const canAccess = false;
-    if (reqUserRole.role === rolesList.SuperUser ||
-      reqUserRole.role === rolesList.PowerUser) {
+    let canAccess = false;
+    if (reqUsr.role.role === rolesList.SuperUser ||
+      reqUsr.role.role === rolesList.PowerUser) {
       canAccess = true;
     }
     const User = model.getUserModel();
-    const usr = await User.findById(req.params.id);
+    let usr = await User.findById(req.value.params.id);
     usr.password = '';
     if (canAccess) {
       res.status(200).json(usr);
@@ -173,26 +145,34 @@ module.exports = {
     }
   },
   getUsers: async (req, res, next) => {
-    const Role = model.getRoleModel();
-    const rol = Role.findById(req.user.role);
-    if (rol.role === rolesList.SuperUser ||
-      rol.role === rolesList.PowerUser) {
-      const usrs = User.find({});
+    const usr = req.user;
+    const User = model.getUserModel();
+    if(usr.role.role === rolesList.SuperUser || usr.role.role === rolesList.PowerUser){
+      const usrs = await User.find({});
+      usrs.forEach(function(element) {
+        element.password = '';
+      });
       res.status(200).json(usrs);
     }
-    else if (rol.role === rolesList.Admin || role.role === rolesList.Supervisor) {
-      const usrs = User.find({ clientId: req.user.clientId });
+    else if (usr.role.role === rolesList.Admin || usr.role.role === rolesList.Supervisor) {
+      const usrs = await User.find({ clientId: usr.clientId });
+      usrs.forEach(function(element) {
+        element.password = '';
+      });
       res.status(200).json(usrs);
     }
-    else if (rol.role === rolesList.Manager) {
+    else if (usr.role.role === rolesList.Manager) {
       // implement when branches are done
       res.status(200).json({
         message: 'yet to implement'
       });
     }
-    else if (rol.role === rolesList.User) {
+    else if (usr.role.role === rolesList.User) {
       const User = model.getUserModel();
       const usr = await User.find({ _id: req.user._id });
+      usr.forEach(function(element) {
+        element.password = '';
+      });
       res.status(200).json(usr);
     }
     else {
@@ -224,22 +204,40 @@ module.exports = {
   update: async (req, res, next) => {
     const Role = model.getRoleModel();
     const rol = Role.findById(req.user.role);
+    const updatingRol = Role.findById(req.value.body.role);
     const User = model.getUserModel();
     const updUser = await User.findById(req.params.id);
+    let canUpdate = false;
     if(rol.role === rolesList.SuperUser){
-
+      canUpdate = true;
     }
     if(req.value.body.name && req.value.body.name !== ''){
       updUser.name = req.value.body.name;
     }
     if(req.value.body.phone && req.value.body.phone !== ''){
-      updUser.name = req.value.body.name;
+      updUser.phone = req.value.body.phone;
     }
     if(req.value.body.email && req.value.body.email !== ''){
-      updUser.name = req.value.body.name;
+      updUser.email = req.value.body.email;
     }
     if(req.value.body.role && req.value.body.role !== ''){
       updUser.name = req.value.body.name;
+    }
+    if(rol.role === rolesList.Admin && req.user.clientId === updUser.clientId){
+     const userUpdated = await updUser.save();
+     if(userUpdated){
+       res.status(200).json({
+         message:'user updated successfully'
+       });
+     }
+     res.status(500).json({
+       message: 'error updating user'
+     });
+    }
+    else {
+      res.status(401).json({
+        message:'unauthorized'
+      });
     }
   }
 

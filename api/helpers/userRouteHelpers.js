@@ -30,6 +30,6 @@ module.exports = {
         authSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
             password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/)
-        })
+        }),
     }
 }

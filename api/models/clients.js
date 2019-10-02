@@ -6,49 +6,47 @@ const Schema = mongoose.Schema;
 
 const ClientSchema = new Schema({
     _id: mongoose.Types.ObjectId,
-    clientId:{
+    clientId: {
         type: String,
-        required:[true,'Client id is required'],
-        minlength:6,
-        maxlength:6
+        required: [true, 'Client id is required'],
+        minlength: 6,
+        maxlength: 6,
+        lowercase: true
     },
-    name:{
+    name: {
         type: String,
-        required:[true,'Client name is required']
+        required: [true, 'Client name is required']
     },
-    description:{
+    description: {
         type: String
     },
-    phone:{
+    phone: {
         type: Number,
-        required: function(){
-            this.Email === undefined || this.Email === null;
-        },
-        minlength:10,
+        required: true,
+        minlength: 10,
 
     },
-    email:{
+    email: {
         type: String,
-        required: function(){
-            this.Phone === undefined || this.Phone === null;
-        }
+        required: true
     },
-    address:{
+    address: {
         type: String
     },
-    status:{
-        type:String,
-        enum:['active','inactive','suspended'],
+    status: {
+        type: String,
+        enum: ['active', 'inactive', 'suspended'],
         required: true,
         default: 'inactive'
     },
-    registeredDate:{
+    registeredDate: {
         type: Date,
         required: true
     },
-    unregisteredDate:{
+    unregisteredDate: {
         type: Date
     }
-},{collection:collections.Clients});
+}, { collection: collections.Clients });
+
 
 module.exports = ClientSchema;

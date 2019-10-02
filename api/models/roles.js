@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const collections = require('../commons/db-collections');
 const Schema = mongoose.Schema;
+const model = require('../dbconnections/connection_initializer');
 
 // Create a roles schema
 
@@ -17,14 +18,11 @@ const RoleSchema = new Schema({
     description:{
         type: String
     },
-    levelId:{
-        type: Number,
-        required: true
-    },
     isClientLevel:{
         type: Boolean,
         required: true
     }
 },{collection:collections.Roles});
+
 
 module.exports = RoleSchema;
