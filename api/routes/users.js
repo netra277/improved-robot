@@ -9,9 +9,6 @@ const usersController = require('../controllers/users');
 const authController = require('../controllers/authentication');
 const rolesList = require('../auth/roles');
 
-router.route('/create')
-.post(usersController.create);
-
 router.route('/')
 .get(passport.authenticate('jwt',{session: false}),
 authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),
@@ -22,5 +19,24 @@ router.route('/:id')
 passport.authenticate('jwt',{session: false}),
 authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),
 usersController.getUser);
+
+router.route('/create')
+.post(validateBody(schemas.createUserSchema),
+passport.authenticate('jwt',{ session: false }),
+authController.roleAuthorization([rolesList.Admin]),
+usersController.create);
+
+router.route('/:id')
+.put(validateParam(paramSchemas.idSchema,'id'),
+validateBody(schemas.updateUserSchema),
+passport.authenticate('jwt',{ session: false }),
+authController.roleAuthorization([rolesList.Admin]),
+usersController.update);
+
+router.route('/:id')
+.delete(validateParam(paramSchemas.idSchema,'id'),
+passport.authenticate('jwt',{ session: false }),
+authController.roleAuthorization([rolesList.Admin]),
+usersController.delete);
 
 module.exports = router;

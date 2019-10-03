@@ -23,6 +23,7 @@ const userSchema = new Schema({
     userId: {
         type: String,
         required:true,
+        lowercase: true,
         unique: true
     },
     clientId: {

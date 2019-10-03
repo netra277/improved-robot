@@ -9,89 +9,91 @@ module.exports = {
   create: async (req, res, next) => {
     console.log('createUser method entry');
     const Client = model.getClientModel();
-    console.log('getting client details for clientId: ', req.body.clientId);
+    console.log('getting client details for clientId: ', req.user.clientId);
 
-    const reqUserCli = await Client.findById(req.body.clientId);
-    if (!reqUserCli) {
+    const requestedUserCli = await Client.findById(req.user.clientId);
+    if (!requestedUserCli) {
       console.log('invalid client id, Exiting...');
       res.status(404).json({
         message: 'invalid client details'
       });
     }
     const Role = model.getRoleModel();
-    console.log('getting role details for role id: ', req.body.role);
-    const reqUserRole = await Role.findById(req.body.role);
-    if (!reqUserRole) {
+    console.log('getting role details for role id: ', req.value.body.role);
+    const creatingUserRole = await Role.findById(req.value.body.role);
+    if (!creatingUserRole) {
       console.log('invalid role id. exiting');
       res.status(404).json({
         message: 'invalid role details'
       });
     }
-    const dbRoles = await Role.find({ isClientLevel: true });
     const User = model.getUserModel();
-    const dupUser = await User.findOne({userId: reqUserCli.cliendId + req.body.username });
+    const dupUser = await User.findOne({username : req.value.body.username,userId: reqUserCli.cliendId + req.value.body.username });
     if(dupUser){
       res.status(500).json({
         message:'user already exist'
       })
     }
+    const clientId = req.value.body.clientId;
     const usr = new User({
       _id: new mongoose.Types.ObjectId(),
-      username: req.body.username,
-      password: req.body.password,
-      userId: 'CLI123nethra277',
-      clientId: reqUserCli,
-      name: req.body.name,
+      username: req.value.body.username,
+      password: req.value.body.password,
+      userId: '',
+      clientId: '',
+      name: req.value.body.name,
       createdDate: new Date().toISOString(),
-      phone: req.body.phone,
-      email: req.body.email,
+      phone: req.value.body.phone,
+      email: req.value.body.email,
       lastLogin: new Date().toISOString(),
       role: reqUserRole,
-      status: req.body.status
+      status: req.value.body.status
     });
 
-    // if (reqUserRole.role === rolesList.SuperUser) {
-    //   if (!usr.clientId && usr.clientId === '') {
-    //     res.status(404).json({
-    //       message: 'client id is required'
-    //     });
-    //   }
-    //   usr.userId = usr.clientId + usr.username
-    // }
-    // else if (reqUserRole.role === rolesList.Admin) {
-    //   usr.clientId = reqUserCli._id;
-    //   usr.userId = reqUserCli.clientId + usr.username;
-    //   const selRole = req.value.body.role;
-    //   if (!selRole || selRole === '') {
-    //     res.status(404).json({
-    //       message: 'role is required'
-    //     });
-    //   }
-    //   if (dbRoles.length > 0) {
-    //     const r = dbRoles.filter((f) => {
-    //       return f._id === selRole;
-    //     });
-    //     if (r.length > 0) {
-    //       usr.role = r[0]._id;
-    //     } else {
-    //       res.status(404).json({
-    //         message: 'invalid role id'
-    //       });
-    //     }
-    //   }
+    if (reqUserRole.role === rolesList.SuperUser) {
+      if (!clientId && clientId === '') {
+        res.status(404).json({
+          message: 'client id is required'
+        });
+      }
+      const newClient = await Client.findById(clientId);
+      usr.clientId = newClient;
+      usr.userId = usr.clientId + usr.username;
+    }
+    else if (reqUserRole.role === rolesList.Admin) {
+      usr.clientId = reqUserCli;
+      usr.userId = clientId + usr.username;
+      const selRole = req.value.body.role;
+      if (!selRole || selRole === '') {
+        res.status(404).json({
+          message: 'role is required'
+        });
+      }
+      if (dbRoles.length > 0) {
+        const r = dbRoles.filter((f) => {
+          return f._id === selRole;
+        });
+        if (r.length > 0) {
+          usr.role = r[0]._id;
+        } else {
+          res.status(404).json({
+            message: 'invalid role id'
+          });
+        }
+      }
 
-    // }
-    // else {
-    //   res.status(401).json({
-    //     message: 'unauthorized'
-    //   });
-    // }
-    // if (usr.status !== constants.UserStatus.Active ||
-    //   usr.status !== constants.UserStatus.Inactive) {
-    //   res.status(404).json({
-    //     message: 'Invalid status'
-    //   });
-    // }
+    }
+    else {
+      res.status(401).json({
+        message: 'unauthorized'
+      });
+    }
+    if (usr.status !== constants.UserStatus.Active ||
+      usr.status !== constants.UserStatus.Inactive) {
+      res.status(404).json({
+        message: 'Invalid status'
+      });
+    }
 
     usr.save()
       .then(result => {

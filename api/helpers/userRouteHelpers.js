@@ -27,6 +27,12 @@ module.exports = {
             status: Joi.string().required(),
             clientId: Joi.string().required()
         }),
+        updateUserSchema: Joi.object().keys({
+            name: Joi.string(),
+            phone: Joi.string().regex(/^[0-9]{10,10}$/),
+            email: Joi.string().email(),
+            role: Joi.string(),
+        }),
         authSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
             password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/)
