@@ -28,13 +28,8 @@ module.exports = {
       });
     }
     const User = model.getUserModel();
-    const dupUser = await User.findOne({username : req.value.body.username,userId: reqUserCli.cliendId + req.value.body.username });
-    if(dupUser){
-      res.status(500).json({
-        message:'user already exist'
-      })
-    }
-    const clientId = req.value.body.clientId;
+    
+     
     const usr = new User({
       _id: new mongoose.Types.ObjectId(),
       username: req.value.body.username,
@@ -46,55 +41,42 @@ module.exports = {
       phone: req.value.body.phone,
       email: req.value.body.email,
       lastLogin: new Date().toISOString(),
-      role: reqUserRole,
+      role: creatingUserRole,
       status: req.value.body.status
     });
 
-    if (reqUserRole.role === rolesList.SuperUser) {
-      if (!clientId && clientId === '') {
+    if (req.user.role.role === rolesList.SuperUser) {
+      
+      if (!req.value.body.clientId && req.value.body.clientId === '') {
         res.status(404).json({
           message: 'client id is required'
         });
       }
-      const newClient = await Client.findById(clientId);
+      const newClient = await Client.findById(req.value.body.clientId);
       usr.clientId = newClient;
-      usr.userId = usr.clientId + usr.username;
+      usr.userId = newClient.cliendId + usr.username;
     }
-    else if (reqUserRole.role === rolesList.Admin) {
-      usr.clientId = reqUserCli;
-      usr.userId = clientId + usr.username;
-      const selRole = req.value.body.role;
-      if (!selRole || selRole === '') {
-        res.status(404).json({
-          message: 'role is required'
-        });
-      }
-      if (dbRoles.length > 0) {
-        const r = dbRoles.filter((f) => {
-          return f._id === selRole;
-        });
-        if (r.length > 0) {
-          usr.role = r[0]._id;
-        } else {
-          res.status(404).json({
-            message: 'invalid role id'
-          });
-        }
-      }
-
+    else if (req.user.role.role === rolesList.Admin) {
+      usr.clientId = requestedUserCli;
+      usr.userId = requestedUserCli.clientId + usr.username;
     }
     else {
-      res.status(401).json({
+      return res.status(401).json({
         message: 'unauthorized'
       });
     }
-    if (usr.status !== constants.UserStatus.Active ||
+    if (usr.status !== constants.UserStatus.Active &&
       usr.status !== constants.UserStatus.Inactive) {
-      res.status(404).json({
+      return res.status(404).json({
         message: 'Invalid status'
       });
     }
-
+    const dupUser = await User.findOne({username : usr.username,userId: usr.cliendId + usr.username });
+    if(dupUser){
+      res.status(500).json({
+        message:'user already exist'
+      })
+    }
     usr.save()
       .then(result => {
         console.log('user created');
