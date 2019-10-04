@@ -22,6 +22,8 @@ try{
 console.log('sub: ',payload.sub);
 const user = await usr.findById(payload.sub);
 user.role = await Role.findById(user.role);
+const Client = model.getClientModel();
+user.clientId = await Client.findById(user.clientId);
 
 console.log(user);
 //If user doesn't exists, retrun user
@@ -55,6 +57,9 @@ if(!user){
 const isMatch = await user.isValidPassword(password);
 console.log('password match: ',isMatch);
 // if not handle it
+const Role= dbConnection.getRoleModel();
+user.role = await Role.findById(user.role);
+
 if(!isMatch){
     return done(null,false);
 }

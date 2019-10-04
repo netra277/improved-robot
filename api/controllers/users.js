@@ -47,7 +47,7 @@ module.exports = {
 
     if (req.user.role.role === rolesList.SuperUser) {
       
-      if (!req.value.body.clientId && req.value.body.clientId === '') {
+      if (!req.value.body.clientId || req.value.body.clientId === '') {
         res.status(404).json({
           message: 'client id is required'
         });
@@ -71,22 +71,22 @@ module.exports = {
         message: 'Invalid status'
       });
     }
-    const dupUser = await User.findOne({username : usr.username,userId: usr.cliendId + usr.username });
+    const dupUser = await User.findOne({username : usr.username.toLowerCase(),userId: usr.cliendId.toLowerCase() + usr.username.toLowerCase() });
     if(dupUser){
       res.status(500).json({
         message:'user already exist'
       })
     }
-    usr.save()
+    await usr.save()
       .then(result => {
         console.log('user created');
-        res.status(201).json({
+        return res.status(201).json({
           message: 'User created successfully'
         });
       })
       .catch(err => {
         console.log('error in creating user: ', err);
-        res.status(500).json({
+        return res.status(500).json({
           message: 'Error creating user'
         });
       });
@@ -166,35 +166,29 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
-    const Role = model.getRoleModel();
-    const rol = Role.findById(req.user.role);
     const User = model.getUserModel();
-    const remUser = await User.findById(req.params.id);
-    if (rol.role === rolesList.SuperUser || (remUser.clientId === req.user.clientId && rol.role === rolesList.Admin)) {
-      const resp = await User.remove(req.params.id);
+    const remUser = await User.findById(req.value.params.id);
+    if (req.user.role.role === rolesList.SuperUser || (remUser.clientId === req.user.clientId && req.user.role.role === rolesList.Admin)) {
+      const resp = await User.remove(req.value.params.id);
       if (resp.deletedCount > 0) {
-        res.status(200).json({
+        return res.status(200).json({
           message: 'deleted successfully'
         });
       }
-      res.status(500).json({
+      return res.status(500).json({
         message:'could not able to delete'
       });
+    } else{
+      return res.status(401).json({
+        message: 'unauthorized'
+      });
     }
-    res.status(401).json({
-      message: 'unauthorized'
-    });
   },
   update: async (req, res, next) => {
     const Role = model.getRoleModel();
-    const rol = Role.findById(req.user.role);
-    const updatingRol = Role.findById(req.value.body.role);
+    const updatingRol = await Role.findById(req.value.body.role);
     const User = model.getUserModel();
-    const updUser = await User.findById(req.params.id);
-    let canUpdate = false;
-    if(rol.role === rolesList.SuperUser){
-      canUpdate = true;
-    }
+    const updUser = await User.findById(req.value.params.id);
     if(req.value.body.name && req.value.body.name !== ''){
       updUser.name = req.value.body.name;
     }
@@ -205,21 +199,55 @@ module.exports = {
       updUser.email = req.value.body.email;
     }
     if(req.value.body.role && req.value.body.role !== ''){
-      updUser.name = req.value.body.name;
+      updUser.role = updatingRol;
     }
-    if(rol.role === rolesList.Admin && req.user.clientId === updUser.clientId){
-     const userUpdated = await updUser.save();
-     if(userUpdated){
-       res.status(200).json({
+    if(req.user.role.role === rolesList.SuperUser || (req.user.role.role === rolesList.Admin && req.user.clientId === updUser.clientId)){
+     const userUpdated = await User.updateOne({_id: req.value.params.id}, updUser);
+     if(userUpdated.nModified > 0){
+       return res.status(200).json({
          message:'user updated successfully'
        });
      }
-     res.status(500).json({
+     return res.status(500).json({
        message: 'error updating user'
      });
     }
     else {
-      res.status(401).json({
+      return res.status(401).json({
+        message:'unauthorized'
+      });
+    }
+  },
+
+  updateUserStatus: async(req, res, next)=>{
+    const User = model.getUserModel();
+    const updUser = await User.findById(req.value.params.id);
+    if(!updUser){
+      return res.status(404).json({
+        message:'invalid user id'
+      });
+    }
+    if (req.value.body.status !== constants.UserStatus.Active &&
+      req.value.body.status !== constants.UserStatus.Inactive) {
+      return res.status(404).json({
+        message: 'Invalid status'
+      });
+    }
+    updUser.status = req.value.body.status;
+    
+    if(req.user.role.role === rolesList.SuperUser || (req.user.role.role === rolesList.Admin && req.user.clientId === updUser.clientId)){
+     const userUpdated = await User.updateOne({_id: req.value.params.id}, updUser);
+     if(userUpdated.nModified > 0){
+       return res.status(200).json({
+         message:'user status updated successfully'
+       });
+     }
+     return res.status(500).json({
+       message: 'error updating user status'
+     });
+    }
+    else {
+      return res.status(401).json({
         message:'unauthorized'
       });
     }

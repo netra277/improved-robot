@@ -9,6 +9,10 @@ const ItemSchema =  new Schema({
     itemId: {
         type: String
     },
+    categoryId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: mongooModel.CategoryModel
+    },
     name: {
         type:String
     },

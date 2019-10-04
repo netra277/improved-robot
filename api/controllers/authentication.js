@@ -7,7 +7,8 @@ signToken = user => {
         user: {
             id: user._id,
             clientId: user.clientId,
-            username: user.username
+            username: user.username,
+            role: user.role.role
         },
         iss: 'd-epos',
         sub: user.id,

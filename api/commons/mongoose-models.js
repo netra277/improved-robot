@@ -1,5 +1,11 @@
 module.exports = {
     UsersModel:'UsersModel',
     ClientsModel: 'ClientsModel',
-    RolesModel: 'RolesModel'
+    RolesModel: 'RolesModel',
+    BranchesModel: 'BranchesModel',
+    CategoryModel: 'CategoryModel',
+    ItemsModel: 'ItemsModel',
+    OrdersModel: 'OrdersModel',
+    BranchOrdersModel: 'BranchOrdersModel',
+    BranchUserDetailModel: 'BranchUserDetailModel'
 }

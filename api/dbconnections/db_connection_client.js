@@ -12,7 +12,7 @@ module.exports = {
                 return connections[clientId];
             }
             else{
-                connections[clientId] = mongoose.createConnection(config.connectionStringClientDbDev);
+                connections[clientId] = mongoose.createConnection(config.connectionStringClientDbDev,{ useUnifiedTopology: true,useNewUrlParser: true });
                 return connections[clientId];
             }
         }
@@ -21,7 +21,7 @@ module.exports = {
                 return connections[clientId];
             }
             else{
-                connections[clientId] = mongoose.createConnection(config.connectionStringClientDb);
+                connections[clientId] = mongoose.createConnection(config.connectionStringClientDb,{ useUnifiedTopology: true,useNewUrlParser: true });
                 return connections[clientId];
             }
         }

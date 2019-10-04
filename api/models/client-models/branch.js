@@ -18,11 +18,17 @@ const BranchSchema =  new Schema({
     Address: {
         type: String
     },
+    phone:{
+        type: Number
+    },
+    email:{
+        type: String
+    },
     GSTNumber: {
         type: String
     },
     isHeadBranch: {
-        type: String
+        type: Boolean
     }
 },{collection:collections.ClientDbCollections.Branch});
 

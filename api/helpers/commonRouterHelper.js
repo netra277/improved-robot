@@ -9,7 +9,7 @@ module.exports = {
                 return res.status(400).json(result.error);
             }
             if (!req.value) {
-                req.value = { params: {} };
+                req.value = { params: { }};
             }
             req.value['params'][paramName] = result.value.param;
             console.log('end validateParam');
