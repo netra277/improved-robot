@@ -23,9 +23,11 @@ module.exports = {
             name: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email().required(),
-            role: Joi.string().required(),
+            role: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
             status: Joi.string().required(),
-            clientId: Joi.string().required()
+            clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            isDefaultBranch: Joi.boolean().required(),
+            branchId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
         }),
         updateUserSchema: Joi.object().keys({
             name: Joi.string(),
@@ -35,6 +37,10 @@ module.exports = {
         }),
         updateUserStatusSchema: Joi.object().keys({
             status: Joi.string().allow(['active', 'inactive'])
+        }),
+        resetPasswordSchema: Joi.object().keys({
+            password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/),
+            confirm_password: Joi.ref('password'),
         }),
         authSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),

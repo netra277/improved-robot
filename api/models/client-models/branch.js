@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
+const collections = require('../../commons/db-collections');
 const Schema = mongoose.Schema;
 
 // Create branch schema
@@ -10,9 +10,6 @@ const BranchSchema =  new Schema({
         type: String
     },
     name: {
-        type:String
-    },
-    parentId: {
         type:String
     },
     Address: {

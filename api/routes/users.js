@@ -39,11 +39,11 @@ passport.authenticate('jwt',{ session: false }),
 authController.roleAuthorization([rolesList.Admin]),
 usersController.delete);
 
-router.route('/:id/status')
-.patch(validateParam(paramSchemas.idSchema,'id'),
-validateBody(schemas.updateUserStatusSchema),
+router.route('/:id/resetPassword')
+.post(validateParam(paramSchemas.idSchema,'id'),
+validateBody(schemas.resetPasswordSchema),
 passport.authenticate('jwt',{ session: false }),
 authController.roleAuthorization([rolesList.Admin]),
-usersController.updateUserStatus);
+usersController.resetPassword);
 
 module.exports = router;

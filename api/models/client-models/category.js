@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
+const collections = require('../../commons/db-collections');
 const Schema = mongoose.Schema;
 
 // Create category schema
@@ -10,13 +10,10 @@ const CategorySchema =  new Schema({
         type: String
     },
     name: {
-        type:String
+        type: String
     },
     description:{
         type: String
-    },
-    parentId: {
-        type:String
     }
 },{collection:collections.ClientDbCollections.Category});
 

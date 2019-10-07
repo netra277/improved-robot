@@ -9,10 +9,16 @@ module.exports = {
         const Role = model.getRoleModel();
         if (usr.role.role === rolesList.SuperUser ||
             usr.role.role === rolesList.PowerUser) {
+            console.log('Getting roles...');
             const roles = await Role.find({});
             return res.status(200).json(roles);
         }
-        res.status(401).json({
+        else if(usr.role.role === rolesList.Admin){
+            const roles = await Role.find({isClientLevel: true});
+            return res.status(200).json(roles);
+        }
+        console.log('unauthorized');
+        return res.status(401).json({
             message: 'unauthorized'
         });
 

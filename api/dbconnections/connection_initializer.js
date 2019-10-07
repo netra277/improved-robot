@@ -22,11 +22,18 @@ module.exports = {
         return con.model(mongooModels.RolesModel, RoleSchema);
     },
     getBranchModel(clientId){
-      const cliConnect = clientDbConnection.connectToDatabase(clientId);
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.BranchesModel,BranchSchema);
     },
     getCategoryModel(clientId){
-      const cliConnect = clientDbConnection.connectToDatabase(clientId);
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.CategoryModel,CategorySchema);
+    },
+    getBranchUserModel(clientId){
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
+      return cliConnect.model(mongooModels.BranchUserDetailModel, BranchUserSchema)
     }
 }
