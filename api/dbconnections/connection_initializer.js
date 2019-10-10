@@ -6,6 +6,7 @@ const RoleSchema = require('../models/roles');
 const UserSchema = require('../models/users');
 const BranchSchema = require('../models/client-models/branch');
 const CategorySchema = require('../models/client-models/category');
+const ItemSchema = require('../models/client-models/item');
 const mongooModels = require('../commons/mongoose-models');
 
 module.exports = {
@@ -35,5 +36,20 @@ module.exports = {
       const id = clientId.toLowerCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.BranchUserDetailModel, BranchUserSchema)
+    },
+    getItemsModel(clientId){
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
+      return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
+    },
+    getOrdersModel(clientId){
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
+      return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
+    },
+    getOrderDetailsModel(clientId){
+      const id = clientId.toLowerCase();
+      const cliConnect = clientDbConnection.connectToDatabase(id);
+      return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
     }
 }

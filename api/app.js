@@ -62,6 +62,9 @@ app.use('/auth',require('./routes/authentication'));
 app.use('/users',require('./routes/users'));
 app.use('/clients',require('./routes/clients'));
 app.use('/roles', require('./routes/roles'));
+app.use('/branches', require('./routes/branches'));
+app.use('/categories', require('./routes/category'));
+app.use('/items', require('./routes/items'));
 
 // Error handling
 app.use((req, res, next)=>{

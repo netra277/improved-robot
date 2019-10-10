@@ -85,19 +85,18 @@ module.exports = {
           userId: result._id,
           isDefaultBranch: req.value.body.isDefaultBranch
         });
-        const b = await branch.save()
-        if (b) {
-          console.log('user assigned to branch ');
-          return res.status(201).json({
-            message: 'User created successfully'
+         branch.save()
+          .then(result =>{
+            console.log('user assigned to branch ');
+            return res.status(201).json({
+              message: 'User created successfully'
+            });
+          }).catch(err =>{
+            console.log('error in assigning branch to user');
+            return res.status(500).json({
+              message: 'error in creating user'
+            })
           });
-        }
-        else {
-          console.log('error in assigning branch to user');
-          return res.status(500).json({
-            message: 'error in creating user'
-          })
-        }
       })
       .catch(err => {
         console.log('error in creating user: ', err);
@@ -289,7 +288,7 @@ module.exports = {
   }
 }
 
-function getBranchDetails(userId) {
+async function getBranchDetails(userId) {
   const BranchUser = model.getBranchUserModel();
   const Branch = model.getBranchModel();
   const branchUserDetails = await BranchUser.findOne({ userId });
@@ -299,7 +298,7 @@ function getBranchDetails(userId) {
   }
   return null;
 }
-function getRoleDetails(roleId) {
+async function getRoleDetails(roleId) {
   const Role = model.getRoleModel();
   return await Role.findOne({ _id: roleId });
 

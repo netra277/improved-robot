@@ -112,7 +112,7 @@ module.exports = {
             });
         }
     },
-    update: (req, res, next) => {
+    update: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {
@@ -127,7 +127,7 @@ module.exports = {
             });
         }
         const Branch = model.getBranchModel(clientId);
-        const branch = Branch.findOne({ branchId: req.value.params.branchId });
+        const branch = await Branch.findOne({ branchId: req.value.params.branchId });
         if (!branch) {
             return res.status(404).json({
                 message: 'branch id doesnot exist'
@@ -162,7 +162,7 @@ module.exports = {
             });
         }
     },
-    delete: (req,res,next)=>{
+    delete: async (req,res,next)=>{
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {

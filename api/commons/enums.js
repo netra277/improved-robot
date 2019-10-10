@@ -8,5 +8,11 @@ module.exports = {
     UserStatus:{
         Active: 'active',
         Inactive: 'inactive'
+    },
+    PaymentTypes:{
+        Cash: 'cash',
+        DebitCard: 'debitcard',
+        CreditCard: 'creditcard',
+        UPI: 'upi'
     }
 }

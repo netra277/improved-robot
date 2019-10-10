@@ -24,6 +24,9 @@ const BranchSchema =  new Schema({
     GSTNumber: {
         type: String
     },
+    TaxPercentage:{
+        type: Number
+    },
     isHeadBranch: {
         type: Boolean
     }

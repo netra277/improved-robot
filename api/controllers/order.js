@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
 
 module.exports = {
-    getCategories: async (req, res, next) => {
+    getItems: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
@@ -17,17 +17,17 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const categories = await Category.find();
-        if (categories.length > 0) {
-            return res.status(200).json(categories);
+        const Item = model.getItemsModel(clientId);
+        const items = await Item.find();
+        if (items.length > 0) {
+            return res.status(200).json(items);
         } else {
             return res.status(204).json({
-                message: 'no categories found'
+                message: 'no items found'
             });
         }
     },
-    getCategory: async (req, res, next) => {
+    getItem: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
@@ -41,13 +41,13 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
-        if (category) {
-            return res.status(200).json(category);
+        const Item = model.getItemsModel(clientId);
+        const item = await Item.findById(req.value.params.id);
+        if (item) {
+            return res.status(200).json(item);
         } else {
             return res.status(204).json({
-                message: 'no category found'
+                message: 'no item found'
             });
         }
     },
@@ -57,7 +57,8 @@ module.exports = {
         if (role === rolesList.SuperUser) {
             clientId = req.value.body.clientId;
         }
-        else if (role === rolesList.Admin) {
+        else if (role === rolesList.Admin || role === rolesList.Supervisor ||
+                  role === rolesList.Manager || role === rolesList.User) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -65,28 +66,32 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const dupCategory = Category.findOne({ categoryId: req.value.body.categoryId });
-        if (dupCategory) {
+        const Item = model.getItemsModel(clientId);
+        const dupIem = Item.findOne({ itemCode: req.value.body.itemCode });
+        if (dupIem) {
             return res.status(404).json({
-                message: 'category id already exist'
+                message: 'Item code already exist'
             });
         }
-        const category = new Category({
+        const item = new Item({
             _id: new mongoose.Types.ObjectId(),
-            categoryId: req.value.body.categoryId,
+            itemCode: req.value.body.itemCode,
             name: req.value.body.name,
-            description: req.value.body.description
+            description: req.value.body.description,
+            price: req.value.body.price,
+            itemImage:''
         });
-        const b = await category.save();
+        const Category = model.getCategoryModel(clientId);
+        item.categoryId = Category.findById(req.value.body.categoryId);
+        const b = await item.save();
         if (b) {
             return res.status(200).json({
-                message: 'category created successfully'
+                message: 'Item created successfully'
             });
         }
         else {
             return res.status(500).json({
-                message: 'error in creating category'
+                message: 'error in creating item'
             });
         }
     },
@@ -104,31 +109,38 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
-        if (!category) {
+        const Item = model.getItemsModel(clientId);
+        const item = await Item.findById(req.value.params.id);
+        if (!item) {
             return res.status(404).json({
-                message: 'category id doesnot exist'
+                message: 'item doesnot exist'
             });
         } else {
             if (req.value.body.name && req.value.body.name !== '') {
-                category.name = req.value.body.name;
+                item.name = req.value.body.name;
             }
             if (req.value.body.description && req.value.body.description !== '') {
-                category.description = req.value.body.description;
+                item.description = req.value.body.description;
             }
-            const categoryUpdated = await Category.updateOne({ _id: req.value.params.id }, category);
-            if (categoryUpdated.nModified > 0) {
+            if(req.value.body.categoryId && req.value.body.categoryId !== ''){
+                const Category = model.getCategoryModel(clientId);
+                item.categoryId = Category.findById(req.value.body.categoryId);
+            }
+            if(req.value.body.price && req.value.body.price !== ''){
+                item.price = req.value.body.price;
+            }
+            const itemUpdated = await Item.updateOne({ _id: req.value.params.id }, item);
+            if (itemUpdated.nModified > 0) {
                 return res.status(200).json({
-                    message: 'Category updated successfully'
+                    message: 'Item updated successfully'
                 });
             }
             return res.status(500).json({
-                message: 'error updating category'
+                message: 'error updating item'
             });
         }
     },
-    delete: async (req,res,next)=>{
+    delete: (req,res,next)=>{
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {
@@ -142,21 +154,21 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
-        if (!category) {
+        const Item = model.getItemsModel(clientId);
+        const item =  await Item.findById(req.value.params.id);
+        if (!item) {
             return res.status(404).json({
-                message: 'category id doesnot exist'
+                message: 'item doesnot exist'
             });
         } else {
-            const resp = await Category.remove({ _id: req.value.params.id });
+            const resp = await Item.remove({ _id: req.value.params.id });
             if (resp.deletedCount > 0) {
                 return res.status(200).json({
-                    message: 'category deleted successfully'
+                    message: 'item deleted successfully'
                 });
             }
             return res.status(500).json({
-                message: 'error deleting category'
+                message: 'error deleting item'
             });
         }
     }

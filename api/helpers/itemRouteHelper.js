@@ -7,7 +7,6 @@ module.exports = {
             if(result.error){
                 return res.status(400).json(result.error);
             }
-
             if(!req.value){
                 req.value ={};
             }
@@ -16,18 +15,19 @@ module.exports = {
         }
     },
     schemas:{
-        createCategorySchema: Joi.object().keys({
-            categoryId: Joi.string().alphanum().min(4).max(4).required(),
+        createItemSchema: Joi.object().keys({
+            itemCode: Joi.string().alphanum().min(4).max(4).required(),
             name: Joi.string().required(),
-            description: Joi.string()
+            categoryId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            description: Joi.string(),
+            price: Joi.number().required(),
+            itemImage: Joi.string()
         }),
-        updateCategorySchema: Joi.object().keys({
-            branchId: Joi.string().alphanum().min(6).max(6).required(),
-            phone: Joi.string().regex(/^[0-9]{10,10}$/),
-            email: Joi.string().email(),
+        updateItemSchema: Joi.object().keys({
+            categoryId:  Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             name: Joi.string(),
-            Address: Joi.string(),
-            GSTNumber: Joi.string(),
+            description: Joi.string(),
+            price: Joi.number(),
             isHeadBranch: Joi.boolean()
         })
     }

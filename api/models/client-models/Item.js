@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
+const collections = require('../../commons/db-collections');
+const mongooModel = require('../../commons/mongoose-models');
 const Schema = mongoose.Schema;
 
 // Create Items schema
 
 const ItemSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
-    itemId: {
+    itemCode: {
         type: String
     },
     categoryId:{
@@ -20,9 +21,6 @@ const ItemSchema =  new Schema({
         type: String
     },
     price: {
-        type:String
-    },
-    itemCode: {
         type:String
     },
     itemImage: {
