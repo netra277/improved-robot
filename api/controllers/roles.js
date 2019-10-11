@@ -4,12 +4,12 @@ const rolesList = require('../auth/roles');
 
 module.exports = {
     getRoles: async (req, res, next) => {
-        console.log('In getRoles', req.user);
+        console.log('In getRoles...');
         const usr = req.user;
         const Role = model.getRoleModel();
+        console.log('Getting roles...');
         if (usr.role.role === rolesList.SuperUser ||
             usr.role.role === rolesList.PowerUser) {
-            console.log('Getting roles...');
             const roles = await Role.find({});
             return res.status(200).json(roles);
         }

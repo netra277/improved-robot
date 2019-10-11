@@ -14,7 +14,7 @@ module.exports = {
     const requestedUserCli = await Client.findById(req.user.clientId._id);
     if (!requestedUserCli) {
       console.log('invalid client id, Exiting...');
-      res.status(404).json({
+      return res.status(404).json({
         message: 'invalid client details'
       });
     }
@@ -23,7 +23,7 @@ module.exports = {
     const creatingUserRole = await Role.findById(req.value.body.role);
     if (!creatingUserRole) {
       console.log('invalid role id. exiting');
-      res.status(404).json({
+      return res.status(404).json({
         message: 'invalid role details'
       });
     }
@@ -51,8 +51,9 @@ module.exports = {
         });
       }
       const newClient = await Client.findById(req.value.body.clientId);
+      
       usr.clientId = newClient;
-      usr.userId = newClient.cliendId + usr.username;
+      usr.userId = newClient.clientId + usr.username;
     }
     else if (req.user.role.role === rolesList.Admin) {
       usr.clientId = requestedUserCli;
@@ -69,7 +70,8 @@ module.exports = {
         message: 'Invalid status'
       });
     }
-    const dupUser = await User.findOne({ username: usr.username.toLowerCase(), userId: usr.cliendId.toLowerCase() + usr.username.toLowerCase() });
+    console.log('checking for duplicate user ');
+    const dupUser = await User.findOne({ username: usr.username.toUpperCase(), userId: usr.clientId.clientId.toUpperCase() + usr.username.toUpperCase() });
     if (dupUser) {
       res.status(500).json({
         message: 'user already exist'
@@ -78,25 +80,30 @@ module.exports = {
     await usr.save()
       .then(result => {
         console.log('user created');
-        const BranchUser = model.getBranchUserModel(requestedUserCli.clientId);
-        const branch = new BranchUser({
-          _id: new mongoose.Types.ObjectId(),
-          branchId: req.value.body.branchId,
-          userId: result._id,
-          isDefaultBranch: req.value.body.isDefaultBranch
-        });
-         branch.save()
-          .then(result =>{
-            console.log('user assigned to branch ');
-            return res.status(201).json({
-              message: 'User created successfully'
-            });
-          }).catch(err =>{
-            console.log('error in assigning branch to user');
-            return res.status(500).json({
-              message: 'error in creating user'
-            })
+        if(req.user.role.role === rolesList.Admin){
+          const BranchUser = model.getBranchUserModel(requestedUserCli.clientId);
+          const branch = new BranchUser({
+            _id: new mongoose.Types.ObjectId(),
+            branchId: req.value.body.branchId,
+            userId: result._id
           });
+           branch.save()
+            .then(result =>{
+              console.log('user assigned to branch ');
+              return res.status(201).json({
+                message: 'User created successfully'
+              });
+            }).catch(err =>{
+              console.log('error in assigning branch to user');
+              return res.status(500).json({
+                message: 'error in creating user'
+              })
+            });
+        }
+        return res.status(201).json({
+          message: 'user created successfully'
+        });
+        
       })
       .catch(err => {
         console.log('error in creating user: ', err);

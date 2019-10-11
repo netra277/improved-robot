@@ -11,7 +11,7 @@ const ClientSchema = new Schema({
         required: [true, 'Client id is required'],
         minlength: 6,
         maxlength: 6,
-        lowercase: true
+        uppercase: true
     },
     name: {
         type: String,

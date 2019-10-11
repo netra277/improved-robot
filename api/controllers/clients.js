@@ -28,7 +28,7 @@ module.exports = {
     create: async (req, res, next) => {
         console.log('in create client', req.value);
         const Client = model.getClientModel();
-        const existClient = await Client.findOne({clientId: req.value.body.clientId.toLowerCase() });
+        const existClient = await Client.findOne({clientId: req.value.body.clientId.toUpperCase() });
         if(existClient){
             console.log('client already exist');
             return res.status(500).json({

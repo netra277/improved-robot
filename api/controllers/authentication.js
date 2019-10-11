@@ -26,6 +26,7 @@ module.exports = {
     roleAuthorization: (roles) => {
         return function (req, res, next) {
             var foundUser = req.user;
+            console.log('roles:',roles);
             if(foundUser.role.role === rolesList.SuperUser){
                 console.log('Has access for role:',foundUser.role.role);
                 return next();
@@ -35,8 +36,7 @@ module.exports = {
                 return next();
             }
             console.log('Not authorized for role: ', foundUser.role.role);
-            res.status(401).json({ message: 'You are not authorized to view this content' });
-            return next('Unauthorized');
+            return res.status(401).json({ message: 'You are not authorized to view this content' });
         }
     }
 }

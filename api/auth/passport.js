@@ -3,7 +3,7 @@ const jwtStrategy = require('passport-jwt').Strategy;
 const  { ExtractJwt } = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 
-
+const model = require('../')
 const config = require('../configuration/config');
 const connection = require('../dbconnections/db_connection_common');
 const mongooModels = require('../commons/mongoose-models');
@@ -19,13 +19,12 @@ try{
     const Role= dbConnection.getRoleModel();
         const usr = dbConnection.getUserModel();
 // Find the user specified in token 
-console.log('sub: ',payload.sub);
+console.log('userid: ',payload.sub);
 const user = await usr.findById(payload.sub);
 user.role = await Role.findById(user.role);
-const Client = model.getClientModel();
+const Client = dbConnection.getClientModel();
 user.clientId = await Client.findById(user.clientId);
 
-console.log(user);
 //If user doesn't exists, retrun user
 if(!user){
     return done(null,false);

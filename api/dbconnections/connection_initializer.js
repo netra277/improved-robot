@@ -23,32 +23,33 @@ module.exports = {
         return con.model(mongooModels.RolesModel, RoleSchema);
     },
     getBranchModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
+      console.log('clientid: ',id);
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.BranchesModel,BranchSchema);
     },
     getCategoryModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.CategoryModel,CategorySchema);
     },
     getBranchUserModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.BranchUserDetailModel, BranchUserSchema)
     },
     getItemsModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
     },
     getOrdersModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
     },
     getOrderDetailsModel(clientId){
-      const id = clientId.toLowerCase();
+      const id = clientId.toUpperCase();
       const cliConnect = clientDbConnection.connectToDatabase(id);
       return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
     }

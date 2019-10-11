@@ -26,7 +26,6 @@ module.exports = {
             role: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
             status: Joi.string().required(),
             clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
-            isDefaultBranch: Joi.boolean().required(),
             branchId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
         }),
         updateUserSchema: Joi.object().keys({

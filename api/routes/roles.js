@@ -9,7 +9,7 @@ const rolesList = require('../auth/roles');
 
 router.route('/')
 .get(passport.authenticate('jwt',{session:false}), 
-authController.roleAuthorization([rolesList.PowerUser]),
+authController.roleAuthorization([rolesList.PowerUser,rolesList.Admin]),
 rolesController.getRoles);
 
 router.route('/:id')
