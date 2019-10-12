@@ -21,9 +21,9 @@ module.exports = {
             name: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/),
             Address: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
-            email: Joi.string().email(),
+            email: Joi.string().email().required(),
             GSTNumber: Joi.string(),
-            isHeadBranch: Joi.boolean(),
+            isHeadBranch: Joi.boolean().required(),
             useHeadBranchGST: Joi.boolean().required()
         }),
         updateBranchSchema: Joi.object().keys({

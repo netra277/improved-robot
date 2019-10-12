@@ -14,5 +14,10 @@ module.exports = {
         DebitCard: 'debitcard',
         CreditCard: 'creditcard',
         UPI: 'upi'
+    },
+    OrderType:{
+        Walkin: 'walkin',
+        TakeAway:'takeaway',
+        Delivery:'delivery'
     }
 }

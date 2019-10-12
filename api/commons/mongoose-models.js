@@ -5,8 +5,8 @@ module.exports = {
     BranchesModel: 'BranchesModel',
     CategoryModel: 'CategoryModel',
     ItemsModel: 'ItemsModel',
-    OrdersDailyModel: 'OrdersDailyModel',
+    OrdersModel: 'OrdersModel',
     OrdersMonthlyModel: 'OrdersMonthlyModel',
     OrderDetailsModel: 'OrderDetailsModel',
-    BranchUserDetailModel: 'BranchUserDetailModel'
+    BranchUserModel: 'BranchUserModel'
 }

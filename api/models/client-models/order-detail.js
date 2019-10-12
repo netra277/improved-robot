@@ -8,8 +8,9 @@ const Schema = mongoose.Schema;
 const OrderDetailsSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     orderId: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+           ref: mongooModel.OrdersModel,
+           required: true
     },
     itemId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -81,13 +81,14 @@ module.exports = {
       .then(result => {
         console.log('user created');
         if(req.user.role.role === rolesList.Admin){
+          console.log('clientId: ', requestedUserCli.clientId);
           const BranchUser = model.getBranchUserModel(requestedUserCli.clientId);
           const branch = new BranchUser({
             _id: new mongoose.Types.ObjectId(),
             branchId: req.value.body.branchId,
             userId: result._id
           });
-           branch.save()
+          branch.save()
             .then(result =>{
               console.log('user assigned to branch ');
               return res.status(201).json({
