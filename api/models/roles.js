@@ -14,7 +14,7 @@ const RoleSchema = new Schema({
     role:{
         type: String,
         required:[true,'Role is required'],
-        lowercase: true
+        uppercase: true
     },
     description:{
         type: String

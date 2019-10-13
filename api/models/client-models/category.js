@@ -7,7 +7,8 @@ const Schema = mongoose.Schema;
 const CategorySchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     categoryId: {
-        type: String
+        type: String,
+        uppercase: true
     },
     name: {
         type: String

@@ -7,22 +7,24 @@ module.exports = {
             return null
         }
         if(config.environment === 'DEVELOPMENT'){
-            if(connections[clientId]){
-                console.log('clientid:',connections[clientId]);
-                return connections[clientId];
+            const clientDatabase = config.connectionStringClientDbDev + clientId;
+            if(connections[clientDatabase]){
+                console.log('clientid:',connections[clientDatabase]);
+                return connections[clientDatabase];
             }
             else{
-                connections[clientId] = mongoose.createConnection(config.connectionStringClientDbDev,{ useUnifiedTopology: true,useNewUrlParser: true });
-                return connections[clientId];
+                connections[clientDatabase] = mongoose.createConnection(clientDatabase,{ useUnifiedTopology: true,useNewUrlParser: true });
+                return connections[clientDatabase];
             }
         }
         else{
-            if(connections[clientId]){
-                return connections[clientId];
+            const clientDatabase = config.connectionStringClientDb + clientId;
+            if(connections[clientDatabase]){
+                return connections[clientDatabase];
             }
             else{
-                connections[clientId] = mongoose.createConnection(config.connectionStringClientDb,{ useUnifiedTopology: true,useNewUrlParser: true });
-                return connections[clientId];
+                connections[clientDatabase] = mongoose.createConnection(clientDatabase,{ useUnifiedTopology: true,useNewUrlParser: true });
+                return connections[clientDatabase];
             }
         }
     },

@@ -66,7 +66,7 @@ module.exports = {
             });
         }
         const Item = model.getItemsModel(clientId);
-        const dupIem = Item.findOne({ itemCode: req.value.body.itemCode });
+        const dupIem = await Item.findOne({ itemCode: req.value.body.itemCode });
         if (dupIem) {
             return res.status(404).json({
                 message: 'Item code already exist'
@@ -81,7 +81,7 @@ module.exports = {
             itemImage:''
         });
         const Category = model.getCategoryModel(clientId);
-        item.categoryId = Category.findById(req.value.body.categoryId);
+        item.categoryId = await Category.findById(req.value.body.categoryId);
         const b = await item.save();
         if (b) {
             return res.status(200).json({

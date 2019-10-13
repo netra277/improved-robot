@@ -8,20 +8,24 @@ const Schema = mongoose.Schema;
 const ItemSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     itemCode: {
-        type: String
+        type: String,
+        required: true,
+        uppercase: true
     },
     categoryId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: mongooModel.CategoryModel
     },
     name: {
-        type:String
+        type:String,
+        required: true
     },
     description:{
         type: String
     },
     price: {
-        type:String
+        type:String,
+        required: true
     },
     itemImage: {
         type:String

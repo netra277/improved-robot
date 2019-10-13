@@ -12,7 +12,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
         // unique: true,
-        lowercase: true,
+        uppercase: true,
         minlength: 6,
         maxlength: 12
     },
@@ -23,7 +23,7 @@ const userSchema = new Schema({
     userId: {
         type: String,
         required:true,
-        lowercase: true,
+        uppercase: true,
         unique: true
     },
     clientId: {

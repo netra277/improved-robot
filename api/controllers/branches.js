@@ -53,6 +53,7 @@ module.exports = {
         }
     },
     create: async (req, res, next) => {
+        console.log('In create branch...');
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {
@@ -67,14 +68,14 @@ module.exports = {
             });
         }
         const Branch = model.getBranchModel(clientId);
-        const dupBranch = Branch.findOne({ branchId: req.value.body.branchId });
+        const dupBranch = await Branch.findOne({ branchId: req.value.body.branchId });
         if (dupBranch) {
             return res.status(404).json({
                 message: 'branch id already exist'
             });
         }
         if(req.value.body.isHeadBranch){
-            const singleParentBranch = Branch.findOne({ isHeadBranch: true });
+            const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
             if (singleParentBranch) {
                 return res.status(404).json({
                     message: 'There is already a head branch exist'
@@ -82,7 +83,7 @@ module.exports = {
             }
         }
         else{
-            const singleParentBranch = Branch.findOne({ isHeadBranch: true });
+            const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
             if (!singleParentBranch) {
                 return res.status(404).json({
                     message: 'There should be atleast one head branch'
@@ -116,10 +117,10 @@ module.exports = {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId.toLowerCase();
+            clientId = req.value.body.clientId.toUpperCase();
         }
         else if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId.toLowerCase();
+            clientId = req.user.clientId.clientId.toUpperCase();
         }
         else {
             return res.status(401).json({

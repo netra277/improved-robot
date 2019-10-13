@@ -7,7 +7,8 @@ const Schema = mongoose.Schema;
 const BranchSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     branchId: {
-        type: String
+        type: String,
+        uppercase: true
     },
     name: {
         type:String

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
 
 module.exports = {
-    getItems: async (req, res, next) => {
+    getOrders: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
@@ -27,7 +27,7 @@ module.exports = {
             });
         }
     },
-    getItem: async (req, res, next) => {
+    getOrder: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
@@ -66,32 +66,51 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const Item = model.getItemsModel(clientId);
-        const dupIem = Item.findOne({ itemCode: req.value.body.itemCode });
-        if (dupIem) {
-            return res.status(404).json({
-                message: 'Item code already exist'
-            });
-        }
-        const item = new Item({
+        const today = new Date();
+        let invoice = today.getDate() + today.getMonth() + 1;
+        const Order = model.getOrdersModel(clientId);
+        const countOrder = await Order.find({branchId: req.value.body.branchId }).count();
+        const order = new Order({
             _id: new mongoose.Types.ObjectId(),
-            itemCode: req.value.body.itemCode,
-            name: req.value.body.name,
-            description: req.value.body.description,
-            price: req.value.body.price,
-            itemImage:''
+            orderNumber: countOrder + 1,
+            invoiceNumber: invoice + countOrder,
+            orderedDateTime: new Date().toISOString(),
+            branchId: req.value.body.branchId,
+            amount: req.value.body.paymentDetails.amount,
+            discountAmount: req.value.body.paymentDetails.discountAmount,
+            paymentType: req.value.body.paymentDetails.paymentType,
+            orderCreatedByUser: req.value.body.submittedUserId,
+            cardOrCashDetails: req.value.body.paymentDetails.cashCardDetails,
+            orderType: req.value.body.orderType
         });
-        const Category = model.getCategoryModel(clientId);
-        item.categoryId = Category.findById(req.value.body.categoryId);
-        const b = await item.save();
-        if (b) {
-            return res.status(200).json({
-                message: 'Item created successfully'
-            });
+        const o = await order.save();
+        console.log('order',o);
+        if (o) {
+            console.log('Order created successfully');
         }
         else {
+            console.log('error in creating order');
+        }
+
+        
+        const OrderDetail = model.getOrderDetailsModel(clientId);
+        const itemslist = req.value.body.items;
+        let orderdetails = [];
+        let orderdetail = new OrderDetail();
+        itemslist.forEach((item)=>{
+            orderdetail.itemId = item.itemId;
+            orderdetail.orderId = o._id;
+            orderdetail.quantity = item.quantity;
+            orderdetails.push(orderdetail);
+        });
+        const ods = await OrderDetail.insertMany(orderdetails);
+        if(ods){
+            return res.status(200).json({
+                message: 'order created successfully'
+            });
+        }else {
             return res.status(500).json({
-                message: 'error in creating item'
+                message: 'error in creating order'
             });
         }
     },
@@ -140,7 +159,7 @@ module.exports = {
             });
         }
     },
-    delete: (req,res,next)=>{
+    delete: async (req,res,next)=>{
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {

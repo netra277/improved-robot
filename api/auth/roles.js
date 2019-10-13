@@ -1,8 +1,8 @@
 module.exports = {
-    SuperUser: "superuser",
-    PowerUser: "poweruser",
-    Admin: "admin",
-    Supervisor: "supervisor",
-    Manager: "manager",
-    User: "user"
+    SuperUser: "SUPERUSER",
+    PowerUser: "POWERUSER",
+    Admin: "ADMIN",
+    Supervisor: "SUPERVISOR",
+    Manager: "MANAGER",
+    User: "USER"
 }

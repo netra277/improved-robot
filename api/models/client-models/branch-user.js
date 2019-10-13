@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
+const collections = require('../../commons/db-collections');
 const mongooModel = require('../../commons/mongoose-models');
 const Schema = mongoose.Schema;
 
@@ -9,8 +9,8 @@ const BranchUserSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
-           ref: mongooModel.BranchesModel,
-           required: true
+        ref: mongooModel.BranchesModel,
+        required: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

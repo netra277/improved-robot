@@ -66,7 +66,8 @@ module.exports = {
             });
         }
         const Category = model.getCategoryModel(clientId);
-        const dupCategory = Category.findOne({ categoryId: req.value.body.categoryId });
+        const dupCategory = await Category.findOne({ categoryId: req.value.body.categoryId });
+        console.log('duplicate category: ',dupCategory);
         if (dupCategory) {
             return res.status(404).json({
                 message: 'category id already exist'

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const collections = require('../../commons/db-collections');
-const mongooModel = require('../commons/mongoose-models');
+const mongooModel = require('../../commons/mongoose-models');
 const Schema = mongoose.Schema;
 
 // Create order schema
@@ -46,6 +46,9 @@ const OrderSchema =  new Schema({
            ref: mongooModel.UsersModel,
            required: true
     },
+    cardOrCashDetails: {
+        type: String
+    }
 },{collection:collections.ClientDbCollections.Orders_Daily});
 
 module.exports = OrderSchema;
