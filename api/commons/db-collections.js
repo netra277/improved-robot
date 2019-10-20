@@ -8,9 +8,8 @@ module.exports = {
                 BranchUserDetails: 'branch_user_details',
                 Items: 'item',
                 CategoryItems : 'category_item',
-                Orders_Daily:'orders_daily',
-                Orders_Monthly:'orders',
-                OrderDetails: 'order_details',
+                Orders:'orders',
+                Orders_Monthly:'orders_monthly',
                 SaleYearly: 'sale'
         }
 }

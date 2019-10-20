@@ -8,29 +8,36 @@ const BranchSchema =  new Schema({
     _id: mongoose.Types.ObjectId,
     branchId: {
         type: String,
+        required: true,
         uppercase: true
     },
     name: {
-        type:String
+        type: String,
+        required: true
     },
-    Address: {
-        type: String
+    address: {
+        type: String,
+        required: true
     },
     phone:{
-        type: Number
+        type: Number,
+        required: true
     },
     email:{
-        type: String
-    },
-    GSTNumber: {
-        type: String
-    },
-    TaxPercentage:{
-        type: Number
+        type: String,
+        required: true
     },
     isHeadBranch: {
-        type: Boolean
-    }
+        type: Boolean,
+        required: true
+    },
+    printInvoice: {
+        type: Boolean,
+        required: true
+    },
+    tax: {
+        type: []
+    },
 },{collection:collections.ClientDbCollections.Branch});
 
 module.exports = BranchSchema;

@@ -1,0 +1,15 @@
+.top-align{
+    padding-top: 7px;
+}
+.vl{
+    border-left: 2px solid black;
+    height: 38px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.vl-bottom{
+    border-left: 2px solid slategray;
+    height: 38px;
+    margin-left: 10px;
+    margin-right: 10px;
+}

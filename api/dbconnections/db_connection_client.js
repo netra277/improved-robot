@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('../configuration/config');
 var connections = {};
+const options = { useUnifiedTopology: true,useNewUrlParser: true };
 module.exports = {
     connectToDatabase(clientId){
         if(clientId === null || clientId === undefined){
@@ -13,7 +14,7 @@ module.exports = {
                 return connections[clientDatabase];
             }
             else{
-                connections[clientDatabase] = mongoose.createConnection(clientDatabase,{ useUnifiedTopology: true,useNewUrlParser: true });
+                connections[clientDatabase] = mongoose.createConnection(clientDatabase,options);
                 return connections[clientDatabase];
             }
         }
@@ -23,7 +24,7 @@ module.exports = {
                 return connections[clientDatabase];
             }
             else{
-                connections[clientDatabase] = mongoose.createConnection(clientDatabase,{ useUnifiedTopology: true,useNewUrlParser: true });
+                connections[clientDatabase] = mongoose.createConnection(clientDatabase,options);
                 return connections[clientDatabase];
             }
         }

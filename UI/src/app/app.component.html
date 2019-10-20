@@ -1,19 +1,51 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <!-- nav -->
+<nav class="navbar navbar-expand navbar-dark" style="background-color:aliceblue;" *ngIf="currentUser">
+  <a href="#" class="navbar-brand">Brand</a>
+  <ul class="navbar-nav ml-auto">
+    <li>
+      <label class="top-align">Date: {{date}}</label>
+    </li>
+    <li>
+      <div class="vl"></div>
+    </li>
+    <li>
+      <label class="top-align">User: {{currentUser.username}}</label>
+    </li>
+    <li>
+      <div class="vl"></div>
+    </li>
+    <li>
+        <label class="top-align">Role: {{currentUser.role}}</label>
+      </li>
+      <li>
+        <div class="vl"></div>
+      </li>
+      <li>
+          <label class="top-align">Branch: {{currentUser.username}}</label>
+        </li>
+        <li>
+          <div class="vl"></div>
+        </li>
+        <li>
+            <a class="top-align" (click)="logout()">Logout</a>
+          </li>
+  </ul>
+</nav>
 <nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser">
   <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="/">Home</a>
-      <a class="nav-item nav-link" (click)="logout()">Logout</a>
+    <a class="nav-item nav-link" routerLink="/create-order">Create Order</a>  <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/users">Users</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/branches">Branches</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/categories">Categories</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/items">Items</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/orders">Orders</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/">Configurations</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/">Reports</a> <div class="vl-bottom"></div>
+    <a class="nav-item nav-link" routerLink="/contact-us">Contact Us</a>
   </div>
 </nav>
 
 <!-- main app container -->
-<div class="jumbotron">
-  <div class="container">
-      <div class="row">
-          <div class="col-md-6 offset-md-3">
-              <router-outlet></router-outlet>
-          </div>
-      </div>
-  </div>
-</div>
+
+<router-outlet></router-outlet>

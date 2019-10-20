@@ -8,7 +8,10 @@ module.exports = {
         const reqUserClient = req.user.clientId;
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
+            clientId = req.params.clientId;
+            const Client = model.getClientModel();
+            const client = await Client.findById(clientId);
+            clientId = client.clientId;
         }
         else if (role === rolesList.Admin || role === rolesList.Supervisor) {
             clientId = reqUserClient.clientId;
@@ -58,6 +61,9 @@ module.exports = {
         let clientId = '';
         if (role === rolesList.SuperUser) {
             clientId = req.value.body.clientId;
+            const Client = model.getClientModel();
+            const client = await Client.findById(clientId);
+            clientId = client.clientId;
         }
         else if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
@@ -74,32 +80,33 @@ module.exports = {
                 message: 'branch id already exist'
             });
         }
-        if(req.value.body.isHeadBranch){
-            const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
+        const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
+        
+        if (req.value.body.isHeadBranch) {
             if (singleParentBranch) {
                 return res.status(404).json({
                     message: 'There is already a head branch exist'
                 });
             }
         }
-        else{
-            const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
+        else {
             if (!singleParentBranch) {
                 return res.status(404).json({
                     message: 'There should be atleast one head branch'
                 });
             }
         }
-        
+
         const branch = new Branch({
             _id: new mongoose.Types.ObjectId(),
             branchId: req.value.body.branchId,
             name: req.value.body.name,
-            Address: req.value.body.address,
+            address: req.value.body.address,
             phone: req.value.body.phone,
             email: req.value.body.email,
-            GSTNumber: req.value.body.gstNumber,
-            isHeadBranch: req.value.body.isHeadBranch
+            printInvoice: req.value.body.printInvoice,
+            isHeadBranch: req.value.body.isHeadBranch,
+            tax: req.value.body.tax
         });
         const b = await branch.save();
         if (b) {
@@ -163,7 +170,7 @@ module.exports = {
             });
         }
     },
-    delete: async (req,res,next)=>{
+    delete: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
         if (role === rolesList.SuperUser) {

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { AuthenticationService } from './services';
 import { User } from './models';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +13,19 @@ import { User } from './models';
 export class AppComponent {
   title = 'd-epos';
   currentUser: User;
+  loggedInUserDetails: any;
+  date: any;
 
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService
-    ) {
-        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
-    }
+  constructor(
+    private router: Router,
+    private authenticationService: AuthenticationService
+  ) {
+    this.date = moment().format('dddd, LL');
+    //this.loggedInUserDetails = getLoggedInUserDetails();
+    this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+  }
   logout() {
     this.authenticationService.logout();
     this.router.navigate(['/login']);
-}
+  }
 }

@@ -11,7 +11,7 @@ const OrderSchema =  new Schema({
         type: String,
         required: true
     },
-    invoiceNumber: {
+    invoice: {
         type: String,
         required: true
     },
@@ -24,7 +24,7 @@ const OrderSchema =  new Schema({
            ref: mongooModel.BranchesModel,
            required: true
     },
-    totalAmount:{
+    amount:{
         type: Number,
         required: true
     },
@@ -36,19 +36,34 @@ const OrderSchema =  new Schema({
         type: Number,
         required: true
     },
-    paymentType:{
+    paymentMode:{
         type: String,
         enum: ['cash', 'debitcard', 'creditcard', 'upi'],
         required: true
     },
-    orderCreatedByUser:{
+    orderCreatedByUserId:{
         type: mongoose.Schema.Types.ObjectId,
            ref: mongooModel.UsersModel,
            required: true
     },
-    cardOrCashDetails: {
-        type: String
+    itemsList: [
+        {
+            itemId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: mongooModel.ItemsModel,
+                required: true
+            },
+            quantity: {
+                type: Number
+            }
+        }
+    ],
+    paymentDetails: {
+        type: { cash: {type: String }, debitCard: {type: String }, creditCard: {type: String }, upi: {type: String }}
+    },
+    customerDetails: {
+        type: { name: {type: String},phone: {type: Number}, Address: {type: String } }
     }
-},{collection:collections.ClientDbCollections.Orders_Daily});
+},{collection:collections.ClientDbCollections.Orders});
 
 module.exports = OrderSchema;

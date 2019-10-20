@@ -19,12 +19,16 @@ module.exports = {
         createBranchSchema: Joi.object().keys({
             branchId: Joi.string().alphanum().min(6).max(6).required(),
             name: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/),
-            Address: Joi.string().required(),
+            address: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email().required(),
-            GSTNumber: Joi.string(),
             isHeadBranch: Joi.boolean().required(),
-            useHeadBranchGST: Joi.boolean().required()
+            printInvoice: Joi.boolean().required(),
+            tax: Joi.array().items({
+                key: Joi.string(),
+                value: Joi.string()
+            }),
+            clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
         }),
         updateBranchSchema: Joi.object().keys({
             branchId: Joi.string().alphanum().min(6).max(6).required(),

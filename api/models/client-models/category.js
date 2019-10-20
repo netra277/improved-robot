@@ -11,7 +11,8 @@ const CategorySchema =  new Schema({
         uppercase: true
     },
     name: {
-        type: String
+        type: String,
+        required: true
     },
     description:{
         type: String

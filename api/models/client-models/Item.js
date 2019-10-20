@@ -14,7 +14,8 @@ const ItemSchema =  new Schema({
     },
     categoryId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: mongooModel.CategoryModel
+        ref: mongooModel.CategoryModel,
+        required: true
     },
     name: {
         type:String,

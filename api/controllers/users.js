@@ -43,14 +43,14 @@ module.exports = {
       role: creatingUserRole,
       status: req.value.body.status
     });
-
+    let newClient = '';
     if (req.user.role.role === rolesList.SuperUser) {
       if (!req.value.body.clientId || req.value.body.clientId === '') {
         res.status(404).json({
           message: 'client id is required'
         });
       }
-      const newClient = await Client.findById(req.value.body.clientId);
+      newClient = await Client.findById(req.value.body.clientId);
       
       usr.clientId = newClient;
       usr.userId = newClient.clientId + usr.username;
@@ -77,18 +77,20 @@ module.exports = {
         message: 'user already exist'
       })
     }
+    
     await usr.save()
       .then(result => {
         console.log('user created');
-        if(req.user.role.role === rolesList.Admin){
-          console.log('clientId: ', requestedUserCli.clientId);
-          const BranchUser = model.getBranchUserModel(requestedUserCli.clientId);
-          const branch = new BranchUser({
+        if(req.user.role.role === rolesList.SuperUser){
+          console.log('super user clientId: ', req.value.body.clientId);
+            
+          const BranchUser = model.getBranchUserModel(newClient.clientId);
+          const branchuser = new BranchUser({
             _id: new mongoose.Types.ObjectId(),
             branchId: req.value.body.branchId,
             userId: result._id
           });
-          branch.save()
+          branchuser.save()
             .then(result =>{
               console.log('user assigned to branch ');
               return res.status(201).json({

@@ -1,0 +1,17 @@
+.jumbo-body{
+    padding-top: 35px;
+}
+.vl-divider {
+    border-left: 2px solid gray;
+    height: 650px;
+  }
+.table-responsive {
+    max-height:600px;
+}
+.cardbody-responsive {
+    max-height:520px;
+    overflow-y: auto;
+}
+.col-1{
+    max-width: 0%;
+}
