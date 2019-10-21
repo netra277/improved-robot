@@ -26,7 +26,7 @@ module.exports = {
             printInvoice: Joi.boolean().required(),
             tax: Joi.array().items({
                 key: Joi.string(),
-                value: Joi.string()
+                value: Joi.number()
             }),
             clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
         }),

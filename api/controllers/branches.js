@@ -185,16 +185,16 @@ module.exports = {
             });
         }
         const Branch = model.getBranchModel(clientId);
-        const branch = Branch.findById({ _id: req.value.params.id });
+        const branch = await Branch.findById({ _id: req.value.params.id });
         if (!branch) {
             return res.status(404).json({
                 message: 'branch id doesnot exist'
             });
         } else {
-            const resp = await Branch.removeOne({ _id: req.value.params.id });
+            const resp = await Branch.remove({ _id: req.value.params.id });
             if (resp.deletedCount > 0) {
-                const BranchUser = model.getBranchUserModel();
-                const branchUser = BranchUser.remove({ branchId: req.value.params.id });
+                const BranchUser = model.getBranchUserModel(clientId);
+                const branchUser = await BranchUser.remove({ branchId: req.value.params.id });
                 return res.status(200).json({
                     message: 'branch deleted successfully'
                 });

@@ -1,4 +1,5 @@
 export interface Branch {
+    _id: string;
     branchId: string;
     name: string;
     address: string;

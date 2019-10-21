@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { BranchService } from 'src/app/services';
 import { Branch } from 'src/app/models/branch.interface';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { startWith, map } from 'rxjs/operators';
+import { CreateBranchComponent } from './create-branch/create-branch.component';
+import { AlertsService } from 'src/app/commons/services/alerts.service';
 
 
 
@@ -16,20 +19,14 @@ import { startWith, map } from 'rxjs/operators';
 export class BranchesComponent implements OnInit {
   filterText: string;
   editMode: boolean = false;
-  selectedBranch: Branch= {
-    address: 'this is address',
-    branchId:'ABC001',
-    email: 'abc@abc.com',
-    phone: 1234567898,
-    isHeadBranch: true,
-    name: 'kukatpally',
-    printInvoice: true,
-    tax:[]
-  };
+  selectedBranch: Branch;
    branches;
+   options: NgbModalOptions = {
+     size:'lg'
+   }
   
 
-  constructor(private branchService: BranchService) { 
+  constructor(private branchService: BranchService, private modalService: NgbModal, private alertService: AlertsService) { 
 
   }
 
@@ -37,6 +34,7 @@ export class BranchesComponent implements OnInit {
     this.branchService.getAll().subscribe(data => {
       console.log(data);
       this.branches = data;
+      this.selectedBranch = data[0];
     });
   }
 
@@ -45,11 +43,7 @@ export class BranchesComponent implements OnInit {
     this.selectedBranch = branch;
   }
 
-  editBranch(){
-    console.log('editing branch', this.selectedBranch);
-    this.editMode = true;
-  }
-  deleteBranch(){
-    this.editMode = false;
+  createBranch(){
+    const modalRef = this.modalService.open(CreateBranchComponent,this.options);
   }
 }

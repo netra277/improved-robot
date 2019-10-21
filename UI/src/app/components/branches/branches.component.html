@@ -5,7 +5,7 @@
         <div class="form-group form-inline">
           Search: <input class="form-control ml-2" type="text" name="filterText" placeholder="Type to search..."
             [(ngModel)]="filterText" />
-          <button type="button" class="btn btn-primary ml-auto">Create</button>
+          <button type="button" class="btn btn-primary ml-auto" (click)="createBranch()">Create</button>
         </div>
         <div class="table-responsive">
           <table class="table table-striped table-bordered ">
@@ -39,96 +39,7 @@
     <div class="col-1 vl-divider"></div>
 
     <div class="col-5">
-      <div class="card">
-        <div class="card-header text-center">
-          <h3>Branch Details</h3>
-        </div>
-        <div class="card-body cardbody-responsive">
-
-                <table class="table table-bordered">
-                  <tbody>
-                    <tr>
-                      <td>
-                        Id:
-                      </td>
-                      <td>
-                        <label *ngIf="!editMode">{{selectedBranch.branchId}}</label>
-                        <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.branchId" name="branchId">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Name:
-                      </td>
-                      <td>
-                        <label *ngIf="!editMode">{{selectedBranch.name}}</label>
-                        <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.name" name="name">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Phone:
-                      </td>
-                      <td>
-                        <label *ngIf="!editMode">{{selectedBranch.phone}}</label>
-                        <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.phone" name="phone">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Email:
-                      </td>
-                      <td>
-                        <label *ngIf="!editMode">{{selectedBranch.email}}</label>
-                        <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.email" name="email">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Address:
-                      </td>
-                      <td>
-                        <p><label *ngIf="!editMode">{{selectedBranch.address}}</label></p>
-                        <input type="textarea" *ngIf="editMode" [(ngModel)]="selectedBranch.address" name="address">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Head branch:
-                      </td>
-                      <td>
-                        <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.isHeadBranch" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Print invoice:
-                      </td>
-                      <td>
-                        <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.printInvoice" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Tax:
-                      </td>
-                      <td>
-                        <div *ngFor="let value of selectedBranch.tax">
-                          <label *ngIf="!editMode">{{value.key}} - </label>
-                          <label *ngIf="!editMode">{{value.value}}  %</label>
-                        </div>
-
-                      </td>
-                    </tr>
-                  </tbody>
-
-                </table>
-        </div>
-        <div class="card-footer text-center">
-          <button type="button" class="btn btn-secondary float-left" (click)="editBranch()">Edit</button>
-          <button type="button" class="btn btn-danger float-right" (click)="deleteBranch()">Delete</button>
-        </div>
-      </div>
+      <app-branch [selectedBranch]="selectedBranch"></app-branch>
     </div>
   </div>
 </div>

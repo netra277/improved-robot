@@ -4,6 +4,7 @@ export * from './users/user/user.component';
 export * from './login/login.component';
 export * from './branches/branches.component';
 export * from './branches/branch/branch.component';
+export * from './branches/create-branch/create-branch.component';
 export * from './categories/categories.component';
 export * from './categories/category/category.component';
 export * from './items/items.component';

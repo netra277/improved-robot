@@ -1,0 +1,95 @@
+<form [formGroup]="branchForm" (ngSubmit)="submitBranch()" class="form-horizontal">
+  <div class="card">
+    <div class="card-header">
+      <h3> Create Branch </h3>
+      <button type="button" class="close" aria-label="Close" (click)="dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="branchId">Branch Id:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.branchId }">
+          <input id="branchId" formControlName="branchId" type="text" maxlength="6" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.branchId">{{formErrors.branchId}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="name">Name:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.name }">
+          <input id="name" formControlName="name" type="text" maxlength="40" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.name">{{formErrors.name}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="phone">Phone:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.phone }">
+          <input id="phone" formControlName="phone" type="text" maxlength="10" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.phone">{{formErrors.phone}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="email">Email:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.email }">
+          <input id="email" formControlName="email" type="email" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.email">{{formErrors.email}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="address">Address:</label>
+        <div class="col-sm-8" [ngClass]="{'errors': formErrors.address }">
+          <textarea id="address" formControlName="address" type="textarea" class="form-control"
+            (blur)="checkValidationErrors()"></textarea>
+          <span *ngIf="formErrors.address">{{formErrors.address}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="phone">Head branch:</label>
+        <div class="col-sm-1">
+          <input id="isHeadBranch" formControlName="isHeadBranch" type="checkbox" class="form-control"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="printInvoice">Print Invoice:</label>
+        <div class="col-sm-1">
+          <input id="printInvoice" formControlName="printInvoice" type="checkbox" class="form-control" />
+        </div>
+      </div>
+      <div>
+        <div class="form-group row">
+          <label class="col-sm-2 form-label" for="tax">Tax:</label>
+          <div class="col-sm-8" >
+            <div class="row" style="margin-bottom:8px;" *ngFor="let tax of Taxes; index as i">
+              <div class="col-sm-4">
+                <input id="tax" type="text" class="form-control" [(ngModel)]="tax.key" [ngModelOptions]="{standalone: true}" />
+              </div>
+              <div class="col-sm-4">
+                <input id="tax" type="number" class="form-control" [(ngModel)]="tax.value" min="0" [ngModelOptions]="{standalone: true}"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class=" form-group row">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-3">
+            <button id="addTaxFileds" type="button" class="btn btn-info" (click)="addTaxFields()">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-sm-6">
+          <button type="submit" class="btn btn-primary float-right" [disabled]="branchForm.invalid">Save</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="close('')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -18,4 +18,12 @@ export class BranchService {
   getAll(){
     return this.http.get(`${config.apiUrl}/branches`);
   }
+
+  createBranch(data: any){
+    return this.http.post(`${config.apiUrl}/branches/create`,data);
+  }
+
+  deleteBranch(id: string){
+    return this.http.delete(`${config.apiUrl}/branches/${id}`);
+  }
 }

@@ -1,0 +1,4 @@
+.cardbody-responsive {
+    max-height:520px;
+    overflow-y: auto;
+}

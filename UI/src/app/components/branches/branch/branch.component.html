@@ -1,3 +1,96 @@
-<p>
-  branch works!
-</p>
+<div class="card">
+    <div class="card-header text-center">
+      <h3>Branch Details</h3>
+    </div>
+    <div class="card-body cardbody-responsive">
+
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <td>
+              Id:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedBranch.branchId}}</label>
+              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.branchId" name="branchId">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Name:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedBranch.name}}</label>
+              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.name" name="name">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Phone:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedBranch.phone}}</label>
+              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.phone" name="phone">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Email:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedBranch.email}}</label>
+              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.email" name="email">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Address:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedBranch.address}}</label>
+              <textarea type="textarea" *ngIf="editMode" [(ngModel)]="selectedBranch.address" name="address"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Head branch:
+            </td>
+            <td>
+              <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.isHeadBranch" name="isHeadBranch" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Print invoice:
+            </td>
+            <td>
+              <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.printInvoice" name="printInvoice" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Tax:
+            </td>
+            <td>
+              <div *ngFor="let value of selectedBranch.tax">
+                <label *ngIf="!editMode">{{value.key}} - </label>
+                <label *ngIf="!editMode">{{value.value}} %</label>
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary float-right" (click)="editBranch()">Edit</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-danger" (click)="deleteBranch()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
