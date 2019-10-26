@@ -59,6 +59,7 @@ app.use(cors());
 
 //Routes
 app.use('/auth',require('./routes/authentication'));
+//app.use('/configUser', require('./routes/config-user'));
 app.use('/users',require('./routes/users'));
 app.use('/clients',require('./routes/clients'));
 app.use('/roles', require('./routes/roles'));

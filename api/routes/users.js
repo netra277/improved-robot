@@ -9,6 +9,7 @@ const usersController = require('../controllers/users');
 const authController = require('../controllers/authentication');
 const rolesList = require('../auth/roles');
 
+// actual endpoints
 router.route('/')
 .get(passport.authenticate('jwt',{session: false}),
 authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),

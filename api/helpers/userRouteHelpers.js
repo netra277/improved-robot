@@ -16,9 +16,20 @@ module.exports = {
         }
     },
     schemas:{
+        createConfigUserSchema: Joi.object().keys({
+            username: Joi.string().alphanum().min(6).max(12).required(),
+            password: Joi.string().required(),
+            repeat_password: Joi.ref('password'),
+            name: Joi.string().required(),
+            phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
+            email: Joi.string().email().required(),
+            role: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            status: Joi.string().required(),
+            clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+        }),
         createUserSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
-            password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/),
+            password: Joi.string().required(),
             repeat_password: Joi.ref('password'),
             name: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
@@ -43,7 +54,7 @@ module.exports = {
         }),
         authSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
-            password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/)
+            password: Joi.string().required()
         }),
     }
 }

@@ -19,7 +19,7 @@ import { AlertsService } from 'src/app/commons/services/alerts.service';
 export class BranchesComponent implements OnInit {
   filterText: string;
   editMode: boolean = false;
-  selectedBranch: Branch;
+  branchSelected: Branch;
    branches;
    options: NgbModalOptions = {
      size:'lg'
@@ -34,13 +34,13 @@ export class BranchesComponent implements OnInit {
     this.branchService.getAll().subscribe(data => {
       console.log(data);
       this.branches = data;
-      this.selectedBranch = data[0];
+      this.branchSelected = data[0];
     });
   }
 
   selectedBranchRow(branch:Branch){
     console.log('Branch', branch);
-    this.selectedBranch = branch;
+    this.branchSelected = branch;
   }
 
   createBranch(){

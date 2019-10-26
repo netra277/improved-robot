@@ -35,9 +35,13 @@ module.exports = {
             phone: Joi.string().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email(),
             name: Joi.string(),
-            Address: Joi.string(),
-            GSTNumber: Joi.string(),
-            isHeadBranch: Joi.boolean()
+            address: Joi.string(),
+            isHeadBranch: Joi.boolean(),
+            printInvoice: Joi.boolean(),
+            tax: Joi.array().items({
+                key: Joi.string(),
+                value: Joi.number()
+            }),
         })
     }
 }

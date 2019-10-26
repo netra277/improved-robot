@@ -1,3 +1,46 @@
-<p>
-  category works!
-</p>
+<form [formGroup]="categoryForm" (ngSubmit)="submitCategory()" class="form-horizontal">
+  <div class="card">
+    <div class="card-header">
+      <h3> Create Category </h3>
+      <button type="button" class="close" aria-label="Close" (click)="dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="categoryId">Id:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.categoryId }">
+          <input id="categoryId" formControlName="categoryId" type="text" maxlength="6" class="form-control" [(ngModel)]="category.categoryId"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.categoryId">{{formErrors.categoryId}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="name">Name:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.name }">
+          <input id="name" formControlName="name" type="text" maxlength="40" class="form-control" [(ngModel)]="category.name"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.name">{{formErrors.name}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="description">Description:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.description }">
+          <textarea id="description" formControlName="description" type="text" maxlength="70" class="form-control" [(ngModel)]="category.description"
+            (blur)="checkValidationErrors()"></textarea>
+          <span *ngIf="formErrors.description">{{formErrors.description}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-sm-6">
+          <button type="submit" class="btn btn-primary float-right" [disabled]="categoryForm.invalid">Save</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="close('')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

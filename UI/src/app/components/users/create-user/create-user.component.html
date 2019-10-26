@@ -1,0 +1,96 @@
+<form [formGroup]="userForm" (ngSubmit)="submitUser()" class="form-horizontal">
+  <div class="card">
+    <div class="card-header">
+      <h3> Create User </h3>
+      <button type="button" class="close" aria-label="Close" (click)="dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="username">Username:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.username }">
+          <input id="username" formControlName="username" type="text" maxlength="12" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.username">{{formErrors.username}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="name">Password:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.password }">
+          <input id="password" formControlName="password" type="password" maxlength="12" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.password">{{formErrors.password}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="name">Name:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.name }">
+          <input id="name" formControlName="name" type="text" maxlength="40" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.name">{{formErrors.name}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="phone">Phone:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.phone }">
+          <input id="phone" formControlName="phone" type="text" maxlength="10" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.phone">{{formErrors.phone}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="email">Email:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.email }">
+          <input id="email" formControlName="email" type="email" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.email">{{formErrors.email}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="role">Role:</label>
+        <div class="col-sm-8" [ngClass]="{'errors': formErrors.role }">
+          <select>
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="mercedes">Mercedes</option>
+            <option value="audi">Audi</option>
+          </select>
+          <span *ngIf="formErrors.role">{{formErrors.role}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="branch">Branch:</label>
+        <div class="col-sm-1">
+            <div ngbDropdown class="d-inline-block">
+                <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button ngbDropdownItem>Action - 1</button>
+                  <button ngbDropdownItem>Another Action</button>
+                  <button ngbDropdownItem>Something else is here</button>
+                </div>
+              </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="printInvoice">Status:</label>
+        <div class="col-sm-1">
+            <select>
+                <option value="volvo">active</option>
+                <option value="saab">inactive</option>
+              </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-sm-6">
+          <button type="submit" class="btn btn-primary float-right" [disabled]="userForm.invalid">Save</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

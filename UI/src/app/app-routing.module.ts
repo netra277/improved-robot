@@ -4,6 +4,7 @@ import { HomeComponent, UsersComponent, BranchesComponent,
   LoginComponent, CategoriesComponent, ItemsComponent, OrdersComponent, CreateOrderComponent, ContactUsComponent} from './components';
 import { AuthGuard } from './guards/auth.guard';
 import { Role } from './models';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,12 @@ const routes: Routes = [
     component: ContactUsComponent,
     canActivate: [AuthGuard],
     data: { roles: [Role.Admin]}
+  },
+  {
+    path: 'reports',
+    component: ReportsComponent,
+    canActivate: [AuthGuard],
+    data: {roles: [Role.Admin]}
   },
   // otherwise redirect to home
   { path: '**', redirectTo: '' }

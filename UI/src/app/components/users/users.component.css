@@ -1,0 +1,13 @@
+.jumbo-body{
+    padding-top: 35px;
+}
+.vl-divider {
+    border-left: 2px solid gray;
+    height: 650px;
+  }
+.table-responsive {
+    max-height:600px;
+}
+.col-1{
+    max-width: 0%;
+}

@@ -61,7 +61,7 @@ export class CreateBranchComponent implements OnInit {
 
     this.branchForm.valueChanges.subscribe((data) => {
       this.checkValidationErrors(this.branchForm);
-    })
+    });
   }
   dismiss(msg) {
     this.activeModal.dismiss(msg);

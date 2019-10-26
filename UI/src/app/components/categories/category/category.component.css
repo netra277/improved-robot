@@ -1,0 +1,10 @@
+h3{
+    display: inline-block;
+}
+.errors{
+    color: red;
+    
+}
+.errors input{
+    border-color: red;
+}

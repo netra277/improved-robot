@@ -23,23 +23,16 @@
 
                 <td>{{ branch.branchId }}</td>
                 <td>{{ branch.name }}</td>
-
-                <!-- <td>
-                <ngb-highlight [result]="branch.branchId" [term]="filter.value"></ngb-highlight>
-              </td>
-              <td>
-                <ngb-highlight [result]="branch.name" [term]="filter.value"></ngb-highlight>
-              </td> -->
               </tr>
             </tbody>
           </table>
         </div>
       </form>
     </div>
-    <div class="col-1 vl-divider"></div>
+    <div class="col-1 vl-divider" ></div>
 
     <div class="col-5">
-      <app-branch [selectedBranch]="selectedBranch"></app-branch>
+      <app-branch [selectedBranch]="branchSelected"></app-branch>
     </div>
   </div>
 </div>

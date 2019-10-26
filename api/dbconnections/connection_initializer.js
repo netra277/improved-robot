@@ -26,7 +26,6 @@ module.exports = {
   },
   getBranchModel(clientId) {
     const id = clientId.toUpperCase();
-    console.log('clientid: ', id);
     const cliConnect = clientDbConnection.connectToDatabase(id);
     return cliConnect.model(mongooModels.BranchesModel, BranchSchema);
   },

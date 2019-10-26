@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
 const constants = require('../commons/enums');
 const model = require('../dbconnections/connection_initializer');
+const config = require('../configuration/config');
 
 module.exports = {
-
   create: async (req, res, next) => {
     console.log('createUser method entry');
     const Client = model.getClientModel();
@@ -81,15 +81,22 @@ module.exports = {
     await usr.save()
       .then(result => {
         console.log('user created');
-        if(req.user.role.role === rolesList.SuperUser){
-          console.log('super user clientId: ', req.value.body.clientId);
-            
+        if(req.user.role.role === rolesList.Admin){
+          const Branch = model.getBranchModel(newClient.clientId);
+          const branch = Branch.findById(req.value.body.branchId);
+          if(!branch){
+            return res.status(500).json({
+              message: 'no branch exist'
+            });
+          }
           const BranchUser = model.getBranchUserModel(newClient.clientId);
+          console.log('super user clientId: ', req.value.body.clientId);
           const branchuser = new BranchUser({
             _id: new mongoose.Types.ObjectId(),
             branchId: req.value.body.branchId,
             userId: result._id
           });
+
           branchuser.save()
             .then(result =>{
               console.log('user assigned to branch ');
@@ -102,11 +109,13 @@ module.exports = {
                 message: 'error in creating user'
               })
             });
+            return res.status(201).json({
+              message: 'user created successfully'
+            });
         }
         return res.status(201).json({
           message: 'user created successfully'
         });
-        
       })
       .catch(err => {
         console.log('error in creating user: ', err);
@@ -164,19 +173,28 @@ module.exports = {
       return res.status(200).json(usrs);
     }
     else if (usr.role.role === rolesList.Admin || usr.role.role === rolesList.Supervisor) {
+      console.log('user:', usr);
       const usrs = await User.find({ clientId: usr.clientId._id });
-      usrs.forEach(function (element) {
-        element.branchId = getBranchDetails(element._id);
-        element.role = getRoleDetails(element.role);
-        element.password = '';
-      });
-      return res.status(200).json(usrs);
+      const Role = model.getRoleModel();
+      const adminRole = Role.findOne({role: rolesList.Admin.toUpperCase()  });
+      const filteredUsers = usrs.filter((element)=>{ element.role !== adminRole._id });
+      
+      // const Branch = model.getBranchModel(usr.clientId.clientId);
+      // const BranchUser = model.getBranchUserModel(usr.clientId.clientId);
+      // filteredUsers.forEach((item,index)=>{
+      //   const branchUserDetails = await BranchUser.findOne({ userId: item._id });
+      //   if (branchUserDetails) {
+      //     item.branchId =  await Branch.findOne({ branchId: branchUserDetails.branchId  });
+      //   }
+      //   item.password = '';
+      // });
+      return res.status(200).json(filteredUsers);
     }
     else if (usr.role.role === rolesList.Manager) {
       // implement when branches are done
       const reqUserBranch = getBranchDetails(usr._id);
-      const usrs = await User.find({ clientId: usr.clientId._id });
-      const filteredUser = usrs.filter(function (element) {
+      let usrs = await User.find({ clientId: usr.clientId._id });
+      let filteredUser = usrs.filter(function (element) {
         const b = getBranchDetails(element._id);
         if (b.branchId === reqUserBranch.branchId) {
           element.branchId = b.branchId;
@@ -301,12 +319,7 @@ module.exports = {
 async function getBranchDetails(userId) {
   const BranchUser = model.getBranchUserModel();
   const Branch = model.getBranchModel();
-  const branchUserDetails = await BranchUser.findOne({ userId });
-  if (branchUserDetails) {
-    const branch = await Branch.findOne({ branchId });
-    return branch;
-  }
-  return null;
+ 
 }
 async function getRoleDetails(roleId) {
   const Role = model.getRoleModel();

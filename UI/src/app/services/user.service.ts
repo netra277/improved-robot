@@ -11,4 +11,14 @@ export class UserService {
     getAll() {
         return this.http.get<User[]>(`${config.apiUrl}/users`);
     }
+
+    createUser(data: any){
+        return this.http.post(`${config.apiUrl}/users/create`,data);
+    }
+    editUser(id: string, data: any){
+        return this.http.put(`${config.apiUrl}/users`,data);
+    }
+    deleteUser(id: string){
+        return this.http.delete(`${config.apiUrl}/users/${id}`);
+    }
 }

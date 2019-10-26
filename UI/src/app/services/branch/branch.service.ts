@@ -26,4 +26,8 @@ export class BranchService {
   deleteBranch(id: string){
     return this.http.delete(`${config.apiUrl}/branches/${id}`);
   }
+
+  editBranch(id: string, data:any){
+    return this.http.put(`${config.apiUrl}/branches/${id}`,data);
+  }
 }

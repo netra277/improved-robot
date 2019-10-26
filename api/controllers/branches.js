@@ -135,8 +135,10 @@ module.exports = {
             });
         }
         const Branch = model.getBranchModel(clientId);
-        const branch = await Branch.findOne({ branchId: req.value.params.branchId });
+        console.log('branchId:', req.value.body.branchId);
+        const branch = await Branch.findOne({ branchId: req.value.body.branchId });
         if (!branch) {
+            console.log('branch:',branch);
             return res.status(404).json({
                 message: 'branch id doesnot exist'
             });

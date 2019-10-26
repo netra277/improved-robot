@@ -26,6 +26,8 @@ import { GridFilterPipe } from './commons/pipes/grid-filter.pipe';
 import { LoaderComponent } from './commons/components/loader/loader.component';
 import { LoaderService  } from './commons/services/loader/loader.service';
 import { LoaderInterceptor } from './helpers/loader.interceptor';
+import { CreateUserComponent } from './components/users/create-user/create-user.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 
 @NgModule({
@@ -47,7 +49,9 @@ import { LoaderInterceptor } from './helpers/loader.interceptor';
     ContactUsComponent,
     GridFilterPipe,
     CreateBranchComponent,
-    LoaderComponent
+    LoaderComponent,
+    CreateUserComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
@@ -78,7 +82,9 @@ import { LoaderInterceptor } from './helpers/loader.interceptor';
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    CreateBranchComponent
+    CreateBranchComponent,
+    CreateUserComponent,
+    CategoryComponent
   ]
 })
 export class AppModule { }

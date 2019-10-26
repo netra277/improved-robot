@@ -1,3 +1,4 @@
+<form [formGroup]="editBranchForm">
 <div class="card">
     <div class="card-header text-center">
       <h3>Branch Details</h3>
@@ -11,8 +12,7 @@
               Id:
             </td>
             <td>
-              <label *ngIf="!editMode">{{selectedBranch.branchId}}</label>
-              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.branchId" name="branchId">
+              <label>{{selectedBranch.branchId}}</label>
             </td>
           </tr>
           <tr>
@@ -21,7 +21,7 @@
             </td>
             <td>
               <label *ngIf="!editMode">{{selectedBranch.name}}</label>
-              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.name" name="name">
+              <input type="text" *ngIf="editMode" formControlName="name" [(ngModel)]="selectedBranch.name" id="name" name="name">
             </td>
           </tr>
           <tr>
@@ -30,7 +30,7 @@
             </td>
             <td>
               <label *ngIf="!editMode">{{selectedBranch.phone}}</label>
-              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.phone" name="phone">
+              <input type="text" *ngIf="editMode" formControlName="phone" [(ngModel)]="selectedBranch.phone" id="phone" name="phone">
             </td>
           </tr>
           <tr>
@@ -39,7 +39,7 @@
             </td>
             <td>
               <label *ngIf="!editMode">{{selectedBranch.email}}</label>
-              <input type="text" *ngIf="editMode" [(ngModel)]="selectedBranch.email" name="email">
+              <input type="text" *ngIf="editMode" formControlName="email" [(ngModel)]="selectedBranch.email" id="email" name="email">
             </td>
           </tr>
           <tr>
@@ -48,7 +48,7 @@
             </td>
             <td>
               <label *ngIf="!editMode">{{selectedBranch.address}}</label>
-              <textarea type="textarea" *ngIf="editMode" [(ngModel)]="selectedBranch.address" name="address"></textarea>
+              <textarea type="textarea" *ngIf="editMode" formControlName="address" [(ngModel)]="selectedBranch.address" id="address" name="address"></textarea>
             </td>
           </tr>
           <tr>
@@ -56,7 +56,7 @@
               Head branch:
             </td>
             <td>
-              <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.isHeadBranch" name="isHeadBranch" />
+              <input type="checkbox" [disabled]="!editMode" formControlName="isHeadBranch" [(ngModel)]="selectedBranch.isHeadBranch" id="isHeadBranch" name="isHeadBranch">
             </td>
           </tr>
           <tr>
@@ -64,7 +64,7 @@
               Print invoice:
             </td>
             <td>
-              <input type="checkbox" [disabled]="!editMode" [(ngModel)]="selectedBranch.printInvoice" name="printInvoice" />
+              <input type="checkbox" [disabled]="!editMode" formControlName="printInvoice" [(ngModel)]="selectedBranch.printInvoice" name="printInvoice">
             </td>
           </tr>
           <tr>
@@ -72,9 +72,23 @@
               Tax:
             </td>
             <td>
-              <div *ngFor="let value of selectedBranch.tax">
-                <label *ngIf="!editMode">{{value.key}} - </label>
-                <label *ngIf="!editMode">{{value.value}} %</label>
+              <div class="form-group row">
+                <div class="col-sm-8" >
+                  <div class="row" style="margin-bottom:8px;" *ngFor="let tax of Taxes; index as i">
+                    <div class="col-sm-4">
+                      <input id="tax" type="text" [disabled]="!editMode" class="form-control" [(ngModel)]="tax.key" [ngModelOptions]="{standalone: true}" />
+                    </div>
+                    <div class="col-sm-4">
+                      <input id="tax" type="number" [disabled]="!editMode" class="form-control" [(ngModel)]="tax.value" min="0" [ngModelOptions]="{standalone: true}"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class=" form-group row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-3">
+                  <button id="addTaxFileds" [disabled]="!editMode" type="button" class="btn btn-info" (click)="addTaxFields()">Add</button>
+                </div>
               </div>
 
             </td>
@@ -84,13 +98,21 @@
       </table>
     </div>
     <div class="card-footer">
-      <div class="row">
+      <div class="row" *ngIf="!editMode">
         <div class="col-sm-6">
           <button type="button" class="btn btn-secondary float-right" (click)="editBranch()">Edit</button>
         </div>
         <div class="col-sm-6">
-          <button type="button" class="btn btn-danger" (click)="deleteBranch()">Delete</button>
+            <!-- <a class="btn btn-danger" (click)="deleteBranch()" >
+                <i class="fa fa-trash-o fa-lg"></i> Delete</a> -->
+          <button type="button" class="btn btn-danger" >Delete</button>
+        </div>
+      </div>
+      <div class="row" *ngIf="editMode">
+        <div class="col-sm-12 text-center">
+          <button type="button" class="btn btn-secondary" (click)="saveBranch()">Save</button>
         </div>
       </div>
     </div>
   </div>
+</form>
