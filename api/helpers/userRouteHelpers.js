@@ -19,7 +19,7 @@ module.exports = {
         createConfigUserSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
             password: Joi.string().required(),
-            repeat_password: Joi.ref('password'),
+            repeatpassword: Joi.ref('password'),
             name: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email().required(),
@@ -30,13 +30,13 @@ module.exports = {
         createUserSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),
             password: Joi.string().required(),
-            repeat_password: Joi.ref('password'),
+            repeatpassword: Joi.ref('password'),
             name: Joi.string().required(),
             phone: Joi.string().required().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email().required(),
             role: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
             status: Joi.string().required(),
-            clientId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            clientId: Joi.string(),
             branchId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
         }),
         updateUserSchema: Joi.object().keys({
@@ -44,13 +44,14 @@ module.exports = {
             phone: Joi.string().regex(/^[0-9]{10,10}$/),
             email: Joi.string().email(),
             role: Joi.string(),
+            status: Joi.string().allow(['active', 'inactive'])
         }),
         updateUserStatusSchema: Joi.object().keys({
             status: Joi.string().allow(['active', 'inactive'])
         }),
         resetPasswordSchema: Joi.object().keys({
             password: Joi.string().required().regex(/^[a-zA-Z0-9]{3,30}$/),
-            confirm_password: Joi.ref('password'),
+            confirmpassword: Joi.ref('password'),
         }),
         authSchema: Joi.object().keys({
             username: Joi.string().alphanum().min(6).max(12).required(),

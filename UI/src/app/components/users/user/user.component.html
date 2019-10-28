@@ -1,95 +1,107 @@
 <form [formGroup]="userEditForm">
   <div class="card">
-      <div class="card-header text-center">
-        <h3>User Details</h3>
-      </div>
-      <div class="card-body cardbody-responsive">
-  
-        <table class="table table-bordered">
-          <tbody>
-            <tr>
-              <td>
-                Username:
-              </td>
-              <td>
-                <label>{{selectedUser.username}}</label>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Name:
-              </td>
-              <td>
-                <label *ngIf="!editMode">{{selectedUser.name}}</label>
-                <input type="text" *ngIf="editMode" formControlName="name" [(ngModel)]="selectedUser.name" id="name" name="name">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Phone:
-              </td>
-              <td>
-                <label *ngIf="!editMode">{{selectedUser.phone}}</label>
-                <input type="text" *ngIf="editMode" formControlName="phone" [(ngModel)]="selectedUser.phone" id="phone" name="phone">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Email:
-              </td>
-              <td>
-                <label *ngIf="!editMode">{{selectedUser.email}}</label>
-                <input type="text" *ngIf="editMode" formControlName="email" [(ngModel)]="selectedUser.email" id="email" name="email">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Address:
-              </td>
-              <td>
-                <label *ngIf="!editMode">{{selectedUser.address}}</label>
-                <textarea type="textarea" *ngIf="editMode" formControlName="address" [(ngModel)]="selectedUser.address" id="address" name="address"></textarea>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Branch:
-              </td>
-              <td>
-                <!-- <input type="checkbox" [disabled]="!editMode" formControlName="isHeadBranch" [(ngModel)]="selectedUser.isHeadBranch" id="isHeadBranch" name="isHeadBranch"> -->
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Status:
-              </td>
-              <td>
-                <!-- <input type="checkbox" [disabled]="!editMode" formControlName="printInvoice" [(ngModel)]="selectedUser.printInvoice" name="printInvoice"> -->
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card-footer">
-        <div class="row" *ngIf="!editMode">
-          <div class="col-sm-4">
-            <button type="button" class="btn btn-secondary" (click)="editUser()">Edit</button>
-          </div>
-          <div class="col-sm-4">
-            <button type="button" class="btn btn-secondary" (click)="resetPassword()">Reset Password</button>
-          </div>
-          <div class="col-sm-4">
-            <button type="button" class="btn btn-danger" (click)="deleteUser()">Delete</button>
-          </div>
+    <div class="card-header text-center">
+      <h3>User Details</h3>
+    </div>
+    <div class="card-body cardbody-responsive">
+
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <td>
+              Username:
+            </td>
+            <td>
+              <label>{{selectedUser.username}}</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Branch:
+            </td>
+            <td>
+              <label>{{selectedUser.branch.name}}</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Name:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedUser.name}}</label>
+              <input type="text" *ngIf="editMode" formControlName="name" [(ngModel)]="selectedUser.name" id="name"
+                name="name">
+            </td>
+          </tr>
+          
+          <tr>
+            <td>
+              Phone:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedUser.phone}}</label>
+              <input type="text" *ngIf="editMode" formControlName="phone" [(ngModel)]="selectedUser.phone" id="phone"
+                name="phone">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Email:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedUser.email}}</label>
+              <input type="text" *ngIf="editMode" formControlName="email" [(ngModel)]="selectedUser.email" id="email"
+                name="email">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Role:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedUser.role.role}}</label>
+              <select *ngIf="editMode" (change)="changeRole($event)" formControlName="role">
+                <option value="" disabled>select role</option>
+                <option *ngFor="let role of roles; index as i" [value]="role._id">{{role.role}}</option>
+              </select>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>
+              Status:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedUser.status}}</label>
+              <select *ngIf="editMode" (change)="changeStatus($event)" formControlName="status">
+                <option value="" disabled>select status</option>
+                <option *ngFor="let status of statuses; index as i" [value]="status.status">{{status.status}}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <div class="row" *ngIf="!editMode">
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-secondary" (click)="editUser()">Edit</button>
         </div>
-        <div class="row" *ngIf="editMode">
-          <div class="col-sm-6">
-            <button type="button" class="btn btn-secondary" (click)="saveUser()">Save</button>
-          </div>
-          <div class="col-sm-6">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-          </div>
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-secondary" (click)="resetPassword()">Reset Password</button>
+        </div>
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-danger" (click)="deleteUser()">Delete</button>
+        </div>
+      </div>
+      <div class="row" *ngIf="editMode">
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="saveUser()">Save</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="cancelSave()">Cancel</button>
         </div>
       </div>
     </div>
-  </form>
+  </div>
+</form>

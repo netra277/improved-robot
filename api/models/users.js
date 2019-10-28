@@ -7,7 +7,6 @@ const Schema = mongoose.Schema;
 
 //create a schema
 const userSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
     username: {
         type: String,
         required: true,
@@ -58,6 +57,9 @@ const userSchema = new Schema({
     status: {
         type: String,
         required: true
+    },
+    isDeleted: {
+        type: Boolean
     }
 },{collection:collections.Users});
 userSchema.pre('save', async function(next) {

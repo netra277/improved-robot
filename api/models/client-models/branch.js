@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 // Create branch schema
 
 const BranchSchema =  new Schema({
-    _id: mongoose.Types.ObjectId,
     branchId: {
         type: String,
         required: true,

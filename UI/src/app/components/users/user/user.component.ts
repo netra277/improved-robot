@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { UserService } from 'src/app/services';
+import { UserService, BranchService } from 'src/app/services';
 import { AlertsService } from 'src/app/commons/services/alerts.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -11,6 +11,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class UserComponent implements OnInit {
 
   @Input() selectedUser;
+  statuses;
+  branches;
+  roles;
   userEditForm;
   editMode = false;
   validationMesages = {
@@ -26,16 +29,24 @@ export class UserComponent implements OnInit {
     'address': {
       'required': 'address is required'
     },
+    'role':{
+      'required': 'role is required'
+    },
+    'status':{
+      'required':'branch is required'
+    }
   };
   formErrors = {
     'name': '',
     'phone': '',
     'email': '',
-    'address': ''
+    'address': '',
+    'role':'',
+    'status':''
   };
 
   constructor(private userService: UserService, private alertService: AlertsService, 
-    private fb: FormBuilder) { }
+    private fb: FormBuilder, private branchService: BranchService) { }
 
   ngOnInit() {
 
@@ -45,19 +56,28 @@ export class UserComponent implements OnInit {
       name:'',
       phone:'',
       email:'',
-      address:''
+      branchId:'',
+      status:'',
+      role: ''
     };
     this.userEditForm = this.fb.group({
-      username: [''],
-      name: [''],
-      phone: [''],
-      email: [''],
-      address: ['']
+      name: [this.selectedUser.name],
+      phone: [this.selectedUser.phone],
+      email: [this.selectedUser.email],
+      role: [this.selectedUser.role.role],
+      status:[this.selectedUser.status]
     });
     this.userEditForm.valueChanges.subscribe((data) => {
       if(this.editMode){
         this.checkValidationErrors(this.userEditForm);
       }
+    });
+
+    this.userService.getRoles().subscribe((data)=>{
+      this.roles = data;
+    });
+    this.userService.getUserStatus().subscribe((data)=>{
+      this.statuses = data;
     });
   }
 
@@ -86,7 +106,7 @@ export class UserComponent implements OnInit {
     console.log('editing user', this.selectedUser);
   }
 
-  saveBranch(){
+  saveUser(){
     if(!this.editMode){
       return;
     }
@@ -102,6 +122,7 @@ export class UserComponent implements OnInit {
   }
 
   deleteUser(){
+    
     if(this.selectedUser && this.selectedUser._id){
       console.log('deleting user id', this.selectedUser._id);
       this.userService.deleteUser(this.selectedUser._id).subscribe(()=>{
@@ -112,5 +133,24 @@ export class UserComponent implements OnInit {
         console.log('error in deleting user');
       });
     }
+  }
+  cancelSave(){
+    this.editMode = false;
+  }
+
+  changeRole(e) {
+    this.userEditForm.get('role').setValue(e.target.value, {
+      onlySelf: true
+    })
+  }
+  changeBranch(e) {
+    this.userEditForm.get('branchId').setValue(e.target.value, {
+      onlySelf: true
+    })
+  }
+  changeStatus(e) {
+    this.userEditForm.get('status').setValue(e.target.value, {
+      onlySelf: true
+    })
   }
 }

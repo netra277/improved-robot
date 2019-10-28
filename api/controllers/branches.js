@@ -1,6 +1,7 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
+const Client = model.getClientModel();
 
 module.exports = {
     getBranches: async (req, res, next) => {
@@ -9,7 +10,6 @@ module.exports = {
         let clientId = '';
         if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
             clientId = req.params.clientId;
-            const Client = model.getClientModel();
             const client = await Client.findById(clientId);
             clientId = client.clientId;
         }
@@ -61,7 +61,6 @@ module.exports = {
         let clientId = '';
         if (role === rolesList.SuperUser) {
             clientId = req.value.body.clientId;
-            const Client = model.getClientModel();
             const client = await Client.findById(clientId);
             clientId = client.clientId;
         }
@@ -80,8 +79,8 @@ module.exports = {
                 message: 'branch id already exist'
             });
         }
-        const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
         
+        const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
         if (req.value.body.isHeadBranch) {
             if (singleParentBranch) {
                 return res.status(404).json({
@@ -96,18 +95,9 @@ module.exports = {
                 });
             }
         }
-
-        const branch = new Branch({
-            _id: new mongoose.Types.ObjectId(),
-            branchId: req.value.body.branchId,
-            name: req.value.body.name,
-            address: req.value.body.address,
-            phone: req.value.body.phone,
-            email: req.value.body.email,
-            printInvoice: req.value.body.printInvoice,
-            isHeadBranch: req.value.body.isHeadBranch,
-            tax: req.value.body.tax
-        });
+        
+        const branch = new Branch(req.value.body);
+        console.log('beforesave: ',branch);
         const b = await branch.save();
         if (b) {
             return res.status(200).json({

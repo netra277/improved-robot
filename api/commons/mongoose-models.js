@@ -8,5 +8,6 @@ module.exports = {
     OrdersModel: 'OrdersModel',
     OrdersMonthlyModel: 'OrdersMonthlyModel',
     OrderDetailsModel: 'OrderDetailsModel',
-    BranchUserModel: 'BranchUserModel'
+    BranchUserModel: 'BranchUserModel',
+    RegisteredUserModel: 'RegisteredUserModel'
 }

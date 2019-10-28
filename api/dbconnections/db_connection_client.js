@@ -10,7 +10,6 @@ module.exports = {
         if(config.environment === 'DEVELOPMENT'){
             const clientDatabase = config.connectionStringClientDbDev + clientId;
             if(connections[clientDatabase]){
-                console.log('clientid:',connections[clientDatabase]);
                 return connections[clientDatabase];
             }
             else{

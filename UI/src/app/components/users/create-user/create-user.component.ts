@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertsService } from 'src/app/commons/services/alerts.service';
-import { UserService } from 'src/app/services';
+import { UserService, BranchService } from 'src/app/services';
 
 @Component({
   selector: 'app-create-user',
@@ -10,13 +10,20 @@ import { UserService } from 'src/app/services';
   styleUrls: ['./create-user.component.css']
 })
 export class CreateUserComponent implements OnInit {
-
+  roles:any;
+  branches: any;
+  statuses: any;
   userForm;
   validationMesages = {
     'username': {
       'required': 'Branch Id is required',
-      'minlength': 'Branch Id must be 6 characters',
       'maxlength': 'Branch Id must be 12 characters'
+    },
+    'passwordpassword':{
+      'required':'password is required'
+    },
+    'repeatpassword':{
+      'required':'password is required'
     },
     'name': {
       'required': 'name is required'
@@ -27,37 +34,55 @@ export class CreateUserComponent implements OnInit {
     'email': {
       'required': 'email is required'
     },
-    'address': {
-      'required': 'address is required'
+    'role':{
+      'required':'role is required'
     },
+    'branchId':{
+      'required':'branch is required'
+    }
   };
   formErrors = {
     'username': '',
+    'password':'',
+    'repeatpassword':'',
     'name': '',
     'phone': '',
     'email': '',
-    'address': '',
-    'role':''
+    'role':'',
+    'branchId':''
   };
 
   constructor(private activeModal: NgbActiveModal, private fb: FormBuilder, 
-    private alertService: AlertsService, private userService: UserService) { }
+    private alertService: AlertsService, private userService: UserService,
+    private branchService: BranchService) { }
 
   ngOnInit() {
+    this.userService.getRoles().subscribe((data)=>{
+      this.roles = data;
+    });
+    this.branchService.getAll().subscribe((data)=>{
+      this.branches = data;
+    });
+    this.userService.getUserStatus().subscribe((data)=>{
+      this.statuses = data;
+    });
     this.userForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
-      password:[''],
+      username: ['', [Validators.required, Validators.maxLength(12)]],
+      password:['', Validators.required],
+      repeatpassword:['', Validators.required],
+      role:[''],
       branchId: [''],
       name: ['', Validators.required],
       phone: ['', Validators.required],
       email: ['', Validators.required],
-      address: ['', Validators.required],
       status: ['']
     });
 
     this.userForm.valueChanges.subscribe((data) => {
       this.checkValidationErrors(this.userForm);
     });
+
+    
   }
   dismiss(msg) {
     this.activeModal.dismiss(msg);
@@ -67,7 +92,6 @@ export class CreateUserComponent implements OnInit {
   }
   submitUser() {
     let newUser = this.userForm.value;
-     
     console.log(newUser);
     this.userService.createUser(newUser).subscribe(()=>{
       this.activeModal.close();
@@ -95,5 +119,20 @@ export class CreateUserComponent implements OnInit {
         }
       }
     });
+  }
+  changeRole(e) {
+    this.userForm.get('role').setValue(e.target.value, {
+      onlySelf: true
+    })
+  }
+  changeBranch(e) {
+    this.userForm.get('branchId').setValue(e.target.value, {
+      onlySelf: true
+    })
+  }
+  changeStatus(e) {
+    this.userForm.get('status').setValue(e.target.value, {
+      onlySelf: true
+    })
   }
 }

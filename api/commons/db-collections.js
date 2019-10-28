@@ -10,6 +10,7 @@ module.exports = {
                 CategoryItems : 'category_item',
                 Orders:'orders',
                 Orders_Monthly:'orders_monthly',
-                SaleYearly: 'sale'
+                SaleYearly: 'sale',
+                RegisteredUsers: 'registered_users'
         }
 }

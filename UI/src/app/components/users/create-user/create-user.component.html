@@ -16,11 +16,19 @@
         </div>
       </div>
       <div class="form-group row">
-        <label class="col-sm-2 form-label" for="name">Password:</label>
+        <label class="col-sm-2 form-label" for="password">Password:</label>
         <div class="col-sm-4" [ngClass]="{'errors': formErrors.password }">
           <input id="password" formControlName="password" type="password" maxlength="12" class="form-control"
             (blur)="checkValidationErrors()" />
           <span *ngIf="formErrors.password">{{formErrors.password}}</span>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 form-label" for="repeatpassword">Repeat password:</label>
+        <div class="col-sm-4" [ngClass]="{'errors': formErrors.repeatpassword }">
+          <input id="repeatpassword" formControlName="repeatpassword" type="password" maxlength="12" class="form-control"
+            (blur)="checkValidationErrors()" />
+          <span *ngIf="formErrors.repeatpassword">{{formErrors.repeatpassword}}</span>
         </div>
       </div>
       <div class="form-group row">
@@ -49,36 +57,31 @@
       </div>
       <div class="form-group row">
         <label class="col-sm-2 form-label" for="role">Role:</label>
-        <div class="col-sm-8" [ngClass]="{'errors': formErrors.role }">
-          <select>
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="mercedes">Mercedes</option>
-            <option value="audi">Audi</option>
-          </select>
-          <span *ngIf="formErrors.role">{{formErrors.role}}</span>
+        
+        <div class="col-sm-8">
+           <select (change)="changeRole($event)" formControlName="role">
+             <option value="" disabled>select role</option>
+             <option *ngFor="let role of roles; index as i" [value]="role._id">{{role.role}}</option>
+           </select>
+          <!-- <span *ngIf="formErrors.role">{{formErrors.role}}</span> -->
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-2 form-label" for="branch">Branch:</label>
         <div class="col-sm-1">
-            <div ngbDropdown class="d-inline-block">
-                <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
-                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                  <button ngbDropdownItem>Action - 1</button>
-                  <button ngbDropdownItem>Another Action</button>
-                  <button ngbDropdownItem>Something else is here</button>
-                </div>
-              </div>
+          <select (change)="changeBranch($event)" formControlName="branchId">
+            <option value="" disabled>select branch</option>
+            <option *ngFor="let branch of branches; index as i" [value]="branch._id">{{branch.branchId}} - {{ branch.name }}</option>
+          </select>
         </div>
       </div>
       <div class="form-group row">
-        <label class="col-sm-2 form-label" for="printInvoice">Status:</label>
+        <label class="col-sm-2 form-label" for="status">Status:</label>
         <div class="col-sm-1">
-            <select>
-                <option value="volvo">active</option>
-                <option value="saab">inactive</option>
-              </select>
+          <select (change)="changeStatus($event)" formControlName="status">
+            <option value="" disabled>select status</option>
+            <option *ngFor="let status of statuses; index as i" [value]="status.status">{{status.status}}</option>
+          </select>
         </div>
       </div>
     </div>

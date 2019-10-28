@@ -9,6 +9,7 @@ const CategorySchema = require('../models/client-models/category');
 const ItemSchema = require('../models/client-models/item');
 const BranchUserSchema = require('../models/client-models/branch-user');
 const OrdersSchema = require('../models/client-models/orders');
+const RegisteredUserSchema = require('../models/client-models/registered-user');
 const mongooModels = require('../commons/mongoose-models');
 
 module.exports = {
@@ -37,21 +38,26 @@ module.exports = {
   getBranchUserModel(clientId) {
     const id = clientId.toUpperCase();
     const cliConnect = clientDbConnection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.BranchUserModel, BranchUserSchema)
+    return cliConnect.model(mongooModels.BranchUserModel, BranchUserSchema);
   },
   getItemsModel(clientId) {
     const id = clientId.toUpperCase();
     const cliConnect = clientDbConnection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
+    return cliConnect.model(mongooModels.ItemsModel, ItemSchema);
   },
   getOrdersModel(clientId) {
     const id = clientId.toUpperCase();
     const cliConnect = clientDbConnection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.OrdersModel, OrdersSchema)
+    return cliConnect.model(mongooModels.OrdersModel, OrdersSchema);
   },
   getOrderDetailsModel(clientId) {
     const id = clientId.toUpperCase();
     const cliConnect = clientDbConnection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.ItemsModel, ItemSchema)
+    return cliConnect.model(mongooModels.ItemsModel, ItemSchema);
+  },
+  getRegisteredUsersModel(clientId) {
+    const id = clientId.toUpperCase();
+    const cliConnect = clientDbConnection.connectToDatabase(id);
+    return cliConnect.model(mongooModels.RegisteredUserModel,RegisteredUserSchema);
   }
 }

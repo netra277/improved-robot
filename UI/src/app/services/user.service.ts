@@ -16,9 +16,16 @@ export class UserService {
         return this.http.post(`${config.apiUrl}/users/create`,data);
     }
     editUser(id: string, data: any){
-        return this.http.put(`${config.apiUrl}/users`,data);
+        return this.http.put(`${config.apiUrl}/users/${id}`,data);
     }
     deleteUser(id: string){
         return this.http.delete(`${config.apiUrl}/users/${id}`);
+    }
+
+    getRoles(){
+        return this.http.get(`${config.apiUrl}/roles`);
+    }
+    getUserStatus(){
+        return this.http.get(`${config.apiUrl}/status/user`);
     }
 }

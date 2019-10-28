@@ -15,7 +15,12 @@ module.exports = {
         }
         else if(usr.role.role === rolesList.Admin){
             const roles = await Role.find({isClientLevel: true});
-            return res.status(200).json(roles);
+            const filteredRoles = roles.filter((element)=>{
+                if(element.role!=rolesList.Admin){
+                    return element;
+                }
+            });
+            return res.status(200).json(filteredRoles);
         }
         console.log('unauthorized');
         return res.status(401).json({

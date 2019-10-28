@@ -4,23 +4,22 @@ const rolesList = require('../auth/roles');
 const constants = require('../commons/enums');
 const model = require('../dbconnections/connection_initializer');
 const config = require('../configuration/config');
+const User = model.getUserModel();
+const Role = model.getRoleModel();
 
 module.exports = {
   create: async (req, res, next) => {
     console.log('createUser method entry');
-    const Client = model.getClientModel();
-    console.log('getting client details for clientId: ', req.user.clientId._id);
+    console.log('requested user: ', req.user);
 
-    const requestedUserCli = await Client.findById(req.user.clientId._id);
-    if (!requestedUserCli) {
-      console.log('invalid client id, Exiting...');
-      return res.status(404).json({
-        message: 'invalid client details'
-      });
-    }
     const Role = model.getRoleModel();
     console.log('getting role details for role id: ', req.value.body.role);
-    const creatingUserRole = await Role.findById(req.value.body.role);
+    let creatingUserRole;
+    if (req.user.role.role === rolesList.Admin) {
+      creatingUserRole = await Role.findOne({ _id: req.value.body.role, isClientLevel: true });
+    } else if (req.user.role.role === rolesList.SuperUser) {
+      creatingUserRole = await Role.findOne({ _id: req.value.body.role });
+    }
     if (!creatingUserRole) {
       console.log('invalid role id. exiting');
       return res.status(404).json({
@@ -30,7 +29,6 @@ module.exports = {
     const User = model.getUserModel();
 
     const usr = new User({
-      _id: new mongoose.Types.ObjectId(),
       username: req.value.body.username,
       password: req.value.body.password,
       userId: '',
@@ -43,21 +41,11 @@ module.exports = {
       role: creatingUserRole,
       status: req.value.body.status
     });
-    let newClient = '';
-    if (req.user.role.role === rolesList.SuperUser) {
-      if (!req.value.body.clientId || req.value.body.clientId === '') {
-        res.status(404).json({
-          message: 'client id is required'
-        });
-      }
-      newClient = await Client.findById(req.value.body.clientId);
-      
-      usr.clientId = newClient;
-      usr.userId = newClient.clientId + usr.username;
-    }
-    else if (req.user.role.role === rolesList.Admin) {
-      usr.clientId = requestedUserCli;
-      usr.userId = requestedUserCli.clientId + usr.username;
+    
+    
+    if (req.user.role.role === rolesList.Admin) {
+      usr.clientId = req.user.clientId;
+      usr.userId = req.user.clientId.clientId + usr.username;
     }
     else {
       return res.status(401).json({
@@ -71,58 +59,68 @@ module.exports = {
       });
     }
     console.log('checking for duplicate user ');
-    const dupUser = await User.findOne({ username: usr.username.toUpperCase(), userId: usr.clientId.clientId.toUpperCase() + usr.username.toUpperCase() });
+    const dupUser = await User.findOne({ userId: usr.clientId.clientId.toUpperCase() + usr.username.toUpperCase() });
     if (dupUser) {
-      res.status(500).json({
+      return res.status(500).json({
         message: 'user already exist'
       })
     }
-    
-    await usr.save()
-      .then(result => {
-        console.log('user created');
-        if(req.user.role.role === rolesList.Admin){
-          const Branch = model.getBranchModel(newClient.clientId);
-          const branch = Branch.findById(req.value.body.branchId);
-          if(!branch){
-            return res.status(500).json({
-              message: 'no branch exist'
-            });
-          }
-          const BranchUser = model.getBranchUserModel(newClient.clientId);
-          console.log('super user clientId: ', req.value.body.clientId);
-          const branchuser = new BranchUser({
-            _id: new mongoose.Types.ObjectId(),
-            branchId: req.value.body.branchId,
-            userId: result._id
-          });
 
-          branchuser.save()
-            .then(result =>{
-              console.log('user assigned to branch ');
-              return res.status(201).json({
-                message: 'User created successfully'
-              });
-            }).catch(err =>{
-              console.log('error in assigning branch to user');
-              return res.status(500).json({
-                message: 'error in creating user'
-              })
-            });
-            return res.status(201).json({
-              message: 'user created successfully'
-            });
-        }
-        return res.status(201).json({
-          message: 'user created successfully'
-        });
-      })
-      .catch(err => {
-        console.log('error in creating user: ', err);
-        return res.status(500).json({
-          message: 'Error creating user'
-        });
+    const savedUser = await usr.save();
+    console.log('saved user', savedUser);
+
+    if (req.user.role.role === rolesList.Admin) {
+      const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
+      const registeredUser = new RegisteredUser({
+        username: savedUser.username,
+        userId: savedUser.userId,
+        name: savedUser.name,
+        createdDate: new Date().toISOString(),
+        phone: savedUser.phone,
+        email: savedUser.email,
+        lastLogin: '',
+        role: creatingUserRole,
+        status: savedUser.status
       });
+
+      const savedRegisteredUser = await registeredUser.save();
+
+      const Branch = model.getBranchModel(req.user.clientId.clientId);
+      const branch = await Branch.findById(req.value.body.branchId);
+      if (!branch) {
+        return res.status(500).json({
+          message: 'no branch exist'
+        });
+      }
+
+      console.log('branch exist');
+      const BranchUser = model.getBranchUserModel(req.user.clientId.clientId);
+      let branchUser = await BranchUser.findOne({ branchId: req.value.body.branchId });
+      if (!branchUser) {
+        console.log('creating new branchuser');
+        branchUser = new BranchUser({
+          _id: new mongoose.Types.ObjectId(),
+          branchId: req.value.body.branchId,
+          userIds: savedRegisteredUser._id
+        });
+      } else {
+        console.log('updating new branchuser');
+        if (!branchUser.userIds) {
+          branchUser.userIds = [];
+        }
+        branchUser.userIds.push(savedRegisteredUser._id);
+      }
+      const savedBranchUser = await branchUser.save();
+      if (savedBranchUser) {
+        return res.status(200).json({
+          message: 'User created successfully'
+        })
+      } else {
+        return res.status(500).json({
+          message: 'Error in creating user'
+        })
+      }
+    }
   },
   getUser: async (req, res, next) => {
     console.log('value: ', req.value);
@@ -162,58 +160,29 @@ module.exports = {
   },
   getUsers: async (req, res, next) => {
     const usr = req.user;
-    const User = model.getUserModel();
-    if (usr.role.role === rolesList.SuperUser || usr.role.role === rolesList.PowerUser) {
-      const usrs = await User.find({});
-      usrs.forEach(function (element) {
-        element.branchId = getBranchDetails(element._id);
-        element.role = getRoleDetails(element.role);
-        element.password = '';
-      });
-      return res.status(200).json(usrs);
-    }
-    else if (usr.role.role === rolesList.Admin || usr.role.role === rolesList.Supervisor) {
-      console.log('user:', usr);
-      const usrs = await User.find({ clientId: usr.clientId._id });
-      const Role = model.getRoleModel();
-      const adminRole = Role.findOne({role: rolesList.Admin.toUpperCase()  });
-      const filteredUsers = usrs.filter((element)=>{ element.role !== adminRole._id });
-      
-      // const Branch = model.getBranchModel(usr.clientId.clientId);
-      // const BranchUser = model.getBranchUserModel(usr.clientId.clientId);
-      // filteredUsers.forEach((item,index)=>{
-      //   const branchUserDetails = await BranchUser.findOne({ userId: item._id });
-      //   if (branchUserDetails) {
-      //     item.branchId =  await Branch.findOne({ branchId: branchUserDetails.branchId  });
-      //   }
-      //   item.password = '';
-      // });
+    const BranchUser = model.getBranchUserModel(usr.clientId.clientId);
+    const Branch = model.getBranchModel(usr.clientId.clientId);
+    const RegisteredUsers = model.getRegisteredUsersModel(usr.clientId.clientId);
+    let filteredUsers = [];
+    if (usr.role.role === rolesList.Admin || usr.role.role === rolesList.Supervisor) {
+      console.log('in admin');
+      let usrs = await RegisteredUsers.find().lean();
+
+      for (let index = 0; index < usrs.length; index++) {
+        const singleUser = usrs[index];
+        singleUser.role = await Role.findById(singleUser.role);
+        let branchsUser = await BranchUser.find({ userIds: singleUser._id });
+        console.log('singlebranchUsr:', branchsUser);
+        const branch = await Branch.findOne({ _id: branchsUser[0].branchId });
+        console.log('branchdetails:', branch);
+        singleUser.branch = {
+          branchId: branch.branchId,
+          _id: branch._id,
+          name: branch.name
+        };
+        filteredUsers.push(singleUser);
+      }
       return res.status(200).json(filteredUsers);
-    }
-    else if (usr.role.role === rolesList.Manager) {
-      // implement when branches are done
-      const reqUserBranch = getBranchDetails(usr._id);
-      let usrs = await User.find({ clientId: usr.clientId._id });
-      let filteredUser = usrs.filter(function (element) {
-        const b = getBranchDetails(element._id);
-        if (b.branchId === reqUserBranch.branchId) {
-          element.branchId = b.branchId;
-        }
-        element.password = '';
-        element.role = getRoleDetails(element.role);
-        return element;
-      });
-      return res.status(200).json(filteredUser);
-    }
-    else if (usr.role.role === rolesList.User) {
-      const User = model.getUserModel();
-      const usr = await User.find({ _id: req.user._id });
-      usr.forEach(function (element) {
-        element.branchId = getBranchDetails(element._id);
-        element.role = getRoleDetails(element.role);
-        element.password = '';
-      });
-      return res.status(200).json(usr);
     }
     else {
       return res.status(401).json({
@@ -223,11 +192,28 @@ module.exports = {
   },
   delete: async (req, res, next) => {
     const User = model.getUserModel();
-    const remUser = await User.findById(req.value.params.id);
-    if (req.user.role.role === rolesList.SuperUser || (remUser.clientId === req.user.clientId && req.user.role.role === rolesList.Admin)) {
-      const resp = await User.remove(req.value.params.id);
-      const BranchUser = model.getBranchUserModel();
-      const res = await BranchUser.remove({userId: req.value.params.id});
+    const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
+    console.log('clientId',req.user.clientId.clientId, 'param:',req.value.params.id);
+    const remRegisteredUser = await RegisteredUser.findById(req.value.params.id);
+    if(!remRegisteredUser){
+      return res.status(500).json({
+        message: 'user not found'
+      });
+    }
+    const remCommonUser = await User.findOne({userId: remRegisteredUser.userId});
+    if (req.user.role.role === rolesList.Admin) {
+      const resp = await RegisteredUser.deleteOne({_id: remRegisteredUser._id});
+      const BranchUser = model.getBranchUserModel(req.user.clientId.clientId);
+      let branchUser = await BranchUser.findOne({ userIds: req.value.params.id });
+      console.log('branchUser:',branchUser);
+      var index = branchUser.userIds.indexOf(req.value.params.id);
+      console.log('index:',index);
+      if (index > -1) {
+        branchUser.userIds.splice(index, 1);
+      }
+      await branchUser.save();
+      remCommonUser.isDeleted = true;
+      await remCommonUser.save();
       if (resp.deletedCount > 0) {
         return res.status(200).json({
           message: 'deleted successfully'
@@ -245,32 +231,22 @@ module.exports = {
   update: async (req, res, next) => {
     const Role = model.getRoleModel();
     const updatingRol = await Role.findById(req.value.body.role);
+    const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
     const User = model.getUserModel();
-    const updUser = await User.findById(req.value.params.id);
+    const updRegisteredUser = await RegisteredUser.findById(req.value.params.id);
+    const commonUser = await User.findOne({userId: updRegisteredUser.userId});
+    console.log('updating user: ', updRegisteredUser);
     if (req.value.body.name && req.value.body.name !== '') {
-      updUser.name = req.value.body.name;
+      commonUser.name = updRegisteredUser.name = req.value.body.name;
     }
     if (req.value.body.phone && req.value.body.phone !== '') {
-      updUser.phone = req.value.body.phone;
+      commonUser.phone = updRegisteredUser.phone = req.value.body.phone;
     }
     if (req.value.body.email && req.value.body.email !== '') {
-      updUser.email = req.value.body.email;
+      commonUser.email = updRegisteredUser.email = req.value.body.email;
     }
     if (req.value.body.role && req.value.body.role !== '') {
-      updUser.role = updatingRol;
-    }
-    if (req.value.body.branchId && req.value.body.branchId !== '') {
-      const Branch = model.getBranchUserModel();
-      const branch = await Branch.updateOne({ userId: req.value.params.id }, { branchId: req.value.body.branchId });
-      if (userUpdated.nModified > 0) {
-        return res.status(200).json({
-          message: 'user updated with branch details successfully'
-        });
-      } else {
-        return res.status(500).json({
-          message: 'error updating branch to user'
-        });
-      }
+      commonUser.role = updRegisteredUser.role = updatingRol;
     }
     if (req.value.body.status !== constants.UserStatus.Active &&
       req.value.body.status !== constants.UserStatus.Inactive) {
@@ -278,10 +254,12 @@ module.exports = {
         message: 'Invalid status'
       });
     }
-    updUser.status = req.value.body.status;
-    if (req.user.role.role === rolesList.SuperUser || (req.user.role.role === rolesList.Admin && req.user.clientId === updUser.clientId)) {
-      const userUpdated = await User.updateOne({ _id: req.value.params.id }, updUser);
-      if (userUpdated.nModified > 0) {
+    commonUser.status = updRegisteredUser.status = req.value.body.status;
+    console.log('reqclient:', req.user.clientId._id,'commonuserclient',commonUser.clientId);
+    if (req.user.role.role === rolesList.Admin && req.user.clientId._id.toString() === commonUser.clientId.toString()) {
+      const registereduserUpdated = await RegisteredUser.updateOne({ _id: req.value.params.id }, updRegisteredUser);
+      const commonuserUpdated = await User.updateOne({userId: updRegisteredUser.userId}, commonUser);
+      if (registereduserUpdated.nModified > 0 && commonuserUpdated.nModified > 0) {
         return res.status(200).json({
           message: 'user updated successfully'
         });
@@ -297,29 +275,29 @@ module.exports = {
       });
     }
   },
-  resetPassword: async(req,res,next)=>{
+  resetPassword: async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     // Generate a password hash 
-    const PasswordHash = await bcrypt.hash(req.value.body.password,salt);
+    const PasswordHash = await bcrypt.hash(req.value.body.password, salt);
     const User = model.getUserModel();
-    const usr = User.updateOne({_id: req.user._id},{password: PasswordHash});
-    if(usr.nModified > 0){
+    const usr = User.updateOne({ _id: req.user._id }, { password: PasswordHash });
+    if (usr.nModified > 0) {
       return res.status(200).json({
-        message:'password updated successfully'
+        message: 'password updated successfully'
       });
     }
     else {
       return res.status(500).json({
-        message:'error updating password'
+        message: 'error updating password'
       });
     }
   }
 }
 
-async function getBranchDetails(userId) {
-  const BranchUser = model.getBranchUserModel();
-  const Branch = model.getBranchModel();
- 
+async function getBranchDetails(userId, clientId) {
+  const BranchUser = model.getBranchUserModel(clientId);
+  const Branch = model.getBranchModel(clientId);
+
 }
 async function getRoleDetails(roleId) {
   const Role = model.getRoleModel();

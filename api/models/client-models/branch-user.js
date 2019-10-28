@@ -12,11 +12,10 @@ const BranchUserSchema =  new Schema({
         ref: mongooModel.BranchesModel,
         required: true
     },
-    userId: {
+    userIds: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: mongooModel.UsersModel,
-        required: true
-    }
+        ref: mongooModel.UsersModel
+    }]
 },{collection:collections.ClientDbCollections.BranchUserDetails});
 
 module.exports = BranchUserSchema;
