@@ -12,4 +12,17 @@ export class ItemComponent implements OnInit {
   ngOnInit() {
   }
 
+  editItem(){
+
+  }
+  deleteItem(){
+
+  }
+  saveItem(){
+
+  }
+  cancelSave(){
+    
+  }
+
 }

@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryService } from 'src/app/services/category/category.service';
+import { AlertsService } from 'src/app/commons/services/alerts.service';
 
 @Component({
   selector: 'app-category',
@@ -8,10 +10,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./category.component.css']
 })
 export class CategoryComponent implements OnInit {
+  selectedCategory: any = {};
   categoryForm;
+  editMode: boolean = false;
   validationMesages = {
     'categoryId': {
-      'required': 'Id is required'
+      'required': 'Id is required',
+      'minlength': 'requires 4 characters'
     },
     'name': {
       'required': 'name is required'
@@ -25,18 +30,17 @@ export class CategoryComponent implements OnInit {
     'name': '',
     'description': ''
   };
-  category = {
-    categoryId: '',
-    name: '',
-    description: ''
-  };
-  constructor(private fb: FormBuilder, private activeModal: NgbActiveModal) {
-
-   }
+  constructor(private fb: FormBuilder, private activeModal: NgbActiveModal,
+    private categoryService: CategoryService, private alertService: AlertsService) {
+  }
 
   ngOnInit() {
+    this.categoryService.selectedCategory$.subscribe(category => this.selectedCategory = category);
+    if (this.selectedCategory.categoryId) {
+      this.editMode = true;
+    }
     this.categoryForm = this.fb.group({
-      categoryId: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
+      categoryId: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
       name: ['', Validators.required],
       description: ['']
     });
@@ -66,9 +70,32 @@ export class CategoryComponent implements OnInit {
     });
   }
   dismiss(msg) {
+    this.selectedCategory = {};
     this.activeModal.dismiss(msg);
   }
   close(msg) {
+    this.selectedCategory = {};
     this.activeModal.close(msg);
+  }
+  createCategory() {
+    if (this.editMode) {
+      console.log('editmode');
+      this.categoryService.editCategory(this.selectedCategory._id,this.categoryForm.value).subscribe(() => {
+        this.activeModal.close();
+        this.alertService.success('Category edited successfully!!!!');
+        console.log('success');
+      }, (err) => {
+        console.log('error', err);
+      });
+    } else {
+      console.log('createmode', this.categoryForm.value);
+      this.categoryService.createCategory(this.categoryForm.value).subscribe(() => {
+        this.activeModal.close();
+        this.alertService.success('Category created successfully!!!!');
+        console.log('success');
+      }, (err) => {
+        console.log('error', err);
+      });
+    }
   }
 }

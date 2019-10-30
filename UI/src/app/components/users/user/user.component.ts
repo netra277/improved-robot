@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { UserService, BranchService } from 'src/app/services';
 import { AlertsService } from 'src/app/commons/services/alerts.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { ResetPasswordComponent } from '../reset-password/reset-password.component';
 
 @Component({
   selector: 'app-user',
@@ -44,9 +46,12 @@ export class UserComponent implements OnInit {
     'role':'',
     'status':''
   };
+  options: NgbModalOptions = {
+    size:'sm'
+  }
 
   constructor(private userService: UserService, private alertService: AlertsService, 
-    private fb: FormBuilder, private branchService: BranchService) { }
+    private fb: FormBuilder, private branchService: BranchService, private modalService: NgbModal) { }
 
   ngOnInit() {
 
@@ -56,7 +61,7 @@ export class UserComponent implements OnInit {
       name:'',
       phone:'',
       email:'',
-      branchId:'',
+      branch:'',
       status:'',
       role: ''
     };
@@ -136,6 +141,10 @@ export class UserComponent implements OnInit {
   }
   cancelSave(){
     this.editMode = false;
+  }
+
+  resetPassword(){
+    const modalRef = this.modalService.open(ResetPasswordComponent,this.options);
   }
 
   changeRole(e) {

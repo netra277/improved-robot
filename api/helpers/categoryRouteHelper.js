@@ -22,13 +22,9 @@ module.exports = {
             description: Joi.string()
         }),
         updateCategorySchema: Joi.object().keys({
-            branchId: Joi.string().alphanum().min(6).max(6).required(),
-            phone: Joi.string().regex(/^[0-9]{10,10}$/),
-            email: Joi.string().email(),
+            categoryId: Joi.string().alphanum().min(4).max(4).required(),
             name: Joi.string(),
-            Address: Joi.string(),
-            GSTNumber: Joi.string(),
-            isHeadBranch: Joi.boolean()
+            description: Joi.string()
         })
     }
 }

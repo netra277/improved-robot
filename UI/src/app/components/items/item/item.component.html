@@ -1,3 +1,83 @@
-<p>
-  item works!
-</p>
+<form [formGroup]="itemEditForm">
+  <div class="card">
+    <div class="card-header text-center">
+      <h3>Item Details</h3>
+    </div>
+    <div class="card-body cardbody-responsive">
+
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <td>
+              Item Code:
+            </td>
+            <td>
+              <label>{{selectedItem.itemCode}}</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Name:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedItem.name}}</label>
+              <input type="text" *ngIf="editMode" formControlName="name" [(ngModel)]="selectedItem.name" id="name"
+                name="name">
+            </td>
+          </tr>
+          
+          <tr>
+            <td>
+              Description:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedItem.description}}</label>
+              <textarea type="text" *ngIf="editMode" formControlName="description" [(ngModel)]="selectedItem.description" id="description"
+                name="description"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Price:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedItem.price}}</label>
+              <input type="number" *ngIf="editMode" formControlName="price" min="0" [(ngModel)]="selectedItem.price" id="price"
+                name="price">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Category:
+            </td>
+            <td>
+              <label *ngIf="!editMode">{{selectedItem.role.role}}</label>
+              <select *ngIf="editMode" (change)="changeRole($event)" formControlName="role">
+                <option value="" disabled>select role</option>
+                <option *ngFor="let role of roles; index as i" [value]="role._id">{{role.role}}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <div class="row" *ngIf="!editMode">
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-secondary" (click)="editItem()">Edit</button>
+        </div>
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-danger" (click)="deleteItem()">Delete</button>
+        </div>
+      </div>
+      <div class="row" *ngIf="editMode">
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="saveItem()">Save</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-secondary" (click)="cancelSave()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

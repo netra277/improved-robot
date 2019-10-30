@@ -6,10 +6,7 @@ module.exports = {
     getItems: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -18,7 +15,8 @@ module.exports = {
             });
         }
         const Item = model.getItemsModel(clientId);
-        const items = await Item.find();
+        const Category = model.getCategoryModel(clientId);
+        const items = await Item.find().populate('categoryId');
         if (items.length > 0) {
             return res.status(200).json(items);
         } else {
@@ -54,10 +52,7 @@ module.exports = {
     create: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -73,15 +68,16 @@ module.exports = {
             });
         }
         const item = new Item({
-            _id: new mongoose.Types.ObjectId(),
             itemCode: req.value.body.itemCode,
             name: req.value.body.name,
             description: req.value.body.description,
             price: req.value.body.price,
             itemImage:''
         });
-        const Category = model.getCategoryModel(clientId);
-        item.categoryId = await Category.findById(req.value.body.categoryId);
+        if(req.value.body.categoryId && req.value.body.categoryId !== ''){
+            const Category = model.getCategoryModel(clientId);
+            item.categoryId = await Category.findById(req.value.body.categoryId);
+        }
         const b = await item.save();
         if (b) {
             return res.status(200).json({

@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 // Create category schema
 
 const CategorySchema =  new Schema({
-    _id: mongoose.Types.ObjectId,
     categoryId: {
         type: String,
         uppercase: true

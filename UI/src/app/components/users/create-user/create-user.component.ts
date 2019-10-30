@@ -19,7 +19,7 @@ export class CreateUserComponent implements OnInit {
       'required': 'Branch Id is required',
       'maxlength': 'Branch Id must be 12 characters'
     },
-    'passwordpassword':{
+    'password':{
       'required':'password is required'
     },
     'repeatpassword':{

@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 // Create Items schema
 
 const ItemSchema =  new Schema({
-    _id: mongoose.Types.ObjectId,
     itemCode: {
         type: String,
         required: true,
@@ -15,7 +14,6 @@ const ItemSchema =  new Schema({
     categoryId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: mongooModel.CategoryModel,
-        required: true
     },
     name: {
         type:String,

@@ -1,4 +1,4 @@
-const Joi = require('joi')
+const Joi = require('joi');
 
 module.exports = {
     validateBody: (schema) => {
@@ -24,11 +24,11 @@ module.exports = {
             itemImage: Joi.string()
         }),
         updateItemSchema: Joi.object().keys({
-            categoryId:  Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            itemCode: Joi.string().alphanum().min(4).max(4).required(),
             name: Joi.string(),
             description: Joi.string(),
             price: Joi.number(),
-            isHeadBranch: Joi.boolean()
+            itemImage: Joi.string()
         })
     }
 }

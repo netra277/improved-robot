@@ -16,12 +16,32 @@ module.exports = {
     },
     schemas:{
         createOrderSchema: Joi.object().keys({
-            itemCode: Joi.string().alphanum().min(4).max(4).required(),
-            name: Joi.string().required(),
-            categoryId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            description: Joi.string(),
-            price: Joi.number().required(),
-            itemImage: Joi.string()
+            paymentDetails: Joi.object().keys({
+                amount: Joi.number().required(),
+                discountPercentage: Joi.number().required(),
+                discountAmount: Joi.number().required(),
+                amountAfterDiscount: Joi.number().required(),
+                mode: Joi.string(),
+                particulars: Joi.object().keys({
+                    cash: Joi.string().optional(),
+                    debitcard: Joi.string().optional(),
+                    creditcard: Joi.string().optional(),
+                    upi: Joi.string().optional()
+                })
+            }),
+            branchId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            createdByUserId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            itemsList: Joi.array().items(
+                Joi.object().keys({
+                    itemId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+                    quantity: Joi.number().required()
+                })
+            ),
+            customerDetails: Joi.object().keys({
+                name: Joi.string(),
+                phone: Joi.number(),
+                address: Joi.string()
+            })
         }),
         updateOrderSchema: Joi.object().keys({
             categoryId:  Joi.string().regex(/^[0-9a-fA-F]{24}$/),

@@ -28,6 +28,7 @@ import { LoaderService  } from './commons/services/loader/loader.service';
 import { LoaderInterceptor } from './helpers/loader.interceptor';
 import { CreateUserComponent } from './components/users/create-user/create-user.component';
 import { ReportsComponent } from './components/reports/reports.component';
+import { ResetPasswordComponent } from './components/users/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { ReportsComponent } from './components/reports/reports.component';
     CreateBranchComponent,
     LoaderComponent,
     CreateUserComponent,
-    ReportsComponent
+    ReportsComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -84,7 +86,8 @@ import { ReportsComponent } from './components/reports/reports.component';
   entryComponents: [
     CreateBranchComponent,
     CreateUserComponent,
-    CategoryComponent
+    CategoryComponent,
+    ResetPasswordComponent
   ]
 })
 export class AppModule { }

@@ -54,10 +54,7 @@ module.exports = {
     create: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -74,7 +71,6 @@ module.exports = {
             });
         }
         const category = new Category({
-            _id: new mongoose.Types.ObjectId(),
             categoryId: req.value.body.categoryId,
             name: req.value.body.name,
             description: req.value.body.description
@@ -94,10 +90,7 @@ module.exports = {
     update: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {

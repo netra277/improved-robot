@@ -14,3 +14,4 @@ export * from './orders/create-order/create-order.component';
 export * from './orders/order-details/order-details.component';
 export * from './contact-us/contact-us.component';
 export * from './users/create-user/create-user.component';
+export * from './users/reset-password/reset-password.component';

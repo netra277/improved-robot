@@ -6,12 +6,15 @@ const Schema = mongoose.Schema;
 // Create order schema
 
 const OrderSchema =  new Schema({
-    _id: mongoose.Types.ObjectId,
     orderNumber: {
-        type: String,
+        type: Number,
         required: true
     },
-    invoice: {
+    branchOrderNumber: {
+        type: Number,
+        required: true
+    },
+    invoiceNumber: {
         type: String,
         required: true
     },
@@ -19,31 +22,40 @@ const OrderSchema =  new Schema({
         type: String,
         required: true
     },
+    paymentDetails: {
+        amount:{
+            type: Number,
+            required: true
+        },
+        discountPercentage: {
+            type: Number,
+            required: true
+        },
+        discountAmount:{
+            type: Number,
+            required: true
+        },
+        amountAfterDiscount:{
+            type: Number,
+            required: true
+        },
+        mode:{
+            type: String,
+            enum: ['cash', 'debitcard', 'creditcard', 'upi'],
+            required: true
+        },
+        particulars: {
+            type: {cash:{type: String}, debitcard: {type: String}, creditcard: {type: String}, upi: {type: String}}
+        }
+    },
     branchId:{
         type: mongoose.Schema.Types.ObjectId,
            ref: mongooModel.BranchesModel,
            required: true
     },
-    amount:{
-        type: Number,
-        required: true
-    },
-    discountAmount:{
-        type: Number,
-        required: true
-    },
-    amountAfterDiscount:{
-        type: Number,
-        required: true
-    },
-    paymentMode:{
-        type: String,
-        enum: ['cash', 'debitcard', 'creditcard', 'upi'],
-        required: true
-    },
-    orderCreatedByUserId:{
+    createdByUserId:{
         type: mongoose.Schema.Types.ObjectId,
-           ref: mongooModel.UsersModel,
+           ref: mongooModel.RegisteredUserModel,
            required: true
     },
     itemsList: [
@@ -54,15 +66,13 @@ const OrderSchema =  new Schema({
                 required: true
             },
             quantity: {
-                type: Number
+                type: Number,
+                required: true
             }
         }
     ],
-    paymentDetails: {
-        type: { cash: {type: String }, debitCard: {type: String }, creditCard: {type: String }, upi: {type: String }}
-    },
     customerDetails: {
-        type: { name: {type: String},phone: {type: Number}, Address: {type: String } }
+        type: { name: {type: String},phone: {type: Number}, address: {type: String } }
     }
 },{collection:collections.ClientDbCollections.Orders});
 

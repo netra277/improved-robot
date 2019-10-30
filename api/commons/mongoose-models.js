@@ -6,8 +6,6 @@ module.exports = {
     CategoryModel: 'CategoryModel',
     ItemsModel: 'ItemsModel',
     OrdersModel: 'OrdersModel',
-    OrdersMonthlyModel: 'OrdersMonthlyModel',
-    OrderDetailsModel: 'OrderDetailsModel',
     BranchUserModel: 'BranchUserModel',
     RegisteredUserModel: 'RegisteredUserModel'
 }
