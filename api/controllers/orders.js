@@ -40,10 +40,7 @@ module.exports = {
     getOrder: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.Manager) {
             clientId = req.user.clientId.clientId;
         }
         else {

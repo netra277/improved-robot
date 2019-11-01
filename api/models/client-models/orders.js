@@ -19,7 +19,7 @@ const OrderSchema =  new Schema({
         required: true
     },
     orderedDateTime:{
-        type: String,
+        type: Date,
         required: true
     },
     paymentDetails: {

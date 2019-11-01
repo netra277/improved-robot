@@ -25,7 +25,7 @@ const registeredUsersSchema = new Schema({
         required: true
     },
     createdDate: {
-        type: String,
+        type: Date,
         required: true
     },
     phone: {

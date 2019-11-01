@@ -6,10 +6,7 @@ module.exports = {
     getCategories: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.User) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -30,10 +27,7 @@ module.exports = {
     getCategory: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.User) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -125,10 +119,7 @@ module.exports = {
     delete: async (req,res,next)=>{
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {

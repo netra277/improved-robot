@@ -8,12 +8,7 @@ module.exports = {
         const role = req.user.role.role;
         const reqUserClient = req.user.clientId;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.params.clientId;
-            const client = await Client.findById(clientId);
-            clientId = client.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor) {
             clientId = reqUserClient.clientId;
         }
         else {
@@ -34,10 +29,7 @@ module.exports = {
     getBranch: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin || role === rolesList.Supervisor) {
+        if (role === rolesList.Admin || role === rolesList.Supervisor) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -113,11 +105,8 @@ module.exports = {
     update: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId.toUpperCase();
-        }
-        else if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId.toUpperCase();
+        if (role === rolesList.Admin) {
+            clientId = req.user.clientId.clientId;
         }
         else {
             return res.status(401).json({
@@ -136,11 +125,8 @@ module.exports = {
             if (req.value.body.name && req.value.body.name !== '') {
                 branch.name = req.value.body.name;
             }
-            if (req.value.body.Address && req.value.body.Address !== '') {
+            if (req.value.body.address && req.value.body.address !== '') {
                 branch.Address = req.value.body.Address;
-            }
-            if (req.value.body.GSTNumber && req.value.body.GSTNumber !== '') {
-                branch.GSTNumber = req.value.body.GSTNumber;
             }
             if (req.value.body.phone && req.value.body.phone !== '') {
                 branch.phone = req.value.body.phone;
@@ -150,6 +136,12 @@ module.exports = {
             }
             if (req.value.body.isHeadBranch !== '') {
                 branch.isHeadBranch = req.value.body.isHeadBranch;
+            }
+            if (req.value.body.printInvoice !== '') {
+                branch.printInvoice = req.value.body.printInvoice;
+            }
+            if(req.value.body.tax && req.value.body.tax.length > 0){
+                branch.tax = req.value.body.tax;
             }
             const branchUpdated = await Branch.updateOne({ _id: branch._id }, branch);
             if (branchUpdated.nModified > 0) {
@@ -165,10 +157,7 @@ module.exports = {
     delete: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -187,9 +176,11 @@ module.exports = {
             if (resp.deletedCount > 0) {
                 const BranchUser = model.getBranchUserModel(clientId);
                 const branchUser = await BranchUser.remove({ branchId: req.value.params.id });
-                return res.status(200).json({
-                    message: 'branch deleted successfully'
-                });
+                if(branchUser.deletedCount > 0){
+                    return res.status(200).json({
+                        message: 'branch deleted successfully'
+                    });
+                }
             }
             return res.status(500).json({
                 message: 'error deleting branch'

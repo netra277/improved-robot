@@ -5,20 +5,16 @@ const constants = require('../commons/enums');
 const model = require('../dbconnections/connection_initializer');
 const config = require('../configuration/config');
 const User = model.getUserModel();
-const Role = model.getRoleModel();
 
 module.exports = {
   create: async (req, res, next) => {
     console.log('createUser method entry');
     console.log('requested user: ', req.user);
 
-    const Role = model.getRoleModel();
     console.log('getting role details for role id: ', req.value.body.role);
     let creatingUserRole;
     if (req.user.role.role === rolesList.Admin) {
       creatingUserRole = await Role.findOne({ _id: req.value.body.role, isClientLevel: true });
-    } else if (req.user.role.role === rolesList.SuperUser) {
-      creatingUserRole = await Role.findOne({ _id: req.value.body.role });
     }
     if (!creatingUserRole) {
       console.log('invalid role id. exiting');
@@ -41,8 +37,8 @@ module.exports = {
       role: creatingUserRole,
       status: req.value.body.status
     });
-    
-    
+
+
     if (req.user.role.role === rolesList.Admin) {
       usr.clientId = req.user.clientId;
       usr.userId = req.user.clientId.clientId + usr.username;
@@ -65,6 +61,13 @@ module.exports = {
         message: 'user already exist'
       })
     }
+    const Branch = model.getBranchModel(req.user.clientId.clientId);
+    const branch = await Branch.findById(req.value.body.branchId);
+    if (!branch) {
+      return res.status(500).json({
+        message: 'no branch exist'
+      });
+    }
 
     const savedUser = await usr.save();
     console.log('saved user', savedUser);
@@ -85,13 +88,7 @@ module.exports = {
 
       const savedRegisteredUser = await registeredUser.save();
 
-      const Branch = model.getBranchModel(req.user.clientId.clientId);
-      const branch = await Branch.findById(req.value.body.branchId);
-      if (!branch) {
-        return res.status(500).json({
-          message: 'no branch exist'
-        });
-      }
+
 
       console.log('branch exist');
       const BranchUser = model.getBranchUserModel(req.user.clientId.clientId);
@@ -123,33 +120,23 @@ module.exports = {
     }
   },
   getUser: async (req, res, next) => {
-    console.log('value: ', req.value);
-    const reqUsr = req.user;
-
-    const Client = model.getClientModel();
-    console.log('getting client details for clientId: ', reqUsr.clientId);
-    const reqUserCli = await Client.findById(reqUsr.clientId);
-    if (!reqUserCli) {
-      console.log('invalid client id, Exiting...');
-      return res.status(404).json({
-        message: 'unauthorized'
-      });
-    }
-    const User = model.getUserModel();
-    let usr = await User.findById(req.value.params.id);
-    usr.branchId = getBranchDetails(usr._id);
-    usr.role = getRoleDetails(usr.role);
+    const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
+    const Role = model.getRoleModel();
+    let usr = await RegisteredUser.findById(req.value.params.id).populate('role');
     usr.password = '';
-    if (reqUsr.role.role === rolesList.SuperUser ||
-      reqUsr.role.role === rolesList.PowerUser) {
-
+    let branchsUser = await BranchUser.find({ userIds: usr._id });
+    console.log('singlebranchUsr:', branchsUser);
+    const branch = await Branch.findOne({ _id: branchsUser[0].branchId });
+    console.log('branchdetails:', branch);
+    usr.branch = {
+      branchId: branch.branchId,
+      _id: branch._id,
+      name: branch.name
+    };
+    if (req.user.role.role === rolesList.Admin) {
       return res.status(200).json(usr);
     }
-    else if (reqUserRole.role === rolesList.Admin && reqUserCli._id === usr.clientId) {
-      return res.status(200).json(usr);
-    }
-    else if (reqUserRole.role === rolesList.User && reqUserCli._id === usr.clientId
-      && req.user.username === usr.username && req.user._id === usr._id && req.user.userId === usr.userId) {
+    else if (req.user.role.role === rolesList.User && req.user.userId === usr.userId) {
       return res.status(200).json(usr);
     }
     else {
@@ -193,21 +180,21 @@ module.exports = {
   delete: async (req, res, next) => {
     const User = model.getUserModel();
     const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
-    console.log('clientId',req.user.clientId.clientId, 'param:',req.value.params.id);
+    console.log('clientId', req.user.clientId.clientId, 'param:', req.value.params.id);
     const remRegisteredUser = await RegisteredUser.findById(req.value.params.id);
-    if(!remRegisteredUser){
+    if (!remRegisteredUser) {
       return res.status(500).json({
         message: 'user not found'
       });
     }
-    const remCommonUser = await User.findOne({userId: remRegisteredUser.userId});
+    const remCommonUser = await User.findOne({ userId: remRegisteredUser.userId });
     if (req.user.role.role === rolesList.Admin) {
-      const resp = await RegisteredUser.deleteOne({_id: remRegisteredUser._id});
+      const resp = await RegisteredUser.deleteOne({ _id: remRegisteredUser._id });
       const BranchUser = model.getBranchUserModel(req.user.clientId.clientId);
       let branchUser = await BranchUser.findOne({ userIds: req.value.params.id });
-      console.log('branchUser:',branchUser);
+      console.log('branchUser:', branchUser);
       var index = branchUser.userIds.indexOf(req.value.params.id);
-      console.log('index:',index);
+      console.log('index:', index);
       if (index > -1) {
         branchUser.userIds.splice(index, 1);
       }
@@ -234,7 +221,7 @@ module.exports = {
     const RegisteredUser = model.getRegisteredUsersModel(req.user.clientId.clientId);
     const User = model.getUserModel();
     const updRegisteredUser = await RegisteredUser.findById(req.value.params.id);
-    const commonUser = await User.findOne({userId: updRegisteredUser.userId});
+    const commonUser = await User.findOne({ userId: updRegisteredUser.userId });
     console.log('updating user: ', updRegisteredUser);
     if (req.value.body.name && req.value.body.name !== '') {
       commonUser.name = updRegisteredUser.name = req.value.body.name;
@@ -255,10 +242,10 @@ module.exports = {
       });
     }
     commonUser.status = updRegisteredUser.status = req.value.body.status;
-    console.log('reqclient:', req.user.clientId._id,'commonuserclient',commonUser.clientId);
+    console.log('reqclient:', req.user.clientId._id, 'commonuserclient', commonUser.clientId);
     if (req.user.role.role === rolesList.Admin && req.user.clientId._id.toString() === commonUser.clientId.toString()) {
       const registereduserUpdated = await RegisteredUser.updateOne({ _id: req.value.params.id }, updRegisteredUser);
-      const commonuserUpdated = await User.updateOne({userId: updRegisteredUser.userId}, commonUser);
+      const commonuserUpdated = await User.updateOne({ userId: updRegisteredUser.userId }, commonUser);
       if (registereduserUpdated.nModified > 0 && commonuserUpdated.nModified > 0) {
         return res.status(200).json({
           message: 'user updated successfully'
@@ -292,15 +279,4 @@ module.exports = {
       });
     }
   }
-}
-
-async function getBranchDetails(userId, clientId) {
-  const BranchUser = model.getBranchUserModel(clientId);
-  const Branch = model.getBranchModel(clientId);
-
-}
-async function getRoleDetails(roleId) {
-  const Role = model.getRoleModel();
-  return await Role.findOne({ _id: roleId });
-
 }
