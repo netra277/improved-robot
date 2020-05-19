@@ -8,7 +8,8 @@ module.exports = {
     superUserPassword: process.SUPERUSER_PASSWORD,
     powerUserPassword: process.POWERUSER_PASSWORD,
     connectionStringCommonDbDev: process.env.CONNECTION_STRING_COMMON_DEV,
+    connectionStringClientDbDev: process.env.CONNECTION_STRING_CLIENT_DEV,
     connectionStringCommonDb: process.env.CONNECTION_STRING_COMMON,
     connectionStringClientDb: process.env.CONNECTION_STRING_CLIENT,
-    connectionStringClientDbDev: process.env.CONNECTION_STRING_CLIENT_DEV
+    clientSecretKey: process.env.CLIENT_SECRET_KEY
 }

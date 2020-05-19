@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
+const collections = require('../constants/db-collections');
 const Schema = mongoose.Schema;
 const model = require('../dbconnections/connection_initializer');
 

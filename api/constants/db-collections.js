@@ -1,4 +1,5 @@
 module.exports = {
+        AdminUsers: 'admin_users',
         Users :'Users',
         Clients: 'Clients',
         Roles: 'Roles',

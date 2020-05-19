@@ -3,8 +3,8 @@ const router = require('express-promise-router')();
 const passport = require('passport');
 const passportConfig = require('../auth/passport');
 
-const { validateBody, schemas } = require('../helpers/userRouteHelpers');
-const { validateParam, paramSchemas } = require('../helpers/commonRouterHelper');
+// const { validateBody, schemas } = require('../validators/userRouteHelpers');
+const { validateParam, paramSchemas } = require('../validators/commonRouterHelper');
 const usersController = require('../controllers/users');
 const authController = require('../controllers/authentication');
 const rolesList = require('../auth/roles');
@@ -21,18 +21,10 @@ passport.authenticate('jwt',{session: false}),
 authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager, rolesList.User]),
 usersController.getUser);
 
-router.route('/create')
-.post(validateBody(schemas.createUserSchema),
-passport.authenticate('jwt',{ session: false }),
-authController.roleAuthorization([rolesList.Admin]),
-usersController.create);
-
+router.route('/create',usersController.create);
+    
 router.route('/:id')
-.put(validateParam(paramSchemas.idSchema,'id'),
-validateBody(schemas.updateUserSchema),
-passport.authenticate('jwt',{ session: false }),
-authController.roleAuthorization([rolesList.Admin]),
-usersController.update);
+.put(validateParam(paramSchemas.idSchema,'id'),usersController.update);
 
 router.route('/:id')
 .delete(validateParam(paramSchemas.idSchema,'id'),
@@ -41,10 +33,6 @@ authController.roleAuthorization([rolesList.Admin]),
 usersController.delete);
 
 router.route('/:id/resetPassword')
-.post(validateParam(paramSchemas.idSchema,'id'),
-validateBody(schemas.resetPasswordSchema),
-passport.authenticate('jwt',{ session: false }),
-authController.roleAuthorization([rolesList.Admin]),
-usersController.resetPassword);
+.post(validateParam(paramSchemas.idSchema,'id'),usersController.resetPassword);
 
 module.exports = router;

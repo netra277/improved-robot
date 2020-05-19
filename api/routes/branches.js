@@ -1,7 +1,7 @@
 const router = require('express-promise-router')();
 const passport = require('passport');
-const { validateBody, schemas } = require('../helpers/branchRouteHelper');
-const { validateParam, paramSchemas } = require('../helpers/commonRouterHelper');
+const { validateBody, schemas } = require('../validators/branchRouteHelper');
+const { validateParam, paramSchemas } = require('../validators/commonRouterHelper');
 
 const branchController = require('../controllers/branches');
 const authController = require('../controllers/authentication');
@@ -9,13 +9,13 @@ const rolesList = require('../auth/roles');
 
 router.route('/')
 .get(passport.authenticate('jwt',{session: false}),
-authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor]),
+authController.roleAuthorization([rolesList.Admin, rolesList.StoreSupervisor]),
 branchController.getBranches);
 
 router.route('/:id')
 .get(validateParam(paramSchemas.idSchema,'id'),
 passport.authenticate('jwt',{session: false}),
-authController.roleAuthorization([rolesList.PowerUser, rolesList.Admin, rolesList.Supervisor, rolesList.Manager]),
+authController.roleAuthorization([rolesList.Admin, rolesList.StoreSupervisor, rolesList.Manager]),
 branchController.getBranch);
 
 router.route('/create')

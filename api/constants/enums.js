@@ -19,5 +19,10 @@ module.exports = {
         Walkin: 'walkin',
         TakeAway:'takeaway',
         Delivery:'delivery'
+    },
+    AdminUserStatus: {
+        Created: 'created',
+        Active: 'active',
+        InActive: 'inactive'
     }
 }

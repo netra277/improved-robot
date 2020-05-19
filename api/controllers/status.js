@@ -1,4 +1,4 @@
- const userStatus = require('../commons/enums');
+ const userStatus = require('../constants/enums');
 
 module.exports = {
     getUserStatus: async(req,res,next)=>{

@@ -1,4 +1,5 @@
 module.exports = {
+    AdminUsersModel: 'AdminUsersModel',
     UsersModel:'UsersModel',
     ClientsModel: 'ClientsModel',
     RolesModel: 'RolesModel',

@@ -3,7 +3,7 @@ const config = require('../configuration/config');
 var connections = {};
 const options = { useUnifiedTopology: true,useNewUrlParser: true };
 module.exports = {
-    connectToDatabase(clientId){
+    connectToClientDatabase(clientId){
         if(clientId === null || clientId === undefined){
             return null
         }
@@ -30,5 +30,13 @@ module.exports = {
     },
     disconnectToDatabase(){
         mongoose.disconnect();
+    },
+    connectToDatabase(){
+        if(config.environment === 'DEVELOPMENT'){
+           return mongoose.createConnection(config.connectionStringCommonDbDev,options);
+        }
+        else{
+           return mongoose.createConnection(config.connectionStringCommonDb,options);
+        }
     }
 }

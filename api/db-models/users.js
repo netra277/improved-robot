@@ -1,8 +1,7 @@
-//const dbConnection = require('../dbconnections/db_connection_common');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const collections = require('../commons/db-collections');
-const mongooModel = require('../commons/mongoose-models');
+const collections = require('../constants/db-collections');
+const mongooModel = require('../constants/mongoose-models');
 const Schema = mongoose.Schema;
 
 //create a schema

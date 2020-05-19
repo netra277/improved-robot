@@ -51,12 +51,7 @@ module.exports = {
         console.log('In create branch...');
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-            const client = await Client.findById(clientId);
-            clientId = client.clientId;
-        }
-        else if (role === rolesList.Admin) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {

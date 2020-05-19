@@ -18,8 +18,13 @@ signToken = user => {
 }
 
 module.exports = {
-    login: async (req, res, next) => {
-        const token = signToken(req.user);
+    loginAdmin: async (req, res, next) => {
+        //const token = signToken(req.user);
+        console.log('user login success: ', req.body.clientkey);
+        return res.status(200).json({ token });
+    },
+    loginUser: async (req, res, next) => {
+        //const token = signToken(req.user);
         console.log('user login success: ', req.user.username);
         res.status(200).json({ token });
     },

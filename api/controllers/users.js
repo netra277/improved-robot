@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 const rolesList = require('../auth/roles');
-const constants = require('../commons/enums');
+const constants = require('../constants/enums');
 const model = require('../dbconnections/connection_initializer');
 const config = require('../configuration/config');
 const User = model.getUserModel();

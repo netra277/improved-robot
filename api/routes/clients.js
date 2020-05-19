@@ -2,8 +2,8 @@ const router = require('express-promise-router')();
 const passport = require('passport');
 const passportConfig = require('../auth/passport');
 
-const { validateBody, schemas } = require('../helpers/clientRouteHelper');
-const { validateParam, paramSchemas } = require('../helpers/commonRouterHelper');
+const { validateBody, schemas } = require('../validators/clientRouteHelper');
+const { validateParam, paramSchemas } = require('../validators/commonRouterHelper');
 const clientsController = require('../controllers/clients');
 const authController = require('../controllers/authentication');
 const rolesList = require('../auth/roles');

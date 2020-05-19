@@ -59,7 +59,8 @@ app.use(cors());
 
 //Routes
 app.use('/auth',require('./routes/authentication'));
-//app.use('/configUser', require('./routes/config-user'));
+app.use('/configAdmin', require('./routes/admin-user-routes'));
+app.use('/admin', require('./routes/admin-routes'));
 app.use('/users',require('./routes/users'));
 app.use('/clients',require('./routes/clients'));
 app.use('/roles', require('./routes/roles'));
