@@ -5,4 +5,7 @@ const adminUsersController = require('../controllers/adminUserController');
 router.route('/user')
 .post(adminUsersController.createAdminUser);
 
+router.route('/activateAdmin')
+.put(adminUsersController.activateClient);
+
 module.exports = router;

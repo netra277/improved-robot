@@ -1,25 +1,20 @@
 
 const connection = require('../dbconnections/db_connection');
-const ClientSchema = require('../db-models/clients');
-const RoleSchema = require('../db-models/roles');
-const AdminUserSchema = require('../db-models/admin-users');
-const UserSchema = require('../db-models/users');
-const BranchSchema = require('../db-models/client-models/branch');
-const CategorySchema = require('../db-models/client-models/category');
-const ItemSchema = require('../db-models/client-models/item');
-const BranchUserSchema = require('../db-models/client-models/branch-user');
-const OrdersSchema = require('../db-models/client-models/orders');
-const RegisteredUserSchema = require('../db-models/client-models/registered-user');
+//const clientConnection = require('../dbconnections/db-connection-client');
+const ClientSchema = require('../db-models/clientsModel');
+const RoleSchema = require('../db-models/rolesModel');
+const AdminUserSchema = require('../db-models/admin-usersModel');
+const BranchSchema = require('../db-models/client-models/branchesModel');
+const CategorySchema = require('../db-models/client-models/categoriesModel');
+const ItemSchema = require('../db-models/client-models/ItemsModel');
+const OrdersSchema = require('../db-models/client-models/ordersModel');
+const UsersSchema = require('../db-models/client-models/usersModel');
 const mongooModels = require('../constants/mongoose-models');
 
 module.exports = {
-  getAdminUserModel(){
+  getAdminUserModel() {
     const con = connection.connectToDatabase();
-    return con.model(mongooModels.AdminUsersModel,AdminUserSchema);
-  },
-  getUserModel() {
-    const con = connection.connectToDatabase();
-    return con.model(mongooModels.UsersModel, UserSchema);
+    return con.model(mongooModels.AdminUsersModel, AdminUserSchema);
   },
   getClientModel() {
     const con = connection.connectToDatabase();
@@ -30,38 +25,53 @@ module.exports = {
     return con.model(mongooModels.RolesModel, RoleSchema);
   },
   getBranchModel(clientId) {
+    if(!clientId){
+      return null;
+    }
     const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
+    const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.BranchesModel, BranchSchema);
   },
   getCategoryModel(clientId) {
+    if(!clientId){
+      return null;
+    }
     const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
+    const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.CategoryModel, CategorySchema);
   },
-  getBranchUserModel(clientId) {
-    const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.BranchUserModel, BranchUserSchema);
-  },
   getItemsModel(clientId) {
+    if(!clientId){
+      return null;
+    }
     const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
+    const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.ItemsModel, ItemSchema);
   },
   getOrdersModel(clientId) {
+    if (!clientId) {
+      return null;
+    }
     const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
+    const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.OrdersModel, OrdersSchema);
   },
   getOrderDetailsModel(clientId) {
+    if (!clientId) {
+      return null;
+    }
     const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
+    const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.ItemsModel, ItemSchema);
+    
   },
-  getRegisteredUsersModel(clientId) {
-    const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToDatabase(id);
-    return cliConnect.model(mongooModels.RegisteredUserModel,RegisteredUserSchema);
+  getUserModel(clientId) {
+    console.log('id', clientId);
+    if (!clientId) {
+      return null;
+    }
+      const id = clientId.toUpperCase();
+      const cliConnect = connection.connectToClientDatabase(id);
+      return cliConnect.model(mongooModels.UsersModel, UsersSchema);
   }
 }

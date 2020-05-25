@@ -1,15 +1,19 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const collections = require('../constants/db-collections');
-const mongooModel = require('../constants/mongoose-models');
+const mongooModels = require('../constants/mongoose-models');
 const Schema = mongoose.Schema;
 
 //create a schema
 const adminUserSchema = new Schema({
+    UserId: {
+        type: String,
+        required: true
+    },
     Username: {
         type: String,
         required: true,
-        // unique: true,
+        unique: true,
         uppercase: true,
         maxlength: 12
     },
@@ -18,15 +22,16 @@ const adminUserSchema = new Schema({
         required: true
     },
     ClientId: {
-        type: String,
-           required: true
-    },
-    ClientKey: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: mongooModels.ClientsModel,
         required: true
     },
     Name: {
         type: String,
+        required: true
+    },
+    Phone: {
+        type: Number,
         required: true
     },
     BirthYear: {
@@ -40,25 +45,39 @@ const adminUserSchema = new Schema({
     Email: {
         type: String
     },
-    NumberOfDevices: { 
-        type: Number,
-        required: true
-    },
-    Phone: {
-        type: String,
-        required: true
-    },
     Status: {
         type: String,
         required: true
     },
+    IsLocked: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     RequiredPasswordChange: {
         type: Boolean,
-        required: true
-    }
+        required: true,
+        default: true
+    },
+    NoOfInvalidLogins: {
+        type: Number,
+        default: 0
+    },
+    LastLoginDate: {
+        type: Date
+    },
+    LastLoginIP: {
+        type: String
+    },
+    RoleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: mongooModels.RolesModel
+    },
 },{collection:collections.AdminUsers});
+
 adminUserSchema.pre('save', async function(next) {
  try{
+     this.UserId = this.UserId + this.Username;
      // Generate a salt
     const salt = await bcrypt.genSalt(10);
     // Generate a password hash 

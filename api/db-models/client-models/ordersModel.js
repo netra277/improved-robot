@@ -6,59 +6,55 @@ const Schema = mongoose.Schema;
 // Create order schema
 
 const OrderSchema =  new Schema({
-    orderNumber: {
+    OrderNumber: {
         type: Number,
         required: true
     },
-    branchOrderNumber: {
-        type: Number,
-        required: true
-    },
-    invoiceNumber: {
+    InvoiceNumber: {
         type: String,
         required: true
     },
-    orderedDateTime:{
+    OrderedDateTime:{
         type: Date,
         required: true
     },
-    paymentDetails: {
-        amount:{
+    PaymentDetails: {
+        TotalAmount:{
             type: Number,
             required: true
         },
-        discountPercentage: {
+        DiscountPercentage: {
             type: Number,
             required: true
         },
-        discountAmount:{
+        DiscountAmount:{
             type: Number,
             required: true
         },
-        amountAfterDiscount:{
+        AmountAfterDiscount:{
             type: Number,
             required: true
         },
-        mode:{
+        ModeOfPayment:{
             type: String,
             enum: ['cash', 'debitcard', 'creditcard', 'upi'],
             required: true
         },
-        particulars: {
+        Particulars: {
             type: {cash:{type: String}, debitcard: {type: String}, creditcard: {type: String}, upi: {type: String}}
         }
     },
-    branchId:{
+    BranchId:{
         type: mongoose.Schema.Types.ObjectId,
            ref: mongooModel.BranchesModel,
            required: true
     },
-    createdByUserId:{
+    CreatedByUserId:{
         type: mongoose.Schema.Types.ObjectId,
-           ref: mongooModel.RegisteredUserModel,
+           ref: mongooModel.UsersModel,
            required: true
     },
-    itemsList: [
+    ItemsList: [
         {
             itemId: {
                 type: mongoose.Schema.Types.ObjectId,
@@ -68,11 +64,33 @@ const OrderSchema =  new Schema({
             quantity: {
                 type: Number,
                 required: true
+            },
+            Amount: {
+                type: Number
             }
         }
     ],
-    customerDetails: {
+    CustomerDetails: {
         type: { name: {type: String},phone: {type: Number}, address: {type: String } }
+    },
+    OrderModified: {
+        type: Boolean,
+        default: false
+    },
+    ModifiedByUser: {
+        type: String,
+    },
+    OrderDeleted: {
+        type: Boolean,
+        default: false
+    },
+    OrderType: {
+        type: String,
+        enum: ['walkin', 'takeaway', 'homedeliver'],
+        default: 'walkin'
+    },
+    OrderStatus: {
+        type: String
     }
 },{collection:collections.ClientDbCollections.Orders});
 

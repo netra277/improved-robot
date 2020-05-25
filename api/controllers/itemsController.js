@@ -1,46 +1,36 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
-const rolesList = require('../auth/roles');
 
 module.exports = {
-    getOrders: async (req, res, next) => {
+    getItems: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        console.log('In getOrders', role);
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager ||  role === rolesList.User) {
-            console.log('role', role);
+        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
             clientId = req.user.clientId.clientId;
         }
         else {
-            console.log('unauthorised');
             return res.status(401).json({
                 message: 'unauthorized'
             });
         }
-        const Order = model.getOrdersModel(clientId);
         const Item = model.getItemsModel(clientId);
-        const registeredUsers = model.getRegisteredUsersModel(clientId);
-        const Branch = model.getBranchModel(clientId);
-        const orders = await Order.find()
-            .populate('itemsList.itemId')
-            .populate({path: 'createdByUserId', select: 'name'})
-            .populate({path:'branchId', select:'name'});
-        if (orders.length > 0) {
-            var respOrders = {
-                count: orders.length,
-                orders: orders
-            };
-            return res.status(200).json(respOrders);
+        const Category = model.getCategoryModel(clientId);
+        const items = await Item.find().populate('categoryId');
+        if (items.length > 0) {
+            return res.status(200).json(items);
         } else {
             return res.status(204).json({
-                message: 'no orders found'
+                message: 'no items found'
             });
         }
     },
-    getOrder: async (req, res, next) => {
+    getItem: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.Manager) {
+        if (role === rolesList.SuperUser || role === rolesList.PowerUser) {
+            clientId = req.value.body.clientId;
+        }
+        else if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -61,8 +51,7 @@ module.exports = {
     create: async (req, res, next) => {
         const role = req.user.role.role;
         let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor ||
-                  role === rolesList.Manager || role === rolesList.User) {
+        if (role === rolesList.Admin) {
             clientId = req.user.clientId.clientId;
         }
         else {
@@ -70,50 +59,35 @@ module.exports = {
                 message: 'unauthorized'
             });
         }
-        const today = new Date();
-        let invoice = (today.getDate()).toString() + (today.getMonth() + 1).toString();
-        const Order = model.getOrdersModel(clientId);
-        const branchOrderCount = await Order.find({branchId: req.value.body.branchId }).count();
-        const totalOrderCount = await Order.find({}).count();
-        const order = new Order(req.value.body);
-        order.orderNumber = totalOrderCount + 1;
-        order.branchOrderNumber = branchOrderCount + 1;
-        order.invoiceNumber =  invoice + order.branchOrderNumber;
-        order.orderedDateTime = new Date().toISOString();
-        console.log('order:',order);
-        const ordr = await order.save();
-        console.log('order',ordr);
-        if (ordr) {
-            console.log('Order created successfully');
+        const Item = model.getItemsModel(clientId);
+        const dupIem = await Item.findOne({ itemCode: req.value.body.itemCode });
+        if (dupIem) {
+            return res.status(404).json({
+                message: 'Item code already exist'
+            });
+        }
+        const item = new Item({
+            itemCode: req.value.body.itemCode,
+            name: req.value.body.name,
+            description: req.value.body.description,
+            price: req.value.body.price,
+            itemImage:''
+        });
+        if(req.value.body.categoryId && req.value.body.categoryId !== ''){
+            const Category = model.getCategoryModel(clientId);
+            item.categoryId = await Category.findById(req.value.body.categoryId);
+        }
+        const b = await item.save();
+        if (b) {
             return res.status(200).json({
-                message: 'Order created successfully'
+                message: 'Item created successfully'
             });
         }
         else {
-            console.log('error in creating order');
+            return res.status(500).json({
+                message: 'error in creating item'
+            });
         }
-
-        
-        // const OrderDetail = model.getOrderDetailsModel(clientId);
-        // const itemslist = req.value.body.items;
-        // let orderdetails = [];
-        // let orderdetail = new OrderDetail();
-        // itemslist.forEach((item)=>{
-        //     orderdetail.itemId = item.itemId;
-        //     orderdetail.orderId = o._id;
-        //     orderdetail.quantity = item.quantity;
-        //     orderdetails.push(orderdetail);
-        // });
-        // const ods = await OrderDetail.insertMany(orderdetails);
-        // if(ods){
-        //     return res.status(200).json({
-        //         message: 'order created successfully'
-        //     });
-        // }else {
-        //     return res.status(500).json({
-        //         message: 'error in creating order'
-        //     });
-        // }
     },
     update: async (req, res, next) => {
         const role = req.user.role.role;

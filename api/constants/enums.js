@@ -1,9 +1,16 @@
 module.exports = {
+    
+    Roles: {
+        ADMIN: 'ADMIN',
+        STORE_SUPERVISOR: 'STORE_SUPERVISOR',
+        MANAGER: 'MANAGER',
+        USER: 'USER'
+    },
     ClientStatus :{
         Active: 'active',
         Inactive: 'inactive',
-        Registered: 'registered',
-        Unregistered: 'unregistered'
+        Subscribed: 'subscribed',
+        Unsubscribed: 'unsubscribed'
     },
     UserStatus:{
         Active: 'active',
@@ -13,7 +20,8 @@ module.exports = {
         Cash: 'cash',
         DebitCard: 'debitcard',
         CreditCard: 'creditcard',
-        UPI: 'upi'
+        UPI: 'upi',
+        Cheque: 'cheque'
     },
     OrderType:{
         Walkin: 'walkin',

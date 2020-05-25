@@ -1,12 +1,14 @@
 module.exports = {
-    AdminUsersModel: 'AdminUsersModel',
-    UsersModel:'UsersModel',
-    ClientsModel: 'ClientsModel',
     RolesModel: 'RolesModel',
+    AdminUsersModel: 'AdminUsersModel',
+    ClientsModel: 'ClientsModel',
+    ClientDevciesModel: 'ClientDevciesModel',
+    DevicesModel: 'DevicesModel',
+    DeviceKeysModel: 'DeviceKeysModel',
     BranchesModel: 'BranchesModel',
-    CategoryModel: 'CategoryModel',
+    UsersModel: 'UsersModel',
+    CategoriesModel: 'CategoriesModel',
     ItemsModel: 'ItemsModel',
-    OrdersModel: 'OrdersModel',
-    BranchUserModel: 'BranchUserModel',
-    RegisteredUserModel: 'RegisteredUserModel'
+    OrdersDailyModel: 'OrdersDailyModel',
+    OrdersModel: 'OrdersModel'
 }

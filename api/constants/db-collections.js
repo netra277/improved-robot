@@ -1,17 +1,16 @@
 module.exports = {
-        AdminUsers: 'admin_users',
-        Users :'Users',
         Clients: 'Clients',
         Roles: 'Roles',
+        AdminUsers: 'AdminUsers',
+        ClientDevices: 'ClientDevices',
+        DeviceKeys: 'DeviceKeys',
         ClientDbCollections:{
-                Branch: 'branch',
-                Category: 'category',
-                BranchUserDetails: 'branch_user_details',
-                Items: 'item',
-                CategoryItems : 'category_item',
-                Orders:'orders',
-                Orders_Monthly:'orders_monthly',
-                SaleYearly: 'sale',
-                RegisteredUsers: 'registered_users'
+                Devices: 'Devices',
+                Branches: 'Branches',
+                Users: 'Users',
+                Categories: 'Categories',
+                Items: 'Items',
+                Orders_Daily: 'Orders_',
+                Orders : 'Orders',
         }
 }

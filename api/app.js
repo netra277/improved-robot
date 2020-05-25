@@ -58,18 +58,17 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Routes
-app.use('/auth',require('./routes/authentication'));
+app.use('/auth',require('./routes/authentication-routes'));
 app.use('/configAdmin', require('./routes/admin-user-routes'));
 app.use('/admin', require('./routes/admin-routes'));
-app.use('/users',require('./routes/users'));
-app.use('/clients',require('./routes/clients'));
-app.use('/roles', require('./routes/roles'));
-app.use('/branches', require('./routes/branches'));
-app.use('/categories', require('./routes/category'));
-app.use('/items', require('./routes/items'));
-app.use('/orders', require('./routes/orders'));
-app.use('/status',require('./routes/status'));
-app.use('/reports', require('./routes/reports'));
+app.use('/users',require('./routes/users-routes'));
+app.use('/roles', require('./routes/roles-routes'));
+app.use('/branches', require('./routes/branches-routes'));
+app.use('/categories', require('./routes/category-routes'));
+app.use('/items', require('./routes/items-routes'));
+app.use('/orders', require('./routes/orders-routes'));
+app.use('/status',require('./routes/status-routes'));
+app.use('/reports', require('./routes/reports-routes'));
 
 // Error handling
 app.use((req, res, next)=>{

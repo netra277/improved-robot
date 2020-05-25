@@ -1,27 +1,31 @@
 const mongoose = require('mongoose');
 const collections = require('../constants/db-collections');
 const Schema = mongoose.Schema;
-const model = require('../dbconnections/connection_initializer');
 
 // Create a roles schema
 
 const RoleSchema = new Schema({
     _id: mongoose.Types.ObjectId,
-    roleId:{
+    RoleId:{
         type: Number,
         required:[true,'Role id is required']
     },
-    role:{
+    Role:{
         type: String,
         required:[true,'Role is required'],
         uppercase: true
     },
-    description:{
+    RoleName: {
+        type: String,
+        required: true
+    },
+    Description:{
         type: String
     },
-    isClientLevel:{
+    IsClientLevel:{
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 },{collection:collections.Roles});
 

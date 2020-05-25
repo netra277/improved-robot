@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../configuration/config');
-const rolesList = require('../auth/roles');
+const 
 
 signToken = user => {
     return token = jwt.sign({
@@ -20,7 +20,11 @@ signToken = user => {
 module.exports = {
     loginAdmin: async (req, res, next) => {
         //const token = signToken(req.user);
-        console.log('user login success: ', req.body.clientkey);
+        const reqData = req.body;
+        console.log('user login success: ', reqData.device_id);
+        if(!reqData.device_id || reqData.device_id === '' ){
+            
+        }
         return res.status(200).json({ token });
     },
     loginUser: async (req, res, next) => {
@@ -44,4 +48,10 @@ module.exports = {
             return res.status(401).json({ message: 'You are not authorized to view this content' });
         }
     }
+}
+
+// private methods
+
+getDeviceDetails= (deviceId) =>{
+    
 }

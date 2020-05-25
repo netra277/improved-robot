@@ -5,47 +5,63 @@ const Schema = mongoose.Schema;
 // Create a client schema
 
 const ClientSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
-    clientId: {
+    ClientId: {
         type: String,
         required: [true, 'Client id is required'],
         minlength: 6,
         maxlength: 6,
         uppercase: true
     },
-    name: {
+    Name: {
         type: String,
         required: [true, 'Client name is required']
     },
-    description: {
-        type: String
-    },
-    phone: {
-        type: Number,
-        required: true,
-        minlength: 10,
-
-    },
-    email: {
-        type: String,
+    ClientKey: {
+        type:String,
         required: true
     },
-    address: {
+    Address: {
         type: String
     },
-    status: {
+    Phone: {
+        type: Number,
+        unique: true
+    },
+    Status: {
         type: String,
-        enum: ['active', 'inactive', 'suspended'],
+        enum: ['active', 'inactive', 'subscribed', 'unsubscribed'],
         required: true,
         default: 'inactive'
     },
-    registeredDate: {
-        type: Date,
+    Email: {
+        type: String,
         required: true
     },
-    unregisteredDate: {
+    SubscribedDate: {
+        type: Date,
+        default: Date.now
+    },
+    UnSubscribedDate:{
+        type: Date
+    },
+    DevicesRegistered: {
+        type: Number
+    },
+    IsLocked:{
+        type: Boolean,
+        default: false
+    },
+    SubscribedTillDate:{
+        type: Date
+    },
+    IsActive: {
+        type: Boolean,
+        default: false
+    },
+    ActivatedDate: {
         type: Date
     }
+
 }, { collection: collections.Clients });
 
 

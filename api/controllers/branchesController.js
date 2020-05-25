@@ -1,6 +1,5 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
-const rolesList = require('../auth/roles');
 const Client = model.getClientModel();
 
 module.exports = {

@@ -15,7 +15,11 @@ const CategorySchema =  new Schema({
     },
     description:{
         type: String
+    },
+    ParentCategoryId: {
+        type: String,
+        uppercase: true
     }
-},{collection:collections.ClientDbCollections.Category});
+},{collection:collections.ClientDbCollections.Categories});
 
 module.exports = CategorySchema;

@@ -1,6 +1,5 @@
 
 const mongoose = require('mongoose');
-const rolesList = require('../auth/roles');
 const constants = require('../constants/enums');
 const model = require('../dbconnections/connection_initializer');
 const config = require('../configuration/config');

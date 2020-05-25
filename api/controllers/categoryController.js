@@ -1,6 +1,5 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
-const rolesList = require('../auth/roles');
 
 module.exports = {
     getCategories: async (req, res, next) => {

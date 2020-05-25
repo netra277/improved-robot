@@ -13,7 +13,7 @@ const ItemSchema =  new Schema({
     },
     categoryId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: mongooModel.CategoryModel,
+        ref: mongooModel.CategoriesModel,
     },
     name: {
         type:String,
