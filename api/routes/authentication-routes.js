@@ -9,8 +9,8 @@ router.route('/admin/login')
 .post(passport.authenticate('StratAdmin',{session: false}),
     authController.loginAdmin);
 
-router.route('/login')
-.post(passport.authenticate('local'),
+router.route('/user/login')
+.post(passport.authenticate('local',{session: false}),
     authController.loginUser);
 
 module.exports = router;

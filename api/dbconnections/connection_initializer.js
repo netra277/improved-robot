@@ -3,6 +3,7 @@ const connection = require('../dbconnections/db_connection');
 //const clientConnection = require('../dbconnections/db-connection-client');
 const ClientSchema = require('../db-models/clientsModel');
 const RoleSchema = require('../db-models/rolesModel');
+const ClientDevicesSchema = require('../db-models/client-devices');
 const AdminUserSchema = require('../db-models/admin-usersModel');
 const BranchSchema = require('../db-models/client-models/branchesModel');
 const CategorySchema = require('../db-models/client-models/categoriesModel');
@@ -23,6 +24,10 @@ module.exports = {
   getRoleModel() {
     const con = connection.connectToDatabase();
     return con.model(mongooModels.RolesModel, RoleSchema);
+  },
+  getClientDevicesModel(){
+    const con = connection.connectToDatabase();
+    return con.model(mongooModels.DevicesModel,ClientDevicesSchema);
   },
   getBranchModel(clientId) {
     if(!clientId){
@@ -66,7 +71,6 @@ module.exports = {
     
   },
   getUserModel(clientId) {
-    console.log('id', clientId);
     if (!clientId) {
       return null;
     }

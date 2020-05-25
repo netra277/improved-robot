@@ -69,6 +69,7 @@ app.use('/items', require('./routes/items-routes'));
 app.use('/orders', require('./routes/orders-routes'));
 app.use('/status',require('./routes/status-routes'));
 app.use('/reports', require('./routes/reports-routes'));
+app.use('/devices',require('./routes/devices-routes'));
 
 // Error handling
 app.use((req, res, next)=>{

@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken');
 const config = require('../configuration/config');
-const 
+const model = require('../dbconnections/connection_initializer');
+const ClientDevice = model.getClientDevicesModel();
 
-signToken = user => {
+signToken = (user,branchdetails,deviceId) => {
     return token = jwt.sign({
         user: {
             id: user._id,
-            clientId: user.clientId,
+            deviceId: deviceId,
             username: user.username,
-            role: user.role.role
+            role: user.role,
+            branch: branchdetails
         },
         iss: 'd-epos',
         sub: user.id,
@@ -19,18 +21,32 @@ signToken = user => {
 
 module.exports = {
     loginAdmin: async (req, res, next) => {
-        //const token = signToken(req.user);
+        let token = '';
         const reqData = req.body;
-        console.log('user login success: ', reqData.device_id);
-        if(!reqData.device_id || reqData.device_id === '' ){
-            
+        console.log('user login success: ', reqData.device);
+        if(req.user.RoleId !== reqData.role){
+            return res.status(401).json({message:'Invalid details'});
         }
+        if(!reqData.device || reqData.device === ''){
+            token = signToken(req.user,null, null);
+            return res.status(203).json({token});
+        }
+        const cdevice = await getDeviceDetails(req.user._id,reqData.device);
+        token = signToken(req.user, null, cdevice.DeviceId);
         return res.status(200).json({ token });
     },
     loginUser: async (req, res, next) => {
-        //const token = signToken(req.user);
-        console.log('user login success: ', req.user.username);
-        res.status(200).json({ token });
+        let token = '';
+        const reqData = req.body;
+        console.log('user login success: ', reqData.device);
+        if(!reqData.device || reqData.device === ''){
+            token = signToken(req.user,null, null);
+            return res.status(203).json({token});
+        }
+        const cdevice = await getDeviceDetails(req.user._id,reqData.device);
+        const branch = await getBranchDetails(req.user.BranchId,cdevice.ClientNumber);
+        token = signToken(req.user, branch, cdevice.DeviceId);
+        return res.status(200).json({ token });
     },
     roleAuthorization: (roles) => {
         return function (req, res, next) {
@@ -52,6 +68,24 @@ module.exports = {
 
 // private methods
 
-getDeviceDetails= (deviceId) =>{
-    
+getDeviceDetails= async (deviceId) =>{
+   const cliDevice = await ClientDevice.findById(deviceId);
+   if(!cliDevice){
+       return null;
+   }
+   return cliDevice;
+},
+getBranchDetails = async(branchId,clientNumber)=>{
+    if(!clientNumber){
+        return null;
+    }
+   const Branch = model.getBranchModel(clientNumber);
+   const branc = await Branch.findById(branchId);
+   if(!Branch){
+       return null;
+   }
+   return {
+       id: branc._id,
+       name: Name
+   };
 }

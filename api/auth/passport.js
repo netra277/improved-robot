@@ -27,18 +27,16 @@ passport.use('StratAdmin', new LocalStrategy({
         const isMatched = await user.isValidPassword(password);
         console.log('password match: ', isMatched);
 
-        user.role = getUserRole(true);
-
         if (!isMatched) {
             return done(null, false);
         }
+        user.role = await getUserRole(user.RoleId);
         return done(null, user);
 
     } catch (error) {
         done(null, false);
     }
 }));
-
 
 // Json web token strategy
 passport.use(new jwtStrategy({
@@ -46,54 +44,66 @@ passport.use(new jwtStrategy({
     secretOrKey: config.jwtSecretKey
 }, async (payload, done) => {
     try {
-        const Role = conn.getRoleModel();
-        const usr = conn.getUserModel();
-        // Find the user specified in token 
-        console.log('userid: ', payload.sub);
-        const user = await usr.findById(payload.sub);
-        user.role = await Role.findById(user.role);
-        const Client = conn.getClientModel();
-        user.clientId = await Client.findById(user.clientId);
-
-        //If user doesn't exists, retrun user
-        if (!user) {
+        console.log('tokendetails', payload);
+        if(!payload.user || !payload.role || !payload.role.id || payload.role.id === ''){
             return done(null, false);
         }
-        // otherwise, return user
-        done(null, user);
+        const role = await Role.findById(payload.role.id);
+        if(role.Role === constants.Roles.ADMIN){
+            
+        }
+        // const Role = conn.getRoleModel();
+        // const usr = conn.getUserModel();
+        // // Find the user specified in token 
+        // console.log('userid: ', payload.sub);
+        // const user = await usr.findById(payload.sub);
+        // user.role = await Role.findById(user.role);
+        // const Client = conn.getClientModel();
+        // user.clientId = await Client.findById(user.clientId);
+
+        // //If user doesn't exists, retrun user
+        // if (!user) {
+        //     return done(null, false);
+        // }
+        // // otherwise, return user
+        // done(null, user);
     } catch (err) {
         done(err, false);
     }
 }));
 
-
-
 // local strategy
-passport.use('local', new LocalStrategy({
-    usernameField: 'username',
-    passwordField: 'password'
-}, async (username, password, done) => {
-    console.log('localstrategy');
+passport.use('local', new LocalStrategy({passReqToCallback: true }, async (req, username, password, done) => {
+    console.log('user strategy:',req.body);
     try {
-        const usr = conn.getUserModel();
+        const reqData = req.body;
+        if(!reqData.device || reqData.device === ''){
+            console.log('device not registered for user: ',reqData.username);
+            return done(null,false);
+        }
+        const ClientDevice = conn.getClientDevicesModel();
+        const cDevice = await ClientDevice.findById(reqData.device);
+        if(!cDevice){
+            console.log('Invalid device id for user: ',reqData.username);
+            return done(null,false);
+        }
+        const User = conn.getUserModel(cDevice.ClientNumber);
         //find the user with the given username
-        const user = await usr.findOne({ username });
+        const user = await User.findOne({ Username : reqData.username, RoleId:reqData.role });
         // if  not found, return user
         if (!user) {
             console.log('no user found');
             return done(null, false);
         }
-
         // check if the password is correct
         const isMatch = await user.isValidPassword(password);
         console.log('password match: ', isMatch);
         // if not handle it
-        const Role = conn.getRoleModel();
-        user.role = await Role.findById(user.role);
-
         if (!isMatch) {
             return done(null, false);
         }
+        
+        user.role = await getUserRole(user.RoleId);
 
         return done(null, user);
     } catch (error) {
@@ -101,15 +111,18 @@ passport.use('local', new LocalStrategy({
     }
 }));
 
-
 // private methods
 
-getUserRole = async (isAdmin) =>{
-    if(isAdmin){
-        const rol = await Role.findOne({ Role: constants.Roles.ADMIN });
+getUserRole = async (roleId) => {
+    if(!roleId){
+        return null;
+    }
+    const rol = await Role.findById(roleId);
+    if (rol) {
         return {
             id: rol._id,
             name: rol.RoleName
         };
     }
+    return null;
 }
