@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 // Create a  schema
 
 const ClientDeviceSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
     DeviceId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: mongooModels.DevicesModel,
@@ -21,7 +20,12 @@ const ClientDeviceSchema = new Schema({
     ClientNumber:{
         type: String,
         required: true
+    },
+    Status:{
+        type: String,
+        required: true
     }
+
 },{collection:collections.ClientDevices});
 
 

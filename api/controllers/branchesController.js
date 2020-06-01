@@ -48,18 +48,8 @@ module.exports = {
     },
     create: async (req, res, next) => {
         console.log('In create branch...');
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Branch = model.getBranchModel(clientId);
-        const dupBranch = await Branch.findOne({ branchId: req.value.body.branchId });
+        const Branch = model.getBranchModel(req.user.ClientNumber);
+        const dupBranch = await Branch.findOne({ branchId: req.body.branchId });
         if (dupBranch) {
             return res.status(404).json({
                 message: 'branch id already exist'
@@ -67,7 +57,7 @@ module.exports = {
         }
         
         const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
-        if (req.value.body.isHeadBranch) {
+        if (req.body.isHeadBranch) {
             if (singleParentBranch) {
                 return res.status(404).json({
                     message: 'There is already a head branch exist'

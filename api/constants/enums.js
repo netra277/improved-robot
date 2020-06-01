@@ -32,5 +32,10 @@ module.exports = {
         Created: 'created',
         Active: 'active',
         InActive: 'inactive'
+    },
+    DeviceStatus: {
+        Created: 'created',
+        Active: 'active',
+        InActive: 'inactive'
     }
 }

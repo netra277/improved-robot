@@ -11,6 +11,8 @@ const ItemSchema = require('../db-models/client-models/ItemsModel');
 const OrdersSchema = require('../db-models/client-models/ordersModel');
 const UsersSchema = require('../db-models/client-models/usersModel');
 const mongooModels = require('../constants/mongoose-models');
+const DevicesSchema = require('../db-models/client-models/devicesModel');
+const DeviceKeysSchema = require('../db-models/device-keysModel');
 
 module.exports = {
   getAdminUserModel() {
@@ -28,6 +30,10 @@ module.exports = {
   getClientDevicesModel(){
     const con = connection.connectToDatabase();
     return con.model(mongooModels.DevicesModel,ClientDevicesSchema);
+  },
+  getDeviceKeysModel(){
+    const con = connection.connectToDatabase();
+    return con.model(mongooModels.DeviceKeysModel,DeviceKeysSchema);
   },
   getBranchModel(clientId) {
     if(!clientId){
@@ -77,5 +83,13 @@ module.exports = {
       const id = clientId.toUpperCase();
       const cliConnect = connection.connectToClientDatabase(id);
       return cliConnect.model(mongooModels.UsersModel, UsersSchema);
+  },
+  getDevicesModel(clientId) {
+    if (!clientId) {
+      return null;
+    }
+      const id = clientId.toUpperCase();
+      const cliConnect = connection.connectToClientDatabase(id);
+      return cliConnect.model(mongooModels.DevicesModel, DevicesSchema);
   }
 }

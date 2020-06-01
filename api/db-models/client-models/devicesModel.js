@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 // Create a roles schema
 
 const DeviceSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
     DeviceId:{
         type: String,
         required:[true,'Device id is required'],
@@ -38,7 +37,7 @@ const DeviceSchema = new Schema({
     DeactivatedDate: {
         type: Date
     },
-    ActivatedByUserId:{
+    ActivatedByUserId: {
         type: String
     }
 },{collection:collections.ClientDbCollections.Devices});

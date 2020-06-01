@@ -6,11 +6,11 @@ const passportConfig = require('../auth/passport');
 const authController = require('../controllers/authenticationController');
 
 router.route('/admin/login')
-.post(passport.authenticate('StratAdmin',{session: false}),
+.post(passport.authenticate('StratLoginAdmin',{session: false}),
     authController.loginAdmin);
 
 router.route('/user/login')
-.post(passport.authenticate('local',{session: false}),
+.post(passport.authenticate('StratLoginUser',{session: false}),
     authController.loginUser);
 
 module.exports = router;

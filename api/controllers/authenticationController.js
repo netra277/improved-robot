@@ -23,10 +23,8 @@ module.exports = {
     loginAdmin: async (req, res, next) => {
         let token = '';
         const reqData = req.body;
-        console.log('user login success: ', reqData.device);
-        if(req.user.RoleId !== reqData.role){
-            return res.status(401).json({message:'Invalid details'});
-        }
+        console.log('user login success: ', req.user.role.id, reqData.role);
+         
         if(!reqData.device || reqData.device === ''){
             token = signToken(req.user,null, null);
             return res.status(203).json({token});
@@ -51,16 +49,11 @@ module.exports = {
     roleAuthorization: (roles) => {
         return function (req, res, next) {
             var foundUser = req.user;
-            console.log('roles:',roles);
-            if(foundUser.role.role === rolesList.SuperUser){
-                console.log('Has access for role:',foundUser.role.role);
+            if (roles.indexOf(foundUser.role) > -1) {
+                console.log('Has access for role:',foundUser.role);
                 return next();
             }
-            else if (roles.indexOf(foundUser.role.role) > -1) {
-                console.log('Has access for role:',foundUser.role.role);
-                return next();
-            }
-            console.log('Not authorized for role: ', foundUser.role.role);
+            console.log('Not authorized for role: ', foundUser.role);
             return res.status(401).json({ message: 'You are not authorized to view this content' });
         }
     }

@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 // Create a  schema
 
 const DeviceKeysSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
     ClientId:{
         type: mongoose.Schema.Types.ObjectId,
         required:[true,'Client id is required']
