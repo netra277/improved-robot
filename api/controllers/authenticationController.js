@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const config = require('../configuration/config');
 const model = require('../dbconnections/connection_initializer');
+const constants = require('../constants/enums');
 const ClientDevice = model.getClientDevicesModel();
+const Role = model.getRoleModel();
 
 signToken = (user,branchdetails,deviceId) => {
     return token = jwt.sign({
@@ -23,13 +25,20 @@ module.exports = {
     loginAdmin: async (req, res, next) => {
         let token = '';
         const reqData = req.body;
-        console.log('user login success: ', req.user.role.id, reqData.role);
-         
+        console.log('user login success: ', req.user.role.id, reqData.role,reqData.device);
+         const rol = await Role.findById(reqData.role);
+         if(rol.Role !== constants.Roles.ADMIN){
+             return res.status(401).json({
+                 message:{
+                     detail:'Invalid credentials'
+                 }
+             });
+         }
         if(!reqData.device || reqData.device === ''){
             token = signToken(req.user,null, null);
             return res.status(203).json({token});
         }
-        const cdevice = await getDeviceDetails(req.user._id,reqData.device);
+        const cdevice = await getDeviceDetails(reqData.device);
         token = signToken(req.user, null, cdevice.DeviceId);
         return res.status(200).json({ token });
     },

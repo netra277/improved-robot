@@ -5,15 +5,15 @@ const Schema = mongoose.Schema;
 // Create category schema
 
 const CategorySchema =  new Schema({
-    categoryId: {
+    CategoryId: {
         type: String,
         uppercase: true
     },
-    name: {
+    Name: {
         type: String,
         required: true
     },
-    description:{
+    Description:{
         type: String
     },
     ParentCategoryId: {

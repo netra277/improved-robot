@@ -45,29 +45,28 @@ module.exports = {
         }
     },
     create: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Category = model.getCategoryModel(clientId);
-        const dupCategory = await Category.findOne({ categoryId: req.value.body.categoryId });
-        console.log('duplicate category: ',dupCategory);
-        if (dupCategory) {
+        const usr = req.user;
+        const reqData = req.body;
+        console.log('In create category...',usr.ClientNumber);
+        const Category = model.getCategoryModel(usr.ClientNumber);
+        const dupCate = await Category.findOne({ CategoryId: reqData.category_id });
+        if (dupCate) {
             return res.status(404).json({
-                message: 'category id already exist'
+                message: {
+                    detail: 'category id already exist'
+                }
             });
         }
+        if(!reqData.parent_category_id){
+            reqData.parent_category_id = '';
+        } 
         const category = new Category({
-            categoryId: req.value.body.categoryId,
-            name: req.value.body.name,
-            description: req.value.body.description
+            CategoryId: reqData.category_id,
+            Name: reqData.name,
+            Description: reqData.description,
+            ParentCategoryId: reqData.parent_category_id
         });
+        console.log('beforesave: ');
         const b = await category.save();
         if (b) {
             return res.status(200).json({

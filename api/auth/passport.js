@@ -22,18 +22,30 @@ passport.use('StratLoginAdmin', new LocalStrategy({
         // if  not found, return user
         if (!user) {
             console.log('no user found');
-            return done(null, false);
+            return done({message:{detail: 'no user found'}}, false);
+        }
+        if (user.Status!== constants.AdminUserStatus.Active || user.IsLocked) {
+            console.log('user is inactive');
+            return done({message:{detail: 'user is inactive'}}, false);
+        }
+        if (user.RequiredPasswordChange) {
+            console.log('required password change');
+            return done({
+                message: {
+                    detail:'required password change',
+                    requiredChange: true
+                }
+            }, false);
         }
         // check if the password is correct
         const isMatched = await user.isValidPassword(password);
         console.log('password match: ', isMatched);
 
         if (!isMatched) {
-            return done(null, false);
+            return done({message:{detail: 'password does not match'}}, false);
         }
         user.role = await getUserRole(user.RoleId);
         return done(null, user);
-
     } catch (error) {
         done(null, false);
     }
@@ -122,16 +134,19 @@ passport.use(new jwtStrategy({
             if(!user){
                 return done({message: 'Invalid admin details'},false );
             }
+            console.log('devid',payload.user.deviceId);
             const clidev = await ClientDevices.findOne({DeviceId: payload.user.deviceId, Status: constants.DeviceStatus.Active});
             console.log('b:',clidev._id);
-            if(!clidev || headerDeviceId !== clidev._id){
+            if(!clidev || headerDeviceId.toString() !== clidev._id.toString()){
                 return done({message: 'device doesnot exist or not activated'},false );
             }
             console.log('adding role');
             user.role = role.Role;
             console.log('added role',user);
             user.DeviceId = payload.user.deviceId;
-            done(null,user);
+            console.log('clientnumber');
+            user.ClientNumber = clidev.ClientNumber;
+            return done(null,user);
         }   
         else{
             if(!payload.user.deviceId || payload.user.deviceId === ''){
@@ -139,7 +154,7 @@ passport.use(new jwtStrategy({
             }
             const clidev = await ClientDevices.findOne({DeviceId: payload.user.deviceId, Status: constants.DeviceStatus.Active});
             if(!clidev || headerDeviceId !== clidev._id){
-                return ({message: 'device doesnot exist or not activated'},false );
+                return done({message: 'device doesnot exist or not activated'},false );
             }
             const User = model.getUserModel(clidev.ClientNumber);
             const user = await User.findById(payload.user.id);

@@ -33,12 +33,10 @@ const UsersSchema = new Schema({
         required: true
     },
     Phone: {
-        type: String,
-        required: true
+        type: String
     },
     Email: {
-        type: String,
-        required: true
+        type: String
     },
     LastLogin: {
         type: String

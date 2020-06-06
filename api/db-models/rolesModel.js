@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 // Create a roles schema
 
 const RoleSchema = new Schema({
-    _id: mongoose.Types.ObjectId,
     RoleId:{
         type: Number,
         required:[true,'Role id is required']

@@ -1,43 +1,17 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
-const Client = model.getClientModel();
 
 module.exports = {
     getBranches: async (req, res, next) => {
-        const role = req.user.role.role;
-        const reqUserClient = req.user.clientId;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor) {
-            clientId = reqUserClient.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Branch = model.getBranchModel(clientId);
+        const usr = req.user;
+        const Branch = model.getBranchModel(usr.ClientNumber);
         const branches = await Branch.find();
-        if (branches.length > 0) {
-            return res.status(200).json(branches);
-        } else {
-            return res.status(204).json({
-                message: 'no branches found'
-            });
-        }
+        return res.status(200).json(branches);
     },
     getBranch: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Branch = model.getBranchModel(clientId);
-        const branch = await Branch.findById(req.value.params.id);
+        const usr = req.user;
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        const branch = await Branch.findById(req.params.id);
         if (branch) {
             return res.status(200).json(branch);
         } else {
@@ -47,17 +21,19 @@ module.exports = {
         }
     },
     create: async (req, res, next) => {
-        console.log('In create branch...');
-        const Branch = model.getBranchModel(req.user.ClientNumber);
-        const dupBranch = await Branch.findOne({ branchId: req.body.branchId });
+        const usr = req.user;
+        const reqData = req.body;
+        console.log('In create branch...',usr.ClientNumber);
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        const dupBranch = await Branch.findOne({ branchId: reqData.branch_id });
         if (dupBranch) {
             return res.status(404).json({
                 message: 'branch id already exist'
             });
         }
         
-        const singleParentBranch = await Branch.findOne({ isHeadBranch: true });
-        if (req.body.isHeadBranch) {
+        const singleParentBranch = await Branch.findOne({ IsHeadBranch: true });
+        if (reqData.is_headbranch) {
             if (singleParentBranch) {
                 return res.status(404).json({
                     message: 'There is already a head branch exist'
@@ -72,7 +48,16 @@ module.exports = {
             }
         }
         
-        const branch = new Branch(req.value.body);
+        const branch = new Branch({
+            BranchId: reqData.branch_id,
+            Name: reqData.name,
+            Address: reqData.address,
+            Phone: reqData.phone,
+            Email: reqData.email,
+            IsHeadBranch: reqData.is_headbranch,
+            PrintInvoice: reqData.print_invoice,
+            TaxesToPrint: reqData.taxes_to_print
+        });
         console.log('beforesave: ',branch);
         const b = await branch.save();
         if (b) {
@@ -87,45 +72,44 @@ module.exports = {
         }
     },
     update: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
+        const usr = req.user;
+        const reqData = req.body;
+        if(req.params.id !== reqData.id){
+            return res.status(500).json({
+                message: {
+                    detail: 'Invalid id'
+                }
             });
         }
-        const Branch = model.getBranchModel(clientId);
-        console.log('branchId:', req.value.body.branchId);
-        const branch = await Branch.findOne({ branchId: req.value.body.branchId });
-        if (!branch) {
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        console.log('branchId:', reqData.branch_id);
+        const branch = await Branch.findById(reqData.id);
+        if (!branch || branch.BranchId !==  reqData.branch_id.toUpperCase()) {
             console.log('branch:',branch);
             return res.status(404).json({
                 message: 'branch id doesnot exist'
             });
         } else {
-            if (req.value.body.name && req.value.body.name !== '') {
-                branch.name = req.value.body.name;
+            if (reqData.name && reqData.name !== '') {
+                branch.Name = reqData.name;
             }
-            if (req.value.body.address && req.value.body.address !== '') {
-                branch.Address = req.value.body.Address;
+            if (reqData.address && reqData.address !== '') {
+                branch.Address = reqData.address;
             }
-            if (req.value.body.phone && req.value.body.phone !== '') {
-                branch.phone = req.value.body.phone;
+            if (reqData.phone && reqData.phone !== '') {
+                branch.Phone = reqData.phone;
             }
-            if (req.value.body.email && req.value.body.email !== '') {
-                branch.email = req.value.body.email;
+            if (reqData.email && reqData.email !== '') {
+                branch.Email = reqData.email;
             }
-            if (req.value.body.isHeadBranch !== '') {
-                branch.isHeadBranch = req.value.body.isHeadBranch;
+            if (reqData.isHeadBranch !== '') {
+                branch.IsHeadBranch = reqData.is_headbranch;
             }
-            if (req.value.body.printInvoice !== '') {
-                branch.printInvoice = req.value.body.printInvoice;
+            if (reqData.printInvoice !== '') {
+                branch.PrintInvoice = reqData.print_invoice;
             }
-            if(req.value.body.tax && req.value.body.tax.length > 0){
-                branch.tax = req.value.body.tax;
+            if(reqData.taxes_to_print && reqData.taxes_to_print.length > 0){
+                branch.TaxesToPrint = reqData.taxes_to_print;
             }
             const branchUpdated = await Branch.updateOne({ _id: branch._id }, branch);
             if (branchUpdated.nModified > 0) {
@@ -139,32 +123,19 @@ module.exports = {
         }
     },
     delete: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Branch = model.getBranchModel(clientId);
-        const branch = await Branch.findById({ _id: req.value.params.id });
+        const usr = req.user;
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        const branch = await Branch.findById({ _id: req.params.id });
         if (!branch) {
             return res.status(404).json({
                 message: 'branch id doesnot exist'
             });
         } else {
-            const resp = await Branch.remove({ _id: req.value.params.id });
+            const resp = await Branch.remove({ _id: req.params.id });
             if (resp.deletedCount > 0) {
-                const BranchUser = model.getBranchUserModel(clientId);
-                const branchUser = await BranchUser.remove({ branchId: req.value.params.id });
-                if(branchUser.deletedCount > 0){
                     return res.status(200).json({
                         message: 'branch deleted successfully'
                     });
-                }
             }
             return res.status(500).json({
                 message: 'error deleting branch'

@@ -134,6 +134,20 @@ module.exports = {
         const client = await Client.findById(req.user.ClientId);
         const Device = model.getDevicesModel(client.ClientId);
         const device = await Device.findById(req.params.id);
+        const DeviceKey = model.getDeviceKeysModel();
+        const dkey = await DeviceKey.findOne({DeviceId: req.params.id});
+        console.log('got key:',dkey);
+        const currentdatetime = Date.now();
+        if(dkey){
+            if(currentdatetime < dkey.ExpireTime){
+                return res.status(500).json({
+                    generatedDeviceKey: dkey.GeneratedDeviceKey
+                });
+            }
+            dkey.Status = constants.DeviceKeyStatus.InActive;
+            const upddkey = await DeviceKey.updateOne({_id: dkey._id},dkey);
+        }
+
         console.log('got device:',device);
         if(!device){
             return res.status(400).json({
@@ -146,13 +160,15 @@ module.exports = {
             capitalization: 'uppercase'
         });
         const deviceKey = encryptor.encrypt(sampleId + device.DeviceId);
-        const DeviceKey = model.getDeviceKeysModel();
+        
         var dt = new Date();
          dt.setMinutes( dt.getMinutes() + 30 );
         const deviceke = new DeviceKey({
             ClientId : req.user.ClientId,
+            DeviceId : device._id,
             GeneratedDeviceKey : deviceKey,
-            ExpireTime : dt 
+            ExpireTime : dt,
+            Status: constants.DeviceKeyStatus.Created
         });
         const de = await deviceke.save();
         if (de) {
@@ -166,11 +182,24 @@ module.exports = {
     },
     register: async(req,res,next)=>{
         const DeviceKey = model.getDeviceKeysModel();
-        const devkey = await DeviceKey.findOne({GeneratedDeviceKey: req.body.device_key});
+        const devkey = await DeviceKey.findOne({GeneratedDeviceKey: req.body.device_key, Status: constants.DeviceKeyStatus.Created});
         const currentdatetime = Date.now();
-        if(!devkey || currentdatetime > devkey.ExpireTime){
+        if(devkey){
+            if(currentdatetime > devkey.ExpireTime){
+                devkey.Status = constants.DeviceKeyStatus.InActive;
+                const kd = await DeviceKey.updateOne({_id:devkey._id},devkey);
+                return res.status(500).json({
+                    message: {
+                        detail:'key expired or already activated, please contact administrator for new key'
+                    }
+                });
+            }
+        }
+        else{
             return res.status(500).json({
-                message: 'key expired, please contact administrator for new key'
+                message: {
+                    detail:'Invalid key, please contact administrator for new key'
+                }
             });
         }
         console.log('gen',devkey.GeneratedDeviceKey);
@@ -178,21 +207,24 @@ module.exports = {
         console.log('devId',devId);
         const dId = devId.substring(4,devId.length);
 
-        
         const client = await Client.findById(devkey.ClientId);
         const Device = model.getDevicesModel(client.ClientId);
         console.log('c:',client.ClientId,'d:',dId);
         const device = await Device.findOne({DeviceId: dId, Status: constants.DeviceStatus.Created});
         if(!device){
             return res.status(500).json({
-                message: 'Invalid key'
+                message: {
+                    detail: 'Invalid key'
+                }
             });
         }
         const cliedev = await ClientDevice.findOne({ DeviceId: device._id, ClientId: client._id, Status: constants.DeviceStatus.Created});
         if(!cliedev){
             return res.status(500).json({
-                message: 'error registering device invalid details'
-            })
+                message: {
+                    detail: 'error registering device invalid details'
+                }
+            });
         }
         cliedev.Status = constants.DeviceStatus.Active;
         console.log('in',cliedev);
@@ -204,13 +236,21 @@ module.exports = {
             Status: constants.DeviceStatus.Active,
             ActivatedByUserId : ''
         });
+        devkey.Status = constants.DeviceKeyStatus.Active;
+        const dk = await DeviceKey.updateOne({_id:devkey._id},devkey);
+        console.log('upclidev: ',upclidev);
         if (updatedDevice.nModified > 0) {
             return res.status(200).json({
-                message: 'device registered successfully'
+                message: {
+                    deviceId: cliedev._id,
+                    detail: 'device registered successfully'
+                }
             });
         } else {
             res.status(500).json({
-                message: 'error in registering device'
+                message: {
+                    detail: 'error in registering device'
+                }
             });
         }
     }

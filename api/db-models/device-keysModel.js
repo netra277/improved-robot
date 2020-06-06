@@ -9,12 +9,20 @@ const DeviceKeysSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         required:[true,'Client id is required']
     },
+    DeviceId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required:[true,'device id is required']
+    },
     GeneratedDeviceKey:{
         type: String,
         required:true
     },
     ExpireTime: {
         type: Date,
+        required: true
+    },
+    Status:{
+        type: String,
         required: true
     }
 },{collection:collections.DeviceKeys});

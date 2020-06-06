@@ -13,7 +13,9 @@ module.exports = {
         const clientde = await Client.findById(adminUsr.ClientId);
         if(adminUsr.Status!== constants.AdminUserStatus.Active || !clientde.IsActive){
             return res.status(401).json({
-                message: 'Admin user is not activated. Please contact support.'
+                message: {
+                    detail:'Admin user is not activated. Please contact support.'
+                }
             });
         }
         const isValid = await adminUsr.isValidPassword(reqData.old_password)
@@ -21,10 +23,13 @@ module.exports = {
         if (reqData.new_password === reqData.repeat_password && isValid) {
             console.log('Changing admin password');
             adminUsr.Password = reqData.new_password;
+            adminUsr.RequiredPasswordChange = false;
             console.log(adminUsr._id);
             const updatedUser = await AdminUser.updateOne({_id: adminUsr._id},adminUsr);
             res.status(200).json({
-                message: 'Admin password updated'
+                message:{
+                    detail: 'Admin password updated'
+                } 
             });
         }
         else {
