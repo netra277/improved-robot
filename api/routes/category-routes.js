@@ -1,23 +1,34 @@
 const router = require('express-promise-router')();
 const passport = require('passport');
+const rolesObj = require('../constants/enums').Roles;
 
 const categoryController = require('../controllers/categoryController');
 const authController = require('../controllers/authenticationController');
 
 router.route('/')
-.get(categoryController.getCategories);
+.get(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+categoryController.getCategories);
 
 router.route('/:id')
-.get(categoryController.getCategory);
+.get(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+categoryController.getCategory);
 
-router.route('/create')
-.post(categoryController.create);
+router.route('/')
+.post(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+categoryController.create);
 
 router.route('/:id')
-.put(categoryController.update);
+.put(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+categoryController.update);
 
 router.route('/:id')
-.delete(categoryController.delete);
+.delete(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+categoryController.delete);
 
 
 module.exports = router;

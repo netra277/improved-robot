@@ -1,118 +1,72 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
+const constants = require('../constants/enums');
 
 module.exports = {
     getOrders: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        console.log('In getOrders', role);
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager ||  role === rolesList.User) {
-            console.log('role', role);
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            console.log('unauthorised');
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Order = model.getOrdersModel(clientId);
-        const Item = model.getItemsModel(clientId);
-        const registeredUsers = model.getRegisteredUsersModel(clientId);
-        const Branch = model.getBranchModel(clientId);
-        const orders = await Order.find()
-            .populate('itemsList.itemId')
-            .populate({path: 'createdByUserId', select: 'name'})
-            .populate({path:'branchId', select:'name'});
-        if (orders.length > 0) {
-            var respOrders = {
-                count: orders.length,
-                orders: orders
-            };
-            return res.status(200).json(respOrders);
-        } else {
-            return res.status(204).json({
-                message: 'no orders found'
-            });
-        }
+        const usr = req.user;
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        const Order = model.getOrdersModel(usr.ClientNumber);
+        const orders = await Order.find().populate('BranchId');
+        return res.status(200).json(orders);
     },
     getOrder: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.Manager) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Item = model.getItemsModel(clientId);
-        const item = await Item.findById(req.value.params.id);
-        if (item) {
-            return res.status(200).json(item);
+        const usr = req.user;
+        const Branch = model.getBranchModel(usr.ClientNumber);
+        const Order = model.getOrdersModel(usr.ClientNumber);
+        const order = await Order.findById(req.params.id).populate('BranchId');
+        if (order) {
+            return res.status(200).json(order);
         } else {
             return res.status(204).json({
-                message: 'no item found'
+                message:{
+                    detail: 'no order found'
+                } 
             });
         }
     },
     create: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor ||
-                  role === rolesList.Manager || role === rolesList.User) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const today = new Date();
-        let invoice = (today.getDate()).toString() + (today.getMonth() + 1).toString();
-        const Order = model.getOrdersModel(clientId);
-        const branchOrderCount = await Order.find({branchId: req.value.body.branchId }).count();
-        const totalOrderCount = await Order.find({}).count();
-        const order = new Order(req.value.body);
-        order.orderNumber = totalOrderCount + 1;
-        order.branchOrderNumber = branchOrderCount + 1;
-        order.invoiceNumber =  invoice + order.branchOrderNumber;
-        order.orderedDateTime = new Date().toISOString();
-        console.log('order:',order);
-        const ordr = await order.save();
-        console.log('order',ordr);
-        if (ordr) {
-            console.log('Order created successfully');
+        const usr = req.user;
+        const reqData = req.body;
+        console.log('In create order...',usr.ClientNumber);
+        const Order = model.getOrdersModel(usr.ClientNumber);
+        const orderNo = Order.find().countDocuments() + 1;
+        const fullorderno = pad_with_zeroes(orderNo,4);
+         const invoiceNo = usr.ClientNumber.substring(0,4) + fullorderno;
+         
+        const order = new Order({
+            OrderNumber: orderNo,
+            InvoiceNumber: invoiceNo,
+            OrderedDateTime: Date.now(),
+            PaymentDetails: {
+                TotalAmount: '',
+                DiscountPercentage: '',
+                DiscountAmount: '',
+                AmountAfterDiscount: '',
+                ModeOfPayment: '',
+                Particulars: { }
+            },
+            BranchId: reqData.branch_id,
+            CreatedByUserId: req.user._id,
+            ItemsList : reqData.items,
+            CustomerDetails: reqData.customer_details,
+            OrderType: reqData.order_type,
+            Status: orderstatuses.WalkinStatus.Completed
+        });
+        console.log('beforesave: ');
+        const b = await order.save();
+        if (b) {
             return res.status(200).json({
-                message: 'Order created successfully'
+                message: 'order created successfully',
+                OrderId: orderNo,
+                InvoiceNumber: invoiceNo
             });
         }
         else {
-            console.log('error in creating order');
+            return res.status(500).json({
+                message: 'error in creating order'
+            });
         }
-
-        
-        // const OrderDetail = model.getOrderDetailsModel(clientId);
-        // const itemslist = req.value.body.items;
-        // let orderdetails = [];
-        // let orderdetail = new OrderDetail();
-        // itemslist.forEach((item)=>{
-        //     orderdetail.itemId = item.itemId;
-        //     orderdetail.orderId = o._id;
-        //     orderdetail.quantity = item.quantity;
-        //     orderdetails.push(orderdetail);
-        // });
-        // const ods = await OrderDetail.insertMany(orderdetails);
-        // if(ods){
-        //     return res.status(200).json({
-        //         message: 'order created successfully'
-        //     });
-        // }else {
-        //     return res.status(500).json({
-        //         message: 'error in creating order'
-        //     });
-        // }
     },
     update: async (req, res, next) => {
         const role = req.user.role.role;
@@ -160,35 +114,32 @@ module.exports = {
         }
     },
     delete: async (req,res,next)=>{
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.SuperUser) {
-            clientId = req.value.body.clientId;
-        }
-        else if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Item = model.getItemsModel(clientId);
-        const item =  await Item.findById(req.value.params.id);
-        if (!item) {
+        const usr = req.user;
+        const Order = model.getOrdersModel(usr.ClientNumber);
+        const order = await Order.findById({ _id: req.params.id });
+        if (!order) {
             return res.status(404).json({
-                message: 'item doesnot exist'
+                message: 'order id doesnot exist'
             });
         } else {
-            const resp = await Item.remove({ _id: req.value.params.id });
+            const resp = await Order.remove({ _id: req.params.id });
             if (resp.deletedCount > 0) {
-                return res.status(200).json({
-                    message: 'item deleted successfully'
-                });
+                    return res.status(200).json({
+                        message: 'order deleted successfully'
+                    });
             }
             return res.status(500).json({
-                message: 'error deleting item'
+                message: 'error deleting order'
             });
         }
     }
+
+};
+
+pad_with_zeroes = (number, length) => {
+    var my_string = '' + number;
+    while (my_string.length < length) {
+        my_string = '0' + my_string;
+    }
+    return my_string;
 }

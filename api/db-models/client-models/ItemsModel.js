@@ -6,27 +6,27 @@ const Schema = mongoose.Schema;
 // Create Items schema
 
 const ItemSchema =  new Schema({
-    itemCode: {
+    ItemCode: {
         type: String,
         required: true,
         uppercase: true
     },
-    categoryId:{
+    CategoryId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: mongooModel.CategoriesModel,
     },
-    name: {
+    Name: {
         type:String,
         required: true
     },
-    description:{
+    Description:{
         type: String
     },
-    price: {
-        type:String,
+    Price: {
+        type:Number,
         required: true
     },
-    itemImage: {
+    ItemImage: {
         type:String
     }
 },{collection:collections.ClientDbCollections.Items});

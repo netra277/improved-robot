@@ -56,12 +56,12 @@ const OrderSchema =  new Schema({
     },
     ItemsList: [
         {
-            itemId: {
+            ItemId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: mongooModel.ItemsModel,
                 required: true
             },
-            quantity: {
+            Quantity: {
                 type: Number,
                 required: true
             },
@@ -77,8 +77,9 @@ const OrderSchema =  new Schema({
         type: Boolean,
         default: false
     },
-    ModifiedByUser: {
-        type: String,
+    ModifiedByUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+           ref: mongooModel.UsersModel,
     },
     OrderDeleted: {
         type: Boolean,

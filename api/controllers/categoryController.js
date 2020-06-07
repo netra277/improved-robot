@@ -3,44 +3,22 @@ const mongoose = require('mongoose');
 
 module.exports = {
     getCategories: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.User) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Category = model.getCategoryModel(clientId);
+        const usr = req.user;
+        const Category = model.getCategoryModel(usr.ClientNumber);
         const categories = await Category.find();
-        if (categories.length > 0) {
-            return res.status(200).json(categories);
-        } else {
-            return res.status(204).json({
-                message: 'no categories found'
-            });
-        }
+        return res.status(200).json(categories);
     },
     getCategory: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin || role === rolesList.Supervisor || role === rolesList.Manager || role === rolesList.User) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
+        const usr = req.user;
+        const Category = model.getCategoryModel(usr.ClientNumber);
+        const category = await Category.findById(req.params.id);
         if (category) {
             return res.status(200).json(category);
         } else {
             return res.status(204).json({
-                message: 'no category found'
+                message:{
+                    detail: 'no category found'
+                } 
             });
         }
     },
@@ -80,33 +58,39 @@ module.exports = {
         }
     },
     update: async (req, res, next) => {
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
+        const usr = req.user;
+        const reqData = req.body;
+        if(req.params.id !== reqData.id){
+            return res.status(500).json({
+                message: {
+                    detail: 'Invalid id'
+                }
             });
         }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
-        if (!category) {
+        const Category = model.getCategoryModel(usr.ClientNumber);
+        console.log('categoryId:', reqData.id);
+        const category = await Category.findById(reqData.id);
+        if (!category || category.CategoryId !==  reqData.category_id.toUpperCase()) {
             return res.status(404).json({
                 message: 'category id doesnot exist'
             });
         } else {
-            if (req.value.body.name && req.value.body.name !== '') {
-                category.name = req.value.body.name;
+            if(!reqData.parent_category_id){
+                reqData.parent_category_id = '';
+            } 
+            if (reqData.name && reqData.name !== '') {
+                category.Name = reqData.name;
             }
-            if (req.value.body.description && req.value.body.description !== '') {
-                category.description = req.value.body.description;
+            if (reqData.description && reqData.description !== '') {
+                category.Description = reqData.description;
             }
-            const categoryUpdated = await Category.updateOne({ _id: req.value.params.id }, category);
+            if (reqData.parent_category_id && reqData.parent_category_id !== '') {
+                category.ParentCategoryId = reqData.parent_category_id;
+            }
+            const categoryUpdated = await Category.updateOne({ _id: category._id }, category);
             if (categoryUpdated.nModified > 0) {
                 return res.status(200).json({
-                    message: 'Category updated successfully'
+                    message: 'category updated successfully'
                 });
             }
             return res.status(500).json({
@@ -115,28 +99,19 @@ module.exports = {
         }
     },
     delete: async (req,res,next)=>{
-        const role = req.user.role.role;
-        let clientId = '';
-        if (role === rolesList.Admin) {
-            clientId = req.user.clientId.clientId;
-        }
-        else {
-            return res.status(401).json({
-                message: 'unauthorized'
-            });
-        }
-        const Category = model.getCategoryModel(clientId);
-        const category = await Category.findById(req.value.params.id);
+        const usr = req.user;
+        const Category = model.getCategoryModel(usr.ClientNumber);
+        const category = await Category.findById({ _id: req.params.id });
         if (!category) {
             return res.status(404).json({
                 message: 'category id doesnot exist'
             });
         } else {
-            const resp = await Category.remove({ _id: req.value.params.id });
+            const resp = await Category.remove({ _id: req.params.id });
             if (resp.deletedCount > 0) {
-                return res.status(200).json({
-                    message: 'category deleted successfully'
-                });
+                    return res.status(200).json({
+                        message: 'category deleted successfully'
+                    });
             }
             return res.status(500).json({
                 message: 'error deleting category'

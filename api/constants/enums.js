@@ -42,5 +42,14 @@ module.exports = {
         Created: 'created',
         Active: 'active',
         InActive: 'inactive'
+    },
+    OrderStatus:{
+        WalkinStatus:{
+            PaymentDoneButParked: 'parked',
+            Completed:'completed',
+            PaymentNotDone:'paymentnotdone'
+        },
+        TakeAwayStatus:{},
+        DeliveryStatus:{}
     }
 }

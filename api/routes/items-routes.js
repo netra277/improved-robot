@@ -1,25 +1,34 @@
 const router = require('express-promise-router')();
 const passport = require('passport');
-const { validateBody, schemas } = require('../validators/itemRouteHelper');
-const { validateParam, paramSchemas } = require('../validators/commonRouterHelper');
+const rolesObj = require('../constants/enums').Roles;
 
 const itemsController = require('../controllers/itemsController');
 const authController = require('../controllers/authenticationController');
 
 router.route('/')
-.get(itemsController.getItems);
+.get(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+itemsController.getItems);
 
 router.route('/:id')
-.get(itemsController.getItem);
+.get(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+itemsController.getItem);
 
-router.route('/create')
-.post(itemsController.create);
+router.route('/')
+.post(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+itemsController.create);
 
 router.route('/:id')
-.put(itemsController.update);
+.put(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+itemsController.update);
 
 router.route('/:id')
-.delete(itemsController.delete);
+.delete(passport.authenticate('jwt',{session: false}),
+authController.roleAuthorization([rolesObj.ADMIN]),
+itemsController.delete);
 
 
 module.exports = router;

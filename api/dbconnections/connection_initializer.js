@@ -67,15 +67,6 @@ module.exports = {
     const cliConnect = connection.connectToClientDatabase(id);
     return cliConnect.model(mongooModels.OrdersModel, OrdersSchema);
   },
-  getOrderDetailsModel(clientId) {
-    if (!clientId) {
-      return null;
-    }
-    const id = clientId.toUpperCase();
-    const cliConnect = connection.connectToClientDatabase(id);
-    return cliConnect.model(mongooModels.ItemsModel, ItemSchema);
-    
-  },
   getUserModel(clientId) {
     if (!clientId) {
       return null;
