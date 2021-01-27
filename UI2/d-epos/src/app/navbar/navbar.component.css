@@ -1,0 +1,9 @@
+nav[class="navbar navbar-dark bg-dark justify-content-between navbar-brand"] {
+    height: 7vh; 
+    vertical-align: middle;
+    align-items: center !important;
+    display: grid !important;
+    width: 100% !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}

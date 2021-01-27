@@ -1,0 +1,91 @@
+<p-toast></p-toast>
+<div class="card">
+    <p-table #dt [value]="cart.products" styleClass="p-datatable-gridlines p-datatable-responsive-demo"
+        scrollHeight="300px" [rows]="10" dataKey="code" editMode="row">
+        <ng-template pTemplate="caption">
+            Cart
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Product Code</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Discount</th>
+                <th>Amount</th>
+                <th style="width:4rem"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="product">
+                <td>
+                    {{product.code}}
+                </td>
+                <td>
+                    {{product.name}}
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input pInputText type="text" [(ngModel)]="product.price">
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{product.price | currency:'INR'}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <p-inputNumber [(ngModel)]="product.quantity" [size]="1" [showButtons]="true"
+                                buttonLayout="horizontal" spinnerMode="horizontal" incrementButtonIcon="pi pi-plus"
+                                decrementButtonIcon="pi pi-minus" decrementButtonClass="p-button-danger"
+                                incrementButtonClass="p-button-success" [inputStyle]="{'text-align': 'center'}">
+                            </p-inputNumber>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{product.quantity}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input pInputText type="text" [(ngModel)]="product.discount">
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{product.discount | currency:'INR'}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    {{product.amount | currency:'INR'}}
+                </td>
+                <td style="text-align:center">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(product)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="!editing" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                        (click)="deleteProduct(product)"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(product)"
+                        class="p-button-rounded p-button-text p-button-success p-mr-2"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(product, ri)"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <tr>
+                <td colspan="3" class="p-text-right">Totals</td>
+                <td style="font-weight: bold;">{{cart.totalQuantity}}</td>
+                <td style="font-weight: bold;">{{cart.totalDiscount | currency: 'INR'}}</td>
+                <td style="font-weight: bold;">{{cart.totalAmount | currency: 'INR'}}</td>
+                <td colspan="1" class="p-text-left"></td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

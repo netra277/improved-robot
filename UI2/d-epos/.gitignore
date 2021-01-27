@@ -1,26 +1,18 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# initial configuration files
-configuration/Scripts.txt
-api/routes/config-user.js
-api/controllers/config-user.js
-
-api/node_modules
-api/.env
-
 # compiled output
-UI/dist
+/dist
 /tmp
-UI/out-tsc
+/out-tsc
 # Only exists if Bazel was run
 /bazel-out
 
 # dependencies
-UI/node_modules
+/node_modules
 
 # profiling files
-chrome-profiler-events.json
-speed-measure-plugin.json
+chrome-profiler-events*.json
+speed-measure-plugin*.json
 
 # IDEs and editors
 /.idea
@@ -52,5 +44,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-/.vs/slnx.sqlite
-/.vs/ProjectSettings.json
