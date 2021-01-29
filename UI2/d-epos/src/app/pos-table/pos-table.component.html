@@ -1,19 +1,19 @@
 <p-toast></p-toast>
 <div class="card">
     <p-table #dt [value]="cart.products" styleClass="p-datatable-gridlines p-datatable-responsive-demo"
-        scrollHeight="300px" [rows]="10" dataKey="code" editMode="row">
+        scrollHeight="300px" [rows]="10" dataKey="code" editMode="row" [style]="{'width':'100%'}">
         <ng-template pTemplate="caption">
             Cart
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
-                <th>Product Code</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Discount</th>
-                <th>Amount</th>
-                <th style="width:4rem"></th>
+                <th [style]="{'width':'10%'}">Product Code</th>
+                <th [style]="{'width':'30%'}">Name</th>
+                <th [style]="{'width':'15%'}">Price</th>
+                <th [style]="{'width':'15%'}">Quantity</th>
+                <th [style]="{'width':'10%'}">Discount</th>
+                <th [style]="{'width':'15%'}">Amount</th>
+                <th style="width:4rem" [style]="{'width':'5%'}"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
@@ -27,7 +27,8 @@
                 <td>
                     <p-cellEditor>
                         <ng-template pTemplate="input">
-                            <input pInputText type="text" [(ngModel)]="product.price">
+                            <input pInputText type="number" [(ngModel)]="product.price"
+                                [style]="{'text-align': 'center', 'width': '100%'}">
                         </ng-template>
                         <ng-template pTemplate="output">
                             {{product.price | currency:'INR'}}
@@ -40,7 +41,8 @@
                             <p-inputNumber [(ngModel)]="product.quantity" [size]="1" [showButtons]="true"
                                 buttonLayout="horizontal" spinnerMode="horizontal" incrementButtonIcon="pi pi-plus"
                                 decrementButtonIcon="pi pi-minus" decrementButtonClass="p-button-danger"
-                                incrementButtonClass="p-button-success" [inputStyle]="{'text-align': 'center'}">
+                                incrementButtonClass="p-button-success" [inputStyle]="{'text-align': 'center'}"
+                                [style]="{'text-align': 'center', 'width': '100%'}">
                             </p-inputNumber>
                         </ng-template>
                         <ng-template pTemplate="output">
@@ -51,7 +53,8 @@
                 <td>
                     <p-cellEditor>
                         <ng-template pTemplate="input">
-                            <input pInputText type="text" [(ngModel)]="product.discount">
+                            <input pInputText type="number" [(ngModel)]="product.discount"
+                                [style]="{'text-align': 'center', 'width': '100%'}">
                         </ng-template>
                         <ng-template pTemplate="output">
                             {{product.discount | currency:'INR'}}
@@ -59,19 +62,22 @@
                     </p-cellEditor>
                 </td>
                 <td>
-                    {{product.amount | currency:'INR'}}
+                    {{(product.price * product.quantity) - product.discount | currency:'INR'}}
                 </td>
                 <td style="text-align:center">
                     <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                        (click)="onRowEditInit(product)" class="p-button-rounded p-button-text"></button>
-                    <button *ngIf="!editing" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
-                        (click)="deleteProduct(product)"></button>
+                        (click)="onRowEditInit(product)" class="p-button-rounded p-button-text p-mr-2">
+                    </button>
+                    <button *ngIf="!editing" pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-danger p-mr-2" (click)="deleteProduct(product)">
+                    </button>
                     <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                        (click)="onRowEditSave(product)"
-                        class="p-button-rounded p-button-text p-button-success p-mr-2"></button>
+                        (click)="onRowEditSave(product)" class="p-button-rounded p-button-text p-button-success p-mr-2">
+                    </button>
                     <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
                         (click)="onRowEditCancel(product, ri)"
-                        class="p-button-rounded p-button-text p-button-danger"></button>
+                        class="p-button-rounded p-button-text p-button-danger p-mr-2">
+                    </button>
 
                 </td>
             </tr>

@@ -37,14 +37,10 @@ export class ProductService {
         return this.products;
     }
 
-    updateAmounts() {
+    private updateAmounts() {
         this.products.forEach(x => {
             x.amount = (x.price * x.quantity) - x.discount;
         });
         return this.products;
     }
-
-    // addProductToCart(product: Product) {
-    //     this.cartService.addCartItem(product);
-    // }
 }

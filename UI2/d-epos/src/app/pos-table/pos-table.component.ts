@@ -30,7 +30,7 @@ export class PosTableComponent implements OnInit {
   ) {
 
     this.cartComm.subscribe(res => {
-      if (res.msgType === 'cartItemAdded') {
+      if (res.msgType === ('cartItemAdded' || 'cartItemUpdated')) {
         this.cart = res.obj;
       }
     });
@@ -45,6 +45,8 @@ export class PosTableComponent implements OnInit {
   }
 
   onRowEditSave(product: Product) {
+    product.amount = (product.price * product.quantity) - product.discount;
+    this.cartService.updateCartItem(product);
     if (product.price > 0) {
       delete this.clonedProducts[product.id];
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product is updated' });

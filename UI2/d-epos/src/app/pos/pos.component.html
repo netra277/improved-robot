@@ -1,8 +1,7 @@
 <app-navbar></app-navbar>
 <p-splitter [panelSizes]="[20,80]">
     <ng-template>
-        <p-orderList [value]="products" [(selection)]="selectedProducts" filterBy="name,category"
-            filterPlaceholder="Products">
+        <p-orderList [value]="products" filterBy="name,category" filterPlaceholder="Products">
             <ng-template let-product pTemplate="item">
                 <div class="product-item">
                     <div class="product-list-detail">

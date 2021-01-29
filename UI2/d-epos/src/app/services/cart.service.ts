@@ -24,18 +24,27 @@ export class CartService {
         this.cartCommunication.next({ msgType: 'cartItemAdded', obj: this.cart });
     }
 
+    updateCartItem(product: Product) {
+        const elemIndex = this.cart.products.findIndex(elem => elem.code === product.code);
+        this.cart.products[elemIndex] = product;
+        this.updateBill();
+        this.updateCart(this.cart);
+        this.cartCommunication.next({ msgType: 'cartItemUpdated', obj: this.cart });
+    }
+
     deleteCartItem(product: Product) {
         this.cart.products = this.cart.products.filter(val => val.code !== product.code);
         this.updateBill();
         this.updateCart(this.cart);
+        this.cartCommunication.next({ msgType: 'cartItemDeleted', obj: product.code });
     }
 
     // update cart items methods to be written
-    updateCart(cartObj) {
+    private updateCart(cartObj) {
         localStorage.setItem('cartData', JSON.stringify(cartObj));
     }
 
-    updateBill() {
+    private updateBill() {
         let totaldiscount = 0;
         let totalamount = 0;
         let totalquantity = 0;
