@@ -2,14 +2,14 @@ module.exports = {
     
     Roles: {
         ADMIN: 'ADMIN',
-        STORE_SUPERVISOR: 'STORE_SUPERVISOR',
+        SUPERVISOR: 'SUPERVISOR',
         MANAGER: 'MANAGER',
         USER: 'USER'
     },
     ClientStatus :{
+        Subscribed: 'subscribed',
         Active: 'active',
         Inactive: 'inactive',
-        Subscribed: 'subscribed',
         Unsubscribed: 'unsubscribed'
     },
     UserStatus:{
@@ -41,6 +41,7 @@ module.exports = {
     DeviceKeyStatus: {
         Created: 'created',
         Active: 'active',
+        Registered: 'registered',
         InActive: 'inactive'
     },
     OrderStatus:{

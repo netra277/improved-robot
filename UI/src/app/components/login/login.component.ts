@@ -4,7 +4,7 @@ import {FormControl, FormGroupDirective, NgForm, FormBuilder, FormGroup, Validat
 import { first } from 'rxjs/operators';
 
 import { AuthenticationService } from '../../services';
-
+import { Roles } from '../../models/constants/roles';
 
 
 @Component({
@@ -20,6 +20,8 @@ export class LoginComponent implements OnInit {
     submitted = false;
     returnUrl: string;
     error = '';
+    roles = Roles;
+    selectedRole;
 
     constructor(
         private route: ActivatedRoute,
@@ -37,21 +39,39 @@ export class LoginComponent implements OnInit {
     }
 
 
-    onSubmit() {
-        this.submitted = true;
-
+    onSubmit() { 
         console.log('clicked on submit');
-        this.authenticationService.login(this.username, this.password).pipe(first())
-        .subscribe(
-            data => {
-                this.router.navigate([this.returnUrl]);
-            },
-            error => {
-                console.log('error');
-                this.error = error;
-                this.loading = false;
-            });
+        console.log(this.selectedRole);
+        if(this.selectedRole === "ADMIN"){
+            this.authenticationService.adminLogin(this.username, this.password).pipe(first())
+            .subscribe(
+                data => {
+                    this.router.navigate([this.returnUrl]);
+                },
+                error => {
+                    console.log('error');
+                    this.error = error;
+                    this.loading = false;
+                });
+        }
+        else {
+            this.authenticationService.login(this.username, this.password).pipe(first())
+            .subscribe(
+                data => {
+                    this.router.navigate([this.returnUrl]);
+                },
+                error => {
+                    console.log('error');
+                    this.error = error;
+                    this.loading = false;
+                });
+        }
         
+    }
+
+    selectedRoleChange(role){
+        this.selectedRole = role;
+
     }
 
 }

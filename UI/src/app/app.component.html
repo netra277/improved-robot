@@ -1,6 +1,9 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <!-- nav -->
 <app-loader></app-loader>
+<div *ngIf=" currentUser && !deviceId">
+  Please register the device
+</div>
 <nav class="navbar navbar-expand navbar-dark" style="background-color:aliceblue;" *ngIf="currentUser">
   <a href="#" class="navbar-brand">Brand</a>
   <ul class="navbar-nav ml-auto">
@@ -11,19 +14,19 @@
       <div class="vl"></div>
     </li>
     <li>
-      <label class="top-align">User: {{currentUser.username}}</label>
+      <label class="top-align" (click)="setdevice()">User: {{currentUser.username}}</label>
     </li>
     <li>
       <div class="vl"></div>
     </li>
     <li>
-        <label class="top-align">Role: {{currentUser.role}}</label>
+        <label class="top-align">Role: {{currentUser.role.name}}</label>
       </li>
-      <li>
+      <li *ngIf="currentUser.role.name !== 'ADMIN'">
         <div class="vl"></div>
       </li>
-      <li>
-          <label class="top-align">Branch: {{currentUser.username}}</label>
+      <li *ngIf="currentUser.role.name !== 'ADMIN'">
+          <label class="top-align" >Branch: {{currentUser}}</label>
         </li>
         <li>
           <div class="vl"></div>
@@ -33,7 +36,7 @@
           </li>
   </ul>
 </nav>
-<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser">
+<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser  && deviceId">
   <div class="navbar-nav">
     <a class="nav-item nav-link" routerLink="/create-order">Create Order</a>  <div class="vl-bottom"></div>
     <a class="nav-item nav-link" routerLink="/users">Users</a> <div class="vl-bottom"></div>
@@ -49,5 +52,6 @@
 
 <!-- main app container -->
 <alert></alert>
-
+<div class="py-3">
 <router-outlet></router-outlet>
+</div>

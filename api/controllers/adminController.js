@@ -37,5 +37,37 @@ module.exports = {
                 message: 'Password does not match or invalid old password'
             });
         }
+    },
+    activateClientUser : async(req,res,next)=>{
+       const reqBody = req.body;
+       const adminUsr = await AdminUser.findOne({Username: reqBody.username});
+       adminUsr.Status = constants.AdminUserStatus.Active;
+       adminUsr.RequiredPasswordChange =  false;
+       adminUsr.IsActive = true;
+       
+       let clientdeta = await Client.findById(adminUsr.ClientId);
+       await adminUsr.update(adminUsr);
+
+        clientdeta.IsActive = true;
+        clientdeta.Status = constants.ClientStatus.Active;
+        
+        await clientdeta.update(clientdeta);
+        const User = model.getUserModel(clientdeta.ClientId);
+        const usr = new User({
+            Username : adminUsr.Username,
+            Password: 'password',
+            UserId: adminUsr.UserId,
+            Name : adminUsr.Name,
+            CreatedDate: Date.now(),
+            Phone: adminUsr.Phone,
+            Email: adminUsr.Email,
+            RoleId: adminUsr.RoleId,
+            Status: 'active'
+        });
+        console.log('useract',usr);
+       const u =  await usr.save();
+       return res.status(200).json({
+           message: 'client activated successfully!!!!'
+       });
     }
 }

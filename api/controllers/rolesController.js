@@ -1,6 +1,7 @@
 const model = require('../dbconnections/connection_initializer');
 const mongoose = require('mongoose');
 const constants = require('../constants/enums');
+const config = require('../configuration/config');
 const Role = model.getRoleModel();
 
 module.exports = {
@@ -14,27 +15,33 @@ module.exports = {
         return res.status(200).json(role);
     },
     create: async (req, res, next) => {
-        const reqData = req.body;
+        if(req.headers.username !== config.setupUser || req.headers.password !== config.setupPwd){
+            return res.status(401).json({
+                message: 'Unauthorized'
+            });
+        }
+        console.log('request'+  req.headers.role);
+        const reqBodyData = req.body;
         const Role = model.getRoleModel();
-        const countR = await Role.find().count();
-        if(!constants.Roles.hasOwnProperty(reqData.role)){
+        const countR = await Role.find().countDocuments();
+        if(!constants.Roles.hasOwnProperty(reqBodyData.role)){
             return res.status(500).json({
-                message: 'role not found'
+                message: 'invalid role'
             });
         }
         const role = new Role({
             _id: new mongoose.Types.ObjectId(),
             RoleId: countR + 1,
-            Role: reqData.role,
-            RoleName: reqData.role_name,
-            Description: reqData.description,
-            IsClientLevel: reqData.is_client_level
+            Role: reqBodyData.role,
+            RoleName: reqBodyData.role_name,
+            Description: reqBodyData.description,
+            IsClientLevel: reqBodyData.is_client_level
         });
         console.log('beforecalling save', role);
 
         const roli = await role.save();
         if (roli) {
-            console.log('Role created: ', roli.role);
+            console.log('Role created: ', roli.Role);
             return res.status(200).json({
                 message: 'role created successfully'
             });
@@ -45,10 +52,15 @@ module.exports = {
         });
     },
     update: async (req, res, next) => {
-        const reqData = req.body;
+        if(req.headers.username !== config.setupUser || req.headers.password !== config.setupPwd){
+            return res.status(401).json({
+                message: 'Unauthorized'
+            });
+        }
+        const reqBodyData = req.body;
         const r = await Role.updateOne({ _id: req.params.id }, {
-            RoleName : reqData.role_name,
-            Description: reqData.description
+            RoleName : reqBodyData.role_name,
+            Description: reqBodyData.description
         });
         if (r.nModified > 0) {
             return res.status(200).json({

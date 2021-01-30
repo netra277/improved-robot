@@ -27,31 +27,21 @@ const ClientSchema = new Schema({
         type: Number,
         unique: true
     },
+    Email: {
+        type: String,
+        required: true
+    },
     Status: {
         type: String,
         enum: ['active', 'inactive', 'subscribed', 'unsubscribed'],
         required: true,
         default: 'inactive'
     },
-    Email: {
-        type: String,
-        required: true
-    },
     SubscribedDate: {
         type: Date,
         default: Date.now
     },
-    UnSubscribedDate:{
-        type: Date
-    },
-    DevicesRegistered: {
-        type: Number
-    },
-    IsLocked:{
-        type: Boolean,
-        default: false
-    },
-    SubscribedTillDate:{
+    SubscriptionEndDate:{
         type: Date
     },
     IsActive: {

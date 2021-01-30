@@ -15,6 +15,7 @@ export class AppComponent {
   currentUser: User;
   loggedInUserDetails: any;
   date: any;
+  deviceId;
 
   constructor(
     private router: Router,
@@ -22,10 +23,15 @@ export class AppComponent {
   ) {
     this.date = moment().format('dddd, LL');
     //this.loggedInUserDetails = getLoggedInUserDetails();
+    this.deviceId = localStorage.getItem('device-id');
     this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+    console.log(this.currentUser);
   }
   logout() {
     this.authenticationService.logout();
     this.router.navigate(['/login']);
+  }
+  setdevice(){
+     localStorage.setItem('device-id','abcd');
   }
 }

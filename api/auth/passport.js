@@ -8,7 +8,6 @@ const conn = require('../dbconnections/connection_initializer');
 const constants = require('../constants/enums');
 const AdminUser = conn.getAdminUserModel();
 const Role = conn.getRoleModel();
-const ClientDevices = conn.getClientDevicesModel();
 
 // admin strategy 
 passport.use('StratLoginAdmin', new LocalStrategy({
@@ -58,13 +57,13 @@ passport.use('StratLoginUser', new LocalStrategy({passReqToCallback: true }, asy
         const reqData = req.body;
         if(!reqData.device || reqData.device === ''){
             console.log('device not registered for user: ',reqData.username);
-            return done({message:'invalid device details'},false);
+            return done({message:{detail:'invalid device details'}},false);
         }
         const ClientDevice = conn.getClientDevicesModel();
         const cDevice = await ClientDevice.findById(reqData.device);
         if(!cDevice){
             console.log('Invalid device id for user: ',reqData.username);
-            return done({ message: 'Invalid device details' },false);
+            return done({ message:{detail: 'Invalid device details' }},false);
         }
         const User = conn.getUserModel(cDevice.ClientNumber);
         //find the user with the given username
@@ -97,14 +96,17 @@ passport.use('admindevicesjwt',new jwtStrategy({
     try {
         console.log('tokendetails', payload);
         if(!payload.user || !payload.user.role || !payload.user.role.id || payload.user.role.id === ''){
-            return done({message: 'Invalid roleId'}, false);
+            return done({message: {detail:'Invalid roleId'}}, false);
         }
         console.log('getting admin details',payload.user.role.id);
         const role = await Role.findById(payload.user.role.id);
+        if(!role){
+            return done({message: {detail:'Invalid role details'}},false );
+        }
         if(role.Role === constants.Roles.ADMIN){
             const user = await AdminUser.findById(payload.user.id);
             if(!user){
-               return done({message: 'Invalid admin details'},false );
+               return done({message: {detail: 'Invalid admin details'}},false );
             }
             user.role = role.Role;
            return  done(null,user);
@@ -125,20 +127,24 @@ passport.use(new jwtStrategy({
         console.log('tokendetails', payload);
         const headerDeviceId = req.headers['device_id'];
         console.log('getting admin details and deviceid',headerDeviceId);
-        if(!payload.user || !payload.user.role || !payload.user.role.id || payload.user.role.id === '' || !headerDeviceId || headerDeviceId === ''){
-            return done({message: 'Invalid request'}, false);
+        if(!payload.user || !payload.user.role || !payload.user.role.id || payload.user.role.id === '' 
+            || !headerDeviceId || headerDeviceId === '' || !payload.user.deviceId){
+            return done({message:{detail: 'Invalid request'}}, false);
         }
         const role = await Role.findById(payload.user.role.id);
+        if(!role){
+            return done({message: {detail:'Invalid role details'}},false );
+        }
         if(role.Role === constants.Roles.ADMIN){
             const user = await AdminUser.findById(payload.user.id);
             if(!user){
-                return done({message: 'Invalid admin details'},false );
+                return done({message:{detail: 'Invalid admin details'}},false );
             }
             console.log('devid',payload.user.deviceId);
             const clidev = await ClientDevices.findOne({DeviceId: payload.user.deviceId, Status: constants.DeviceStatus.Active});
             console.log('b:',clidev._id);
             if(!clidev || headerDeviceId.toString() !== clidev._id.toString()){
-                return done({message: 'device doesnot exist or not activated'},false );
+                return done({message: {detail: 'device doesnot exist or not activated'}},false );
             }
             console.log('adding role');
             user.role = role.Role;
@@ -150,26 +156,26 @@ passport.use(new jwtStrategy({
         }   
         else{
             if(!payload.user.deviceId || payload.user.deviceId === ''){
-                return done({message: 'Invalid deviceId'},false);
+                return done({message:{detail: 'Invalid deviceId'}},false);
             }
             const clidev = await ClientDevices.findOne({DeviceId: payload.user.deviceId, Status: constants.DeviceStatus.Active});
             if(!clidev || headerDeviceId !== clidev._id){
-                return done({message: 'device doesnot exist or not activated'},false );
+                return done({message:{detail: 'device doesnot exist or not activated'}},false );
             }
             const User = model.getUserModel(clidev.ClientNumber);
             const user = await User.findById(payload.user.id);
             if(!user){
-                return done({message: 'Invalid user details'},false );
+                return done({message:{detail: 'Invalid user details'}},false );
             }
             user.ClientNumber = clidev.ClientNumber;
             if(user.RoleId !== payload.user.role.id){
-                return done({message: 'Invalid role details'}, false)
+                return done({message:{detail: 'Invalid role details'}}, false)
             }
             user.role = await Role.findById(user.RoleId).RoleName;
             user.DeviceId = payload.user.deviceId;
             done(null,user);
         }
-        done({message: 'no user found'},false);
+        done({message:{detail: 'no user found'}},false);
     } catch (err) {
         done(err, false);
     }
@@ -183,6 +189,7 @@ getUserRole = async (roleId) => {
     if(!roleId){
         return null;
     }
+    console.log('roleid',roleId);
     const rol = await Role.findById(roleId);
     if (rol) {
         return {

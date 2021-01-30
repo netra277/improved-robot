@@ -12,7 +12,17 @@ const Role = model.getRoleModel();
 module.exports = {
     // This endpoint will be available only for Internal purpose to generate Admin Users
     createAdminUser: async (req, res, next) => {
-        const reqData = req.body;
+        if(req.headers.username !== config.setupUser || req.headers.password !== config.setupPwd){
+            return res.status(401).json({
+                message: 'Unauthorized'
+            });
+        }
+        const reqBody = req.body;
+        userId = randomString.generate({
+            length: 4,
+            charset: 'alphanumeric',
+            capitalization: 'uppercase'
+        });
         let clientId = '';
         do {
             clientId = randomString.generate({
@@ -25,35 +35,30 @@ module.exports = {
         // insert client details 
         const clientdetails = new Client({
             ClientId: clientId,
-            Name: reqData.company_name,
+            Name: reqBody.company_name,
             ClientKey: clientKey,
-            Address: reqData.address,
-            Phone: reqData.phone,
+            Address: reqBody.address,
+            Phone: reqBody.phone,
             Status: constants.ClientStatus.Subscribed,
-            Email: reqData.email,
-            UnSubscribedDate: '',
-            DevicesRegistered: reqData.number_of_devices,
-            SubscribedTillDate: new Date(reqData.subscribed_till_date)
+            Email: reqBody.email, 
+            SubscriptionEndDate: new Date(reqBody.subscribed_till_date),
         });
         try{
         const savedclient = await clientdetails.save();
-        console.log('savedclint',savedclient);
+        console.log('savedclient',savedclient);
         const roleDetails = await Role.findOne({Role: constants.Roles.ADMIN });
         console.log('role',roleDetails);
         let password = randomString.generate(10);
             const adminUsr = new AdminUser( {
-              UserId : clientId,
-              Name: reqData.name,
-              Username : reqData.name.split(" ").join("").substring(0,4) + reqData.birth_year + reqData.phone.toString().substring(6,10),
+              UserId : clientId + userId,
+              Name: reqBody.name,
+              Username : clientId.substring(0,3) + reqBody.name.split(" ").join("").substring(0,4) + reqBody.phone.toString().substring(6,10),
               Password : password,
-              BirthYear : reqData.birth_year,
-              Address : reqData.address,
-              Email : reqData.email,
-              Phone : reqData.phone,
+              Address : reqBody.address,
+              Email : reqBody.email,
+              Phone : reqBody.phone,
               Status : constants.AdminUserStatus.Created,
-              ClientId : savedclient._id,
-              RequiredPasswordChange: true,
-              RoleId: roleDetails._id
+              ClientId : savedclient._id
            });
            const savingUser = {
                Username: adminUsr.Username,
@@ -70,32 +75,6 @@ module.exports = {
                     message: 'Error occurred'
                 });
            }
-    },
-    activateClient : async(req,res,next)=>{
-       const reqData = req.body;
-       const adminUs = await AdminUser.findOne({Username: reqData.username});
-       adminUs.Status = constants.AdminUserStatus.Active;
-       await adminUs.update(adminUs);
-       let clientdeta = await Client.findById(adminUs.ClientId);
-        clientdeta.IsActive = true;
-        clientdeta.Status = constants.ClientStatus.Active;
-        await clientdeta.update(clientdeta);
-        const User = model.getUserModel(clientdeta.ClientId);
-        const usr = new User({
-            Username : adminUs.Username,
-            Password: 'password',
-            UserId: adminUs.UserId,
-            Name : adminUs.Name,
-            CreatedDate: Date.now(),
-            Phone: adminUs.Phone,
-            Email: adminUs.Email,
-            RoleId: adminUs.RoleId,
-            Status: 'active'
-        });
-        console.log('useract',usr);
-       const u =  await usr.save();
-       return res.status(200).json({
-           message: 'client activated successfully!!!!'
-       });
     }
+    
 }

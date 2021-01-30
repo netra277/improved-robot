@@ -7,12 +7,14 @@ const Schema = mongoose.Schema;
 const RoleSchema = new Schema({
     RoleId:{
         type: Number,
-        required:[true,'Role id is required']
+        required:[true,'Role id is required'],
+        
     },
     Role:{
         type: String,
         required:[true,'Role is required'],
-        uppercase: true
+        uppercase: true,
+        unique: true
     },
     RoleName: {
         type: String,

@@ -5,14 +5,10 @@ const mongooModels = require('../constants/mongoose-models');
 const Schema = mongoose.Schema;
 
 //create a schema
-const adminUserSchema = new Schema({
+const clientUserSchema = new Schema({
     UserId: {
         type: String,
-        required: true,
-        unique: true,
-        uppercase: true,
-        maxlength: 10,
-        minlength: 10
+        required: true
     },
     Username: {
         type: String,
@@ -29,12 +25,6 @@ const adminUserSchema = new Schema({
         type: String,
         required: true
     },
-    ClientId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: mongooModels.ClientsModel,
-        required: true
-    },
-    
     Phone: {
         type: Number,
         required: true
@@ -45,6 +35,11 @@ const adminUserSchema = new Schema({
     },
     Email: {
         type: String
+    },
+    ClientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: mongooModels.ClientsModel,
+        required: true
     },
     Status: {
         type: String,
@@ -64,17 +59,25 @@ const adminUserSchema = new Schema({
         type: Number,
         default: 0
     },
+    CreatedDate: {
+        type: Date,
+    },
+    RoleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: mongooModels.RolesModel,
+        required: true
+    },
     LastLoginDate: {
         type: Date
     },
     LastLoginIP: {
         type: String
     }
-},{collection:collections.AdminUsers});
+},{collection:collections.ClientUsers});
 
-adminUserSchema.pre('save', async function(next) {
+clientUserSchema.pre('save', async function(next) {
  try{
-     //this.UserId = this.UserId + this.Username;
+     this.UserId = this.UserId + this.Username;
      // Generate a salt
     const salt = await bcrypt.genSalt(10);
     // Generate a password hash 
@@ -85,7 +88,7 @@ adminUserSchema.pre('save', async function(next) {
      next(error);
  }
 });
-adminUserSchema.pre('updateOne', async function(next) {
+clientUserSchema.pre('updateOne', async function(next) {
     try{
         // Generate a salt
        const salt = await bcrypt.genSalt(10);
@@ -98,7 +101,7 @@ adminUserSchema.pre('updateOne', async function(next) {
     }
    });
 
-adminUserSchema.methods.isValidPassword = async function(newpassword){
+   clientUserSchema.methods.isValidPassword = async function(newpassword){
     try{
       return await bcrypt.compare(newpassword,this.Password);
     }catch(err){

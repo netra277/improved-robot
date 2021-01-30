@@ -14,6 +14,9 @@ const BranchSchema =  new Schema({
         type: String,
         required: true
     },
+    BranchCode: {
+        type: String
+    },
     Address: {
         type: String,
         required: true
@@ -38,6 +41,9 @@ const BranchSchema =  new Schema({
     TaxesToPrint: {
         type: []
     },
+    OverallTaxPercent: {
+        type: Number
+    }
 },{collection:collections.ClientDbCollections.Branches});
 
 module.exports = BranchSchema;

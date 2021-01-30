@@ -1,17 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent, UsersComponent, BranchesComponent, 
-  LoginComponent, CategoriesComponent, ItemsComponent, OrdersComponent, CreateOrderComponent, ContactUsComponent} from './components';
+  LoginComponent, CategoriesComponent, ItemsComponent, RegisterDeviceComponent,
+  DevicesComponent } from './components';
 import { AuthGuard } from './guards/auth.guard';
 import { Role } from './models';
-import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
-  {
-    path:'',
-    component:CreateOrderComponent,
-    canActivate:[AuthGuard]
-  },
   {
     path: 'login',
     component: LoginComponent
@@ -41,28 +36,12 @@ const routes: Routes = [
     data: { roles: [Role.Admin]}
   },
   {
-    path: 'orders',
-    component: OrdersComponent,
-    canActivate: [AuthGuard],
-    data: { roles: [Role.Admin]}
+    path: 'devices',
+    component: DevicesComponent,
   },
   {
-    path: 'create-order',
-    component: CreateOrderComponent,
-    canActivate: [AuthGuard],
-    data: { roles: [Role.Admin]}
-  },
-  {
-    path: 'contact-us',
-    component: ContactUsComponent,
-    canActivate: [AuthGuard],
-    data: { roles: [Role.Admin]}
-  },
-  {
-    path: 'reports',
-    component: ReportsComponent,
-    canActivate: [AuthGuard],
-    data: {roles: [Role.Admin]}
+    path: 'register-device',
+    component: RegisterDeviceComponent,
   },
   // otherwise redirect to home
   { path: '**', redirectTo: '' }

@@ -8,5 +8,7 @@ module.exports = {
     connectionStringCommonDbDev: process.env.CONNECTION_STRING_COMMON_DEV,
     connectionStringClientDbDev: process.env.CONNECTION_STRING_CLIENT_DEV,
     connectionStringCommonDb: process.env.CONNECTION_STRING_COMMON,
-    connectionStringClientDb: process.env.CONNECTION_STRING_CLIENT
+    connectionStringClientDb: process.env.CONNECTION_STRING_CLIENT,
+    setupUser: process.env.SETUP_UN,
+    setupPwd: process.env.SETUP_PW
 }

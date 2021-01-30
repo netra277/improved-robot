@@ -4,8 +4,7 @@ const constants = require('../constants/enums');
 const randomString = require('randomstring');
 const encryptor = require('../utilities/encryptor');
 const Role = model.getRoleModel();
-const Client = model.getClientModel();
-const ClientDevice = model.getClientDevicesModel();
+const Client = model.getClientModel(); 
 
 
 module.exports = {
@@ -236,7 +235,7 @@ module.exports = {
             Status: constants.DeviceStatus.Active,
             ActivatedByUserId : ''
         });
-        devkey.Status = constants.DeviceKeyStatus.Active;
+        devkey.Status = constants.DeviceKeyStatus.Registered;
         const dk = await DeviceKey.updateOne({_id:devkey._id},devkey);
         console.log('upclidev: ',upclidev);
         if (updatedDevice.nModified > 0) {
