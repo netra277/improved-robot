@@ -1,0 +1,39 @@
+<app-navbar></app-navbar>
+<p-splitter [panelSizes]="[20,80]">
+    <ng-template>
+        <p-orderList [value]="products" filterBy="name,category" filterPlaceholder="Products">
+            <ng-template let-product pTemplate="item">
+                <div class="product-item">
+                    <div class="product-list-detail">
+                        <h6 class="p-mb-1">{{product.name}}</h6>
+                        <div>
+                            <div>
+                                <i class="pi pi-tag product-category-icon"></i>
+                                <span class="product-category">{{product.category}}</span>
+                            </div>
+                            <div>
+                                &nbsp;<b><span class="product-category">{{product.price |
+                                        currency:'INR'}}</span></b>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="product-list-action">
+                        <!-- <div class="input-group">
+                            <p-inputNumber [size]="1" [(ngModel)]="product.quantity" [showButtons]="true">
+                            </p-inputNumber> -->
+                        <button pButton pRipple type="button" icon="pi pi-arrow-right" (click)="addToCart(product.code)"
+                            class="p-button-rounded"></button>
+
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </ng-template>
+        </p-orderList>
+    </ng-template>
+    <ng-template>
+        <div class="p-col p-d-flex">
+            <app-pos-table></app-pos-table>
+        </div>
+    </ng-template>
+</p-splitter>
